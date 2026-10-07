@@ -30,11 +30,23 @@ blueprint'teki gibi İngilizce kalır (`NowSelector`, `ReminderPlanner`).
 
 ## Her oturum başında
 
-1. `docs/progress.md` ve `git log -10` oku.
+1. `docs/yol-haritasi.md` (tek durum kaynağı), `docs/progress.md` ve `git log -10` oku.
 2. `docs/BLUEPRINT.md`'nin ilgili bölümünü ve `docs/decisions/` kayıtlarını oku.
-3. Bu oturumda **tek** dikey dilim ya da dilim içi tek madde seç.
+3. Yol haritasından bu oturumun **tek** maddesini (ör. F2.11) seç.
 4. Hedefi iki cümleyle `docs/progress.md`'ye yaz.
 5. Önce testleri, sonra kodu yaz.
+
+## Yol haritası kuralları
+
+- Projenin gidişatı `docs/yol-haritasi.md` üzerinden işaretlenir. `progress.md` yalnız
+  oturum günlüğüdür.
+- Bir madde ancak kanıtı gösterilebiliyorsa ☑ olur; kanıt (commit, test, bulgu başlığı)
+  satırın sonuna yazılır. Yarım iş ◐, engelli iş ⛔ + neyi beklediği.
+- Her iş bitiminde aynı commit'te yol haritası güncellenir: madde işareti, "Genel durum"
+  tablosu, "Şu an / Sıradaki tek adım / Açık engeller" ve "Son güncelleme".
+- Faz, çift kontrolün **ikisi de** (K1 makine, K2 gerçek dünya) geçmeden kapanmaz. K2'yi
+  yalnız Kullanıcı'nın açık onayı işaretler; varsayılmaz.
+- Yol haritası kapsam eklemez. Yeni iş çıkarsa önce karar kaydı ya da `ideas.md`.
 
 ## Kod kuralları
 

@@ -1,6 +1,9 @@
-# İlerleme
+# İlerleme — oturum günlüğü
 
-## Dilim durumu
+> Güncel durum ve madde madde işaretleme için **`docs/yol-haritasi.md`** dosyasına bak.
+> Bu dosya yalnız oturum günlüğüdür; aşağıdaki dilim tablosu ilk günkü hâliyle tarihçe olarak durur.
+
+## Dilim durumu (7 Ekim 2026 itibarıyla; güncel hâli yol haritasında)
 
 | Dilim | İçerik | "Bitti" ölçütü | Durum |
 |---|---|---|---|
