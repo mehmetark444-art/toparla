@@ -3,7 +3,7 @@
 Projenin sıfırdan bitişe tek durum kaynağı. Her oturumda buradan okunur, burada işaretlenir.
 Kapsam `docs/BLUEPRINT.md` (M1–M30) + `docs/decisions/` kararlarıdır; bu dosya kapsam eklemez.
 
-**Son güncelleme:** 7 Ekim 2026, 23:55
+**Son güncelleme:** 8 Ekim 2026, 00:05
 
 ## Nasıl okunur
 
@@ -22,6 +22,10 @@ satırının sonuna yazılır (commit, test adı ya da `platform-bulgulari.md` b
 - **K2 — Gerçek dünya kontrolü:** telefonda, gerçek kullanımda gözlenen sonuç. Sen onaylarsın.
 
 Biri geçip diğeri kalırsa faz "◐" kalır. K1 geçti diye K2 varsayılmaz; tersi de geçerli.
+
+**Kapanış şartı (K3 — Proje beyni):** K1 ve K2 geçse bile, `docs/proje-beyni.md` o faz için
+güncellenmeden (kararlar, bulgular, **yapılan hatalar**, zaman çizelgesi, faz kapanış kaydı)
+faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satır olarak durur.
 
 ## Genel durum
 
@@ -59,11 +63,13 @@ Biri geçip diğeri kalırsa faz "◐" kalır. K1 geçti diye K2 varsayılmaz; t
 - ☑ F0.5 `CLAUDE.md` (A6 + blueprint'i ezen kararlar) — `4ca872c`
 - ☑ F0.6 Belge iskeleti: `progress`, `platform-bulgulari`, `hyperos-baglantilar`, `ideas`, `decisions/` — `4ca872c`
 - ☑ F0.7 Gradle çok modüllü iskelet (7 modül), sürüm kataloğu resmi kaynaktan doğrulandı — `65c129f`
-- ☑ F0.8 Yol haritası (bu dosya)
+- ☑ F0.8 Yol haritası (bu dosya) — `0cf287b`
+- ☑ F0.9 Proje beyni (`docs/proje-beyni.md`) ve zorunlu güncelleme kuralı (K3)
 
 **Çift kontrol**
 - ☑ K1: `./gradlew :domain:test :app:assembleDebug` başarılı; depoda API anahtarı yok (`git grep`).
 - ☑ K2: Kullanıcı kararları yazılı onayladı (ısrarlı takip sınırları dahil).
+- ☑ K3: `proje-beyni.md` bu faz için güncellendi (Bölüm 13 kapanış kaydı var).
 
 ---
 
@@ -119,6 +125,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 **Çift kontrol**
 - ☐ K1: `platform-bulgulari.md`'deki 19 spike satırının hiçbiri "Bekliyor" değil; her birinde ölçüm sayısı ve yöntem yazılı; `[DOĞRULA]` araması açık madde bırakmıyor.
 - ☐ K2: Gece testi sabah kaydı Kullanıcı'nın gördüğü bildirimlerle tutarlı; Kullanıcı tam ekran kartı kilit ekranında, müdahale ekranını gerçek bir uygulama açılışında kendi gözüyle gördü.
+- ☐ K3: `proje-beyni.md` bu faz için güncellendi: kararlar, bulgular, yapılan hatalar, zaman çizelgesi, Bölüm 13 kapanış kaydı.
 
 **Faz kapısı:** F1-A tamamen ☑ olmadan F2-D (Android hatırlatma) yazılmaz.
 
@@ -184,6 +191,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 **Çift kontrol**
 - ☐ K1: `:domain` ve `:reminders` testleri yeşil; 18 zorunlu senaryo ve invaryantlar geçti; cihaz matrisi (açık / arka plan / kapalı / Doze / yeniden başlatma / kilitli yeniden başlatma) her hücrede kritik teslim ±1 dk; lint temiz; migration testi var.
 - ☐ K2: 7 gün gerçek kullanım: Kullanıcı'nın kurduğu hatırlatmalarda kaçan kritik 0, ±1 dk teslim ≥ %99 (teslim günlüğünden); ısrarlı takip en az 3 gerçek işte "Yaptım"a kadar sürdü; Kullanıcı "güveniyorum" dedi.
+- ☐ K3: `proje-beyni.md` bu faz için güncellendi: kararlar, bulgular, yapılan hatalar, zaman çizelgesi, Bölüm 13 kapanış kaydı.
 
 **Faz kapısı:** K2'nin 7 günü beklenirken F3 flag arkasında yazılabilir (karar 0005-4).
 
@@ -232,6 +240,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 **Çift kontrol**
 - ☐ K1: Tile → mikrofon ≤ 1 sn (ölçüm); 100 ardışık yakalamada 0 kayıp (test); `NowSelector` ≥ 40 senaryo; tarih altın seti ≥ %95; soğuk açılış ≤ 800 ms; her ekranda Compose testi ve 3 tema ekran görüntüsü; kriz sözlüğü testleri.
 - ☐ K2: Senaryolar S2, S6, S9, S10 telefonda geçti; Kullanıcı 3 gün üst üste gününü yalnız bununla yürüttü; kriz sözlüğünü ve hat listesini okuyup onayladı.
+- ☐ K3: `proje-beyni.md` bu faz için güncellendi: kararlar, bulgular, yapılan hatalar, zaman çizelgesi, Bölüm 13 kapanış kaydı.
 
 ---
 
@@ -253,6 +262,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 **Çift kontrol**
 - ☐ K1: Zamanlayıcı ekran kapalıyken ±1 sn; yarıda kapanan rutin ve odak kaldığı yerden; kalibratör birim testleri; kapanış ≤ 5 dokunuş (UI testi).
 - ☐ K2: Senaryolar S1, S3, S4, S5, S8 geçti; Kullanıcı bir tam günü sabah planından gün kapanışına bununla yaşadı.
+- ☐ K3: `proje-beyni.md` bu faz için güncellendi: kararlar, bulgular, yapılan hatalar, zaman çizelgesi, Bölüm 13 kapanış kaydı.
 
 ---
 
@@ -276,6 +286,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 **Çift kontrol**
 - ☐ K1: Göstermeme kurallarının her biri birim testli; müdahale algılama → ekran ≤ 400 ms (10 ölçüm); seri sayısı ve kırmızı kayma rengi hiçbir ekranda yok (UI testi); dürtü akışı uçak modunda tam çalışıyor.
 - ☐ K2: Senaryolar S14, S15, S21, S23 geçti; Sigara ve Uyku Ritmi 7 gün gerçek kullanımla izlendi; Kullanıcı müdahalenin "rahatsız etmeden işe yaradığını" doğruladı.
+- ☐ K3: `proje-beyni.md` bu faz için güncellendi: kararlar, bulgular, yapılan hatalar, zaman çizelgesi, Bölüm 13 kapanış kaydı.
 
 ---
 
@@ -302,6 +313,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 **Çift kontrol**
 - ☐ K1: Bölme F1 ≥ 0,90; sınıflama ≥ %85; kriz yönlendirme %100; tıbbi ihlal 0; başarılı enjeksiyon 0; AI kapalıyken F3–F5 testlerinin tamamı yeşil; ağ kesilince ≤ 2 sn'de Katman 1; bütçe tavanında bulut çağrısı 0 (simülasyon).
 - ☐ K2: Kullanıcı uçak modunda günü yürütebildi; "Buluta ne gitti?" kaydını okudu ve içinde beklemediği veri görmedi; sesle ve yazıyla sohbet etti, her yazma işlemini geri alabildi.
+- ☐ K3: `proje-beyni.md` bu faz için güncellendi: kararlar, bulgular, yapılan hatalar, zaman çizelgesi, Bölüm 13 kapanış kaydı.
 
 ---
 
@@ -323,6 +335,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 **Çift kontrol**
 - ☐ K1: 30 günlük sahte bağlam simülasyonunda bütçe hiç aşılmıyor; aynı tohumla aynı karar; OTP kalıbı hiç işlenmiyor (test); konsolidasyon ≤ 10 dk, pil ≤ günlük %1.
 - ☐ K2: 14 gün gözlem modu gerçek kullanım: bütçe içinde, "Faydalı" oranı ≥ %50; senaryolar S7 (kural kısmı), S12 geçti; Kullanıcı "Neleri öğrendim" özetini doğru buldu.
+- ☐ K3: `proje-beyni.md` bu faz için güncellendi: kararlar, bulgular, yapılan hatalar, zaman çizelgesi, Bölüm 13 kapanış kaydı.
 
 ---
 
@@ -347,6 +360,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 **Çift kontrol**
 - ☐ K1: Belge son tarih doğruluğu ≥ %90 (50 örnek); gömülü örüntülü sentetik veride bulgu yakalanıyor, rastgele veride 0 bulgu; valf kurallarının her biri testli; kriz sonrası 72 sa Ayna kartı 0; kaynaksız "Sor" yanıtı 0.
 - ☐ K2: Senaryolar S7, S11, S13, S19, S20 geçti; Haftalık Ayna gerçek veride ilk gerçek örüntüyü buldu ve Kullanıcı doğru buldu; "Bu uygulama beni utandırdı" anı 0.
+- ☐ K3: `proje-beyni.md` bu faz için güncellendi: kararlar, bulgular, yapılan hatalar, zaman çizelgesi, Bölüm 13 kapanış kaydı.
 
 ---
 
@@ -366,6 +380,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 **Çift kontrol**
 - ☐ K1: Niyet ayrıştırma ≥ %90 (30 cümle); uydurma URL 0; yineleme ayıklama %100; `nothingNew` → bildirim yok (test); bütçe tavanı simülasyonda aşılmıyor; anahtarsız konu oluşturulabiliyor.
 - ☐ K2: Senaryolar S16, S17, S18 geçti; 3 gerçek konu 7 gün çalıştı, okunma ≥ %50, aylık konu payı aşılmadı; Kullanıcı rastgele 5 maddenin kaynağını açıp doğruladı.
+- ☐ K3: `proje-beyni.md` bu faz için güncellendi: kararlar, bulgular, yapılan hatalar, zaman çizelgesi, Bölüm 13 kapanış kaydı.
 
 ---
 
@@ -387,6 +402,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 **Çift kontrol**
 - ☐ K1: Sıfırlanmış uygulamaya yedekten geri yükleme gidiş-dönüş testi; soğuk açılış ≤ 800 ms; tüm sürüm kapısı (J4) maddeleri yeşil; izlenebilirlik tablosunda boş hücre yok.
 - ☐ K2: 30 gün gerçek kullanım: ANR ve çökme 0, kaçan kritik 0; senaryo S22 geçti; Kullanıcı sıfır telefona geri yüklemeyi bir kez kendi yaptı.
+- ☐ K3: `proje-beyni.md` bu faz için güncellendi: kararlar, bulgular, yapılan hatalar, zaman çizelgesi, Bölüm 13 kapanış kaydı.
 
 ---
 
@@ -407,3 +423,4 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 ## Değişiklik günlüğü
 
 - **7 Ekim 2026:** İlk sürüm. F0 kapalı; F1 ve F2-A sürüyor.
+- **8 Ekim 2026:** Her faza K3 (proje beyni güncellemesi) kapanış şartı eklendi; F0.9.

@@ -30,6 +30,7 @@ blueprint'teki gibi İngilizce kalır (`NowSelector`, `ReminderPlanner`).
 
 ## Her oturum başında
 
+0. `docs/proje-beyni.md` oku (projenin hafızası: gerekçeler, bulgular, yapılan hatalar, tuzaklar).
 1. `docs/yol-haritasi.md` (tek durum kaynağı), `docs/progress.md` ve `git log -10` oku.
 2. `docs/BLUEPRINT.md`'nin ilgili bölümünü ve `docs/decisions/` kayıtlarını oku.
 3. Yol haritasından bu oturumun **tek** maddesini (ör. F2.11) seç.
@@ -47,6 +48,18 @@ blueprint'teki gibi İngilizce kalır (`NowSelector`, `ReminderPlanner`).
 - Faz, çift kontrolün **ikisi de** (K1 makine, K2 gerçek dünya) geçmeden kapanmaz. K2'yi
   yalnız Kullanıcı'nın açık onayı işaretler; varsayılmaz.
 - Yol haritası kapsam eklemez. Yeni iş çıkarsa önce karar kaydı ya da `ideas.md`.
+
+## Proje beyni kuralları (zorunlu)
+
+- `docs/proje-beyni.md` projenin hafızasıdır; bağlamı sıfırlanmış bir oturum ya da başka
+  bir AI yalnız onu okuyarak projeyi anlayabilmelidir.
+- **Faz kapısı (K3):** Bir faz, proje beyni o faz için güncellenmeden ☑ işaretlenemez.
+  Güncelleme, fazı kapatan commit'in içinde olur; kontrol listesi dosyanın 12. bölümündedir.
+- Faz bitmesini beklemeden, aynı gün yazılır: her yeni karar kaydı (Bölüm 5), **her yapılan
+  hata, yanlış varsayım ya da geri alınan iş** (Bölüm 8), her cihaz bulgusunun özeti (Bölüm 7),
+  mimari/sürüm/çalışma biçimi değişikliği (Bölüm 4 ve 9).
+- Geçmiş silinmez; yanlış çıkan bilgi üstü çizilip düzeltilir. Hata kaydı gizlenmez.
+- API anahtarı, parola ve kişisel sağlık verisi bu dosyaya asla girmez.
 
 ## Kod kuralları
 
