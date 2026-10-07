@@ -90,3 +90,13 @@ Kullanıcı uygulamada 2 dk'lık çifti kurdu, uygulamayı son uygulamalardan ka
 - Açılışta `LOCKED_BOOT_COMPLETED` (22:19:12) ve 30 ms sonra `BOOT_COMPLETED` geldi; alıcı her ikisinde bekleyen 2 alarmı yeniden kurdu (çift kurulum idempotent: aynı `PendingIntent`, tek teslim).
 - İki alarm da zamanında: `setExactAndAllowWhileIdle` +26 ms, `setAlarmClock` +51 ms; bildirim gönderildi. **Yeniden başlatma sonrası yeniden planlama çalışıyor**; yeniden başlatmadan alarmların geri kurulmasına ~45 sn (hedef ≤ 60 sn, S10).
 - **Kilitli (Direct Boot) senaryosu DOĞRULANMADI.** `dumpsys lock_settings` → `CredentialType: NONE`: telefonda güvenli ekran kilidi yok (22:08:31'de kaldırılmış). Kilit olmayınca depolama açılışta kendiliğinden açılır; `BOOT_COMPLETED`'in hemen gelmesi bunu gösteriyor. Cihaz korumalı depolamadan okuma kodu çalıştı ama kilit açılmadan önceki pencere hiç oluşmadı. Ekran kilidi geri konunca tekrarlanacak.
+
+### 7 Ekim 2026 — Spike 1: kilitli yeniden başlatma (Direct Boot) — DOĞRULANDI
+
+Ekran kilidi PIN olarak kuruldu (`CredentialType: PIN`). 5,5 dk'lık çift kuruldu (plan 22:31:27), 22:26:10'da `adb reboot`. Kullanıcı ne SIM PIN'i ne ekran PIN'i girdi.
+
+- Alarm anında ve sonrasında `dumpsys user` → `RUNNING_LOCKED`. Yalnız `LOCKED_BOOT_COMPLETED` geldi (22:26:40, yeniden başlatmadan ~30 sn sonra); `BOOT_COMPLETED` gelmedi.
+- `directBootAware` alıcı, cihaz korumalı depolamadaki bekleyen listeden 2 alarmı yeniden kurdu.
+- İkisi de kilitliyken çaldı: `setExactAndAllowWhileIdle` +132 ms, `setAlarmClock` +153 ms; bildirim gönderildi (`notifEnabled=true`), Kullanıcı kilit ekranında gördü.
+- **Sonuç:** G1'deki Direct Boot tasarımı (alarm kurmaya yetecek en küçük veri cihaz korumalı depolamada + `directBootAware` alıcılar) bu cihazda çalışıyor.
+- Araç notu: kilitliyken `run-as` çalışmıyor (kimlik korumalı dizin yok); kayıt `logcat -s TOPARLA_SPIKE` ile okundu. Ürün tanılamasında da kilitli dönem kayıtları cihaz korumalı depolamaya yazılmalı.
