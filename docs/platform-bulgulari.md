@@ -82,3 +82,11 @@ Kullanıcı uygulamada 2 dk'lık çifti kurdu, uygulamayı son uygulamalardan ka
 - İki alarm da çaldı: `setExactAndAllowWhileIdle` +130 ms, `setAlarmClock` +152 ms; bildirim gönderildi. Sapmanın önceki ~15–40 ms'den yüksek olması sürecin soğuk başlatıldığını (yani kaydırmanın süreci gerçekten öldürdüğünü) düşündürüyor.
 - Paket durumu `stopped=false`: HyperOS 3'te kaydırarak kapatma **zorla durdurma değil**; alarmlar korunuyor.
 - Sınır: tek deneme, 2 dk ufuk, ekran kapalı ama USB bağlı. Uzun ufuk (1 sa, gece) ve Güvenlik uygulamasının "Bellek temizleme"si ayrıca denenecek.
+
+### 7 Ekim 2026 — Spike 1: yeniden başlatma
+
+5 dk'lık çift kuruldu (plan 22:23:19), 22:18:27'de `adb reboot`. Cihaz 22:19:01'de adb'ye döndü.
+
+- Açılışta `LOCKED_BOOT_COMPLETED` (22:19:12) ve 30 ms sonra `BOOT_COMPLETED` geldi; alıcı her ikisinde bekleyen 2 alarmı yeniden kurdu (çift kurulum idempotent: aynı `PendingIntent`, tek teslim).
+- İki alarm da zamanında: `setExactAndAllowWhileIdle` +26 ms, `setAlarmClock` +51 ms; bildirim gönderildi. **Yeniden başlatma sonrası yeniden planlama çalışıyor**; yeniden başlatmadan alarmların geri kurulmasına ~45 sn (hedef ≤ 60 sn, S10).
+- **Kilitli (Direct Boot) senaryosu DOĞRULANMADI.** `dumpsys lock_settings` → `CredentialType: NONE`: telefonda güvenli ekran kilidi yok (22:08:31'de kaldırılmış). Kilit olmayınca depolama açılışta kendiliğinden açılır; `BOOT_COMPLETED`'in hemen gelmesi bunu gösteriyor. Cihaz korumalı depolamadan okuma kodu çalıştı ama kilit açılmadan önceki pencere hiç oluşmadı. Ekran kilidi geri konunca tekrarlanacak.
