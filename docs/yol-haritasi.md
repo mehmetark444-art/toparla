@@ -283,7 +283,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 
 **Amaç:** AI altyapısı. AI kapalıyken her şey çalışmaya devam eder.
 
-- ☐ F6.1 `LlmClient`, `TaskSpec`, `Router` (8 kural), `RouterDecision`
+- ☐ F6.1 M16: `LlmClient`, `TaskSpec`, `Router` (8 kural), `RouterDecision`
 - ☐ F6.2 `GeminiClient`: akış, şemalı çıktı, işlev çağrısı, görsel, önbellekleme, 402/429/5xx ele alma
 - ☐ F6.3 `LocalLlmClient` (LiteRT-LM + Gemma): yükleme/boşaltma, kuyruk önceliği, termal koruma
 - ☐ F6.4 Bütçe: `AiCallLog`, `AiBudgetDay`, `pricing.json`, %80 uyarı, %100 Katman 1; harcama ekranı
@@ -316,7 +316,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 - ☐ F7.5 "Neden?" sheet'i (D21), "Faydalı / Faydasız"
 - ☐ F7.6 Beni Tanı görüşmesi (Ek D) ve profil ekranı; hipotez ve düzeltme defteri
 - ☐ F7.7 Gece konsolidasyonu (9 adım, ≤ 10 dk, kaldığı yerden)
-- ☐ F7.8 Onboarding tam akış (D1, 9 adım)
+- ☐ F7.8 M23: Onboarding tam akış (D1, 9 adım) ve Ayarlar alt sayfalarının tamamı (D20)
 - ☐ F7.9 Konum ve NFC tetikleri: çıkış kontrolü, rutin, yol süresi öğrenme
 - ☐ F7.10 M22 tamamlayıcılar: dinamik kısayollar, derin bağlantılar, Mi Band yansıması
 
@@ -353,7 +353,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 ## F9 — Konu Motoru (S8) ☐
 
 - ☐ F9.1 H5 tabloları
-- ☐ F9.2 Niyet ayrıştırma, Niyet kartı, hassas konu tespiti, özel kişi takibi reddi
+- ☐ F9.2 M24: Niyet ayrıştırma, Niyet kartı, hassas konu tespiti, özel kişi takibi reddi
 - ☐ F9.3 `WebResearchClient` (Google Arama temellendirmesi), `TopicRunWorker`, Katman 0 doğrulama (yineleme, kaynak, telif örtüşmesi, URL eşleme)
 - ☐ F9.4 `TopicDigestWorker`: günde 2 birleşik özet, öğrenilen saat, yenilik yoksa atla
 - ☐ F9.5 Akış ekranı (D6), konu detayı (Özetler · Bilgi · Ayarlar), `TopicDigestCard`
