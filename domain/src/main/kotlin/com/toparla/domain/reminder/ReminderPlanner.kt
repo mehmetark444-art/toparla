@@ -36,6 +36,8 @@ object ReminderPlanner {
         val existingByKey = existing.associateBy { it.key }
         val plannedKeys = planned.mapTo(HashSet()) { it.key }
         return PlanResult(
+            // Anahtar zamanı içerdiği için normalde key eşitse fireAt de eşittir; karşılaştırma,
+            // ScheduledAlarm tablosu sistemle tutarsız kalmışsa kendini onarmak içindir.
             toSchedule = planned.filter { existingByKey[it.key]?.fireAt != it.fireAt },
             toCancel = existing.map { it.key }.filterNot { it in plannedKeys },
         )

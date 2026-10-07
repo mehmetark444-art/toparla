@@ -18,7 +18,7 @@ Biçimler 8 Ekim 2026'da resmi belgelerden (code.claude.com/docs) doğrulanarak 
 
 ## Kancalar
 
-Node ile yazıldı (bağımlılıksız). Sınama: `bash .claude/hooks/sinama.sh` (17 senaryo).
+Node ile yazıldı (bağımlılıksız). Sınama: `bash .claude/hooks/sinama.sh` (21 senaryo).
 
 | Kanca | Olay | Davranış |
 |---|---|---|
@@ -60,9 +60,12 @@ Kişisel tercihler için `.claude/settings.local.json` ve `CLAUDE.local.md` giti
 | `/karar-kaydi <başlık>` | Blueprint'ten sapma, yeni izin, teknoloji seçimi |
 | `/hata-kaydi` | Hata, yanlış varsayım, geri alınan iş (aynı gün) |
 | `/faz-kapat <faz>` | Faz kapanış töreni: K1 + K2 + K3 |
+| `/gece-kontrolu` | Çalışılan her günün son işi: satır satır yeniden okuma, temizlik, kasıtlı bozmayla test sınaması, belge eşitleme; sonuç `docs/gece-kontrolleri.md` |
 
 `dogrula/kontrol.mjs` depo tutarlılığını denetler: gizli değer yok · belgelerdeki commit'ler gerçek ·
 M1–M30 kapsamı · her fazda K1/K2/K3 · kapanan fazın kapanış kaydı · karar kayıtları `CLAUDE.md`'de.
+`--gece` ile ek olarak: çalışma ağacı temiz · artık dosya yok · sahipsiz TODO yok · `CLAUDE.md` kısa ·
+ön maddeler yerinde · yol haritası ve proje beyni tarihleri güncel · açık engel ve teyit bekleyen karar hatırlatması.
 
 ## Alt ajanlar
 

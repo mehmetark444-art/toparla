@@ -18,13 +18,26 @@ sealed interface Recurrence {
 
     data object Daily : Recurrence
 
-    data class Weekly(val days: Set<DayOfWeek>) : Recurrence
+    data class Weekly(val days: Set<DayOfWeek>) : Recurrence {
+        init {
+            require(days.isNotEmpty()) { "Weekly en az bir gün ister" }
+        }
+    }
 
     /** Ayın günü. Kısa aylarda ayın son gününe çekilir (31 → Şubat'ta 28/29). */
-    data class MonthlyOnDay(val day: Int) : Recurrence
+    data class MonthlyOnDay(val day: Int) : Recurrence {
+        init {
+            require(day in 1..31) { "MonthlyOnDay günü 1..31 olmalı: $day" }
+        }
+    }
 
     /** Her gün [windowStart]'tan başlayıp [windowEnd]'i geçmeyecek şekilde her [hours] saatte bir. */
-    data class EveryHours(val hours: Int, val windowStart: LocalTime, val windowEnd: LocalTime) : Recurrence
+    data class EveryHours(val hours: Int, val windowStart: LocalTime, val windowEnd: LocalTime) : Recurrence {
+        init {
+            require(hours in 1..23) { "EveryHours aralığı 1..23 saat olmalı: $hours" }
+            require(!windowEnd.isBefore(windowStart)) { "EveryHours penceresi gün içinde olmalı" }
+        }
+    }
 }
 
 /** Hatırlatma tanımı: planlayıcının girdisi. */

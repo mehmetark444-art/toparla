@@ -62,6 +62,12 @@ Oturum başlangıç kancası güncel durumu bağlama ekler; ayrıntı için `/ot
   `/hata-kaydi`), her cihaz bulgusunun özeti (Bölüm 7), mimari ya da çalışma biçimi değişikliği (Bölüm 4, 9).
 - Geçmiş silinmez; yanlış bilgi üstü çizilip düzeltilir. Gizli değer ve sağlık verisi girmez.
 
+## Gece kontrolü (zorunlu, çalışılan her gün)
+Günün son işi `/gece-kontrolu`: o gün değişen her dosya satır satır yeniden okunur, hata ve gereksiz
+kod temizlenir, testlerin bozuk kodu yakaladığı sınanır, belgeler eşitlenir. İki kontrol de yapılır:
+makine (`kontrol.mjs --gece`) ve göz. Sonuç `docs/gece-kontrolleri.md`'ye yazılır; temiz çıkmadan
+ya da açık kalanlar kaydedilmeden gün kapanmaz.
+
 ## Kod ve belge kuralları
 Ayrıntı yola göre yüklenen dosyalarda; ilgili dosyaya dokunduğunda kendiliğinden gelir:
 `.claude/rules/kod.md` · `domain.md` · `android.md` · `belgeler.md` · `betikler-ve-cihaz.md`.
@@ -82,7 +88,7 @@ Ayrıntı yola göre yüklenen dosyalarda; ilgili dosyaya dokunduğunda kendili�
 
 ## Usuller (yetenekler)
 `/oturum-basla` · `/yeni-modul <M ya da F maddesi>` · `/cihaz-testi` · `/dogrula [faz]` ·
-`/karar-kaydi <başlık>` · `/hata-kaydi` · `/faz-kapat <faz>`.
+`/karar-kaydi <başlık>` · `/hata-kaydi` · `/faz-kapat <faz>` · `/gece-kontrolu`.
 Denetçi alt ajanlar (Kullanıcı isteyince ya da faz kapanışında): `blueprint-denetci`, `kod-denetci`,
 `guvenlik-denetci`.
 

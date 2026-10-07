@@ -99,5 +99,51 @@ if (fazArg > -1) {
   }
 }
 
+// 9) Gece kontrolü: temizlik ve bayatlık (yalnız --gece ile)
+if (process.argv.includes('--gece')) {
+  const warn = (m) => console.log(`UYARI  ${m}`);
+  const status = (git(['status', '--porcelain']) || '').split(/\r?\n/).filter(Boolean);
+  check(status.length === 0, 'çalışma ağacı temiz (commit bekleyen değişiklik yok)', status.slice(0, 6).join(' · '));
+
+  const leftovers = tracked.filter((f) => /(Gecici|Deneme|sizinti|Scratch)[^/]*$|\.(tmp|bak|orig|rej)$|~$/i.test(f));
+  check(leftovers.length === 0, 'geçici ya da artık dosya yok', leftovers.join(', '));
+
+  const sources = tracked.filter((f) => /\.(kt|kts|mjs|sh|xml|toml)$/.test(f) && f !== '.claude/skills/dogrula/kontrol.mjs');
+  const todos = [];
+  for (const f of sources) {
+    read(f).split(/\r?\n/).forEach((line, i) => {
+      if (/\b(TODO|FIXME|XXX|HACK)\b/.test(line)) todos.push(`${f}:${i + 1}`);
+    });
+  }
+  check(todos.length === 0, 'kodda sahipsiz TODO / FIXME yok', todos.slice(0, 8).join(', '));
+
+  const claudeLines = claude.split(/\r?\n/).length;
+  check(claudeLines < 200, `CLAUDE.md kısa (${claudeLines} satır < 200)`);
+
+  const noFront = tracked.filter((f) => /^\.claude\/(skills\/[^/]+\/SKILL|agents\/[^/]+|rules\/[^/]+)\.md$/.test(f) && !read(f).startsWith('---'));
+  check(noFront.length === 0, 'yetenek, alt ajan ve kural dosyalarının ön maddesi var', noFront.join(', '));
+
+  // Yol haritasının tarihi, son kod/belge commit'inden eski olmamalı.
+  const months = { Ocak: 0, Şubat: 1, Mart: 2, Nisan: 3, Mayıs: 4, Haziran: 5, Temmuz: 6, Ağustos: 7, Eylül: 8, Ekim: 9, Kasım: 10, Aralık: 11 };
+  const parseTr = (text) => {
+    const m = /\*\*Son güncelleme:\*\*\s*(\d{1,2}) (\S+) (\d{4})/.exec(text);
+    return m && months[m[2]] !== undefined ? new Date(Number(m[3]), months[m[2]], Number(m[1])) : null;
+  };
+  const lastCommit = new Date((git(['log', '-1', '--format=%cI']) || '').trim());
+  const lastDay = new Date(lastCommit.getFullYear(), lastCommit.getMonth(), lastCommit.getDate());
+  for (const [name, text] of [['yol haritası', roadmap], ['proje beyni', brain]]) {
+    const d = parseTr(text);
+    check(d !== null && d >= lastDay, `${name} "Son güncelleme" tarihi son commit gününü kapsıyor`, d ? d.toLocaleDateString('tr-TR') : 'tarih okunamadı');
+  }
+
+  // Bilgi: açık engeller ve teyit bekleyenler (hata değil, hatırlatma)
+  const blockers = (roadmap.match(/^- ⛔ .*$/gm) || []).filter((l) => !/ F\d+\.\d+/.test(l));
+  blockers.forEach((b) => warn(`açık engel: ${b.replace(/^- ⛔ /, '')}`));
+  for (const f of decisions) {
+    const head = read(`docs/decisions/${f}`).split(/\r?\n/).slice(0, 4).join(' ');
+    if (/teyit ettirilecek|Aday/.test(head)) warn(`karar ${f.slice(0, 4)} hâlâ teyit ya da ölçüm bekliyor`);
+  }
+}
+
 console.log(failed ? `SONUC: ${failed} sorun` : 'SONUC: tutarlı');
 process.exit(failed ? 1 : 0);

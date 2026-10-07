@@ -9,50 +9,49 @@ burada kapanır: **ne denendi · nasıl · sonuç · karar**.
 |---|---|
 | İşletim sistemi | Windows 11 Home |
 | Android Studio | 2025.2.2, `C:\Program Files\Android\Android Studio` |
-| JDK | Android Studio JBR 21.0.8 (ayrı JDK yok; `JAVA_HOME` tanımsız) |
+| JDK | Android Studio JBR 21.0.8 (ayrı JDK yok; sistemde `JAVA_HOME` tanımsız, Claude Code oturumlarında `.claude/settings.json` verir) |
 | Android SDK | `%LOCALAPPDATA%\Android\Sdk`; platformlar 33, 34, **36**; build-tools 35.0.0, 36.1.0; NDK 28.2 |
 | adb | 36.0.2, PATH'te değil (`…\Sdk\platform-tools\adb.exe`) |
 | Gradle | Sarmalayıcı 9.6.0 (AGP 9.4.1 gereği); JBR 21 ile koşar |
 | Derleme | `JAVA_HOME` = Android Studio `jbr` verilerek `./gradlew :domain:test :app:assembleDebug` başarılı (ilk derleme 2 dk 36 sn) |
 | Not | Kurulu Android Studio 2025.2.2, AGP 9.4.1 projesini açmak için eski olabilir `[DOĞRULA]`; komut satırı derlemesi etkilenmez |
 | Git | 2.52 |
-| Telefon | `adb devices` listesi boş: henüz bağlı değil |
+| Telefon | 7 Ekim 21:55'te USB ile bağlandı ve yetkilendirildi; kimliği aşağıda. `adb` için `./scripts/adb` |
 
 ## S0 spike listesi
 
-Sıra: önce ürünü taşıyan ve en kırılgan varsayımlar.
+Sıra: önce ürünü taşıyan ve en kırılgan varsayımlar. Bu tablo spike **tanımlarını** tutar;
+güncel durum ve madde işaretleri yalnız `docs/yol-haritasi.md` F1 bölümündedir.
 
-| # | Spike | Blueprint | Durum |
+| # | Spike | Blueprint | Güncel durum |
 |---|---|---|---|
-| 1 | **Alarm teslimi:** `setAlarmClock` ↔ `setExactAndAllowWhileIdle`; 2 dk / 1 sa / gece / Doze / uygulama kapalı / yeniden başlatma / kilitli yeniden başlatma / bekleme kovası rare | G1, J2 | Devam ediyor: ilk tur yapıldı, bulgular aşağıda |
-| 2 | Kesin alarmdan FGS başlatma muafiyeti; `specialUse` FGS; her başlatma yolu | G1, G2 | Bekliyor |
-| 3 | Tam ekran bildirim + HyperOS "Kilit ekranında göster", "Arka planda açılır pencere" | G1 | Bekliyor |
-| 4 | HyperOS ayar derin bağlantıları (otomatik başlatma, pil, kısıtlı ayarlar) → `hyperos-baglantilar.md` | G3 | Bekliyor |
-| 5 | Erişilebilirlik: uygulama açılışı algılama gecikmesi (hedef ≤ 400 ms), servis ömrü, servisten Activity başlatma; olmazsa overlay yedeği | G3, G4, G10, D11 | Bekliyor |
-| 6 | Bildirim erişimi: yan yüklemede kısıtlı ayarlar, `allow_listener`, kopma sonrası `requestRebind` | G4 | Bekliyor |
-| 7 | Bildirim "cooldown" davranışı ve alarm ses akışı; DND aşımı | G1 | Bekliyor |
-| 8 | Tile: kilitliyken `LockCaptureActivity`, Tile → mikrofon ≤ 1 sn | G9 | Bekliyor |
-| 9 | Türkçe cihaz içi STT: 30 cümlelik set (sayı, tarih, özel isim) WER; yetersizse yerel Whisper | G7 | Bekliyor |
-| 10 | Cihaz içi model: LiteRT-LM + Gemma sürümü `[DOĞRULA: güncel adlar]`, 16 KB sayfa uyumu, GPU/NPU, token/sn, ilk token, 10 dk sıcaklık; 50 örnek Türkçe kalite | G8, F2 | Bekliyor |
-| 11 | **Gemini API:** anahtarın uç noktası (Developer API ↔ Vertex AI), akış, işlev çağrısı, şemalı çıktı, bağlam önbellekleme, görsel girdi, Google Arama temellendirmesi (atıf alanları, maliyet), model kimlikleri ve fiyatlar | Karar 0001, F5.1, M24.2 | Bekliyor |
-| 12 | Konu bütçesi ölçümü: 1 konu × günde 2 tarama gerçek maliyeti → varsayılan sıklık | F11, M24.7 | Bekliyor |
-| 13 | Room + BundledSQLiteDriver ile FTS5 | B1 | Bekliyor |
-| 14 | Health Connect: Mi Band → Mi Fitness → uyku/adım akışı | M19.6 | Bekliyor |
-| 15 | Geofence: Play Hizmetleri varlığı, arka plan olay gecikmesi | G6 | Bekliyor |
-| 16 | Canlı güncelleme: `ProgressStyle`, "promoted ongoing", HyperOS odak bildirimi | G9 | Bekliyor |
-| 17 | Arama durumu: `AudioManager.getMode` ile izinsiz algılama | Karar 0005-11 | Bekliyor |
-| 18 | ALO 171 hattının güncelliği | M25.2 T1 | Bekliyor |
-| 19 | `kur.sh` komutlarının HyperOS'te davranışı | Ek B | Bekliyor |
+| 1 | **Alarm teslimi:** `setAlarmClock` ↔ `setExactAndAllowWhileIdle`; 2 dk / 1 sa / gece / Doze / uygulama kapalı / yeniden başlatma / kilitli yeniden başlatma / bekleme kovası rare | G1, J2 | yol haritası F1.1 |
+| 2 | Kesin alarmdan FGS başlatma muafiyeti; `specialUse` FGS; her başlatma yolu | G1, G2 | yol haritası F1 |
+| 3 | Tam ekran bildirim + HyperOS "Kilit ekranında göster", "Arka planda açılır pencere" | G1 | yol haritası F1 |
+| 4 | HyperOS ayar derin bağlantıları (otomatik başlatma, pil, kısıtlı ayarlar) → `hyperos-baglantilar.md` | G3 | yol haritası F1 |
+| 5 | Erişilebilirlik: uygulama açılışı algılama gecikmesi (hedef ≤ 400 ms), servis ömrü, servisten Activity başlatma; olmazsa overlay yedeği | G3, G4, G10, D11 | yol haritası F1 |
+| 6 | Bildirim erişimi: yan yüklemede kısıtlı ayarlar, `allow_listener`, kopma sonrası `requestRebind` | G4 | yol haritası F1 |
+| 7 | Bildirim "cooldown" davranışı ve alarm ses akışı; DND aşımı | G1 | yol haritası F1 |
+| 8 | Tile: kilitliyken `LockCaptureActivity`, Tile → mikrofon ≤ 1 sn | G9 | yol haritası F1 |
+| 9 | Türkçe cihaz içi STT: 30 cümlelik set (sayı, tarih, özel isim) WER; yetersizse yerel Whisper | G7 | yol haritası F1 |
+| 10 | Cihaz içi model: LiteRT-LM + Gemma sürümü `[DOĞRULA: güncel adlar]`, 16 KB sayfa uyumu, GPU/NPU, token/sn, ilk token, 10 dk sıcaklık; 50 örnek Türkçe kalite | G8, F2 | yol haritası F1 |
+| 11 | **Gemini API:** anahtarın uç noktası (Developer API ↔ Vertex AI), akış, işlev çağrısı, şemalı çıktı, bağlam önbellekleme, görsel girdi, Google Arama temellendirmesi (atıf alanları, maliyet), model kimlikleri ve fiyatlar | Karar 0001, F5.1, M24.2 | yol haritası F1 |
+| 12 | Konu bütçesi ölçümü: 1 konu × günde 2 tarama gerçek maliyeti → varsayılan sıklık | F11, M24.7 | yol haritası F1 |
+| 13 | Room + BundledSQLiteDriver ile FTS5 | B1 | yol haritası F1 |
+| 14 | Health Connect: Mi Band → Mi Fitness → uyku/adım akışı | M19.6 | yol haritası F1 |
+| 15 | Geofence: Play Hizmetleri varlığı, arka plan olay gecikmesi | G6 | yol haritası F1 |
+| 16 | Canlı güncelleme: `ProgressStyle`, "promoted ongoing", HyperOS odak bildirimi | G9 | yol haritası F1 |
+| 17 | Arama durumu: `AudioManager.getMode` ile izinsiz algılama | Karar 0005-11 | yol haritası F1 |
+| 18 | ALO 171 hattının güncelliği | M25.2 T1 | yol haritası F1 |
+| 19 | `kur.sh` komutlarının HyperOS'te davranışı | Ek B | yol haritası F1 |
 
 ## Bulgular
-
-_Henüz cihaz bulgusu yok._
 
 ### 7 Ekim 2026 — Cihaz kimliği ve ilk kurulum denemesi
 
 - **Cihaz:** Xiaomi 17T Pro (`2602EPTC0G`, `warhol_global`), Android 16 (API 36), HyperOS `OS3.0.310.0.WPSMIXM`, güvenlik yaması 2026-08-01, `arm64-v8a`.
 - **Sayfa boyutu:** `getconf PAGE_SIZE` = **4096**. Cihaz 16 KB sayfa kullanmıyor; yerel kütüphanelerde 16 KB uyumu yine de korunur (ileriye dönük), ama bu cihazda engel değil.
-- **`adb install` engeli:** İlk deneme `INSTALL_FAILED_USER_RESTRICTED: Install canceled by user` ile reddedildi. HyperOS, Geliştirici seçenekleri → **USB ile yükle** açık değilse ya da telefondaki onay penceresi 10 sn içinde onaylanmazsa kurulumu reddeder. `kur.sh` bu hatayı yakalayıp Türkçe yönerge göstermeli. Durum: Kullanıcı'nın ayarı açması bekleniyor.
+- **`adb install` engeli:** İlk deneme `INSTALL_FAILED_USER_RESTRICTED: Install canceled by user` ile reddedildi. HyperOS, Geliştirici seçenekleri → **USB ile yükle** açık değilse ya da telefondaki onay penceresi 10 sn içinde onaylanmazsa kurulumu reddeder. `kur.sh` bu hatayı yakalayıp Türkçe yönerge göstermeli. Sonuç: ayar zaten açıkmış (`persist.security.adbinstall=1`); retlerin nedeni telefondaki onay penceresinin onaylanmaması, bir kez de yanlışlıkla reddedilmesiydi. Sonraki denemede `Success`.
 
 ### 7 Ekim 2026 — Spike 1: alarm teslimi (ilk tur)
 

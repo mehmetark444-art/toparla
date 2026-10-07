@@ -16,10 +16,4 @@ object Defaults {
     /** Israrlı takip tekrar aralığı, dakika (karar 0003). */
     const val PERSISTENT_REMINDER_INTERVAL_MIN = 30
     val PERSISTENT_REMINDER_INTERVAL_OPTIONS_MIN = listOf(15, 30, 60)
-
-    /** Aynı anda aktif koçluk alan alışkanlık üst sınırı (K23). */
-    const val MAX_FOCUS_HABITS = 2
-
-    /** Bulut AI aylık bütçe varsayılanı, ABD doları (K21). */
-    const val MONTHLY_AI_BUDGET_USD = 25
 }

@@ -23,7 +23,9 @@ function git(args) {
 }
 
 // 3) Gizli dosyayı ekrana basma
-if (/\b(cat|type|head|tail|less|more|bat|Get-Content|gc)\b[^|;&\n]*\b(secrets|keystore)\.properties\b/i.test(cmd)) {
+// Komut ikamesi içindeki okuma ($(…) ya da ters tırnak) değeri ekrana değil değişkene verir; serbest.
+const visible = cmd.replace(/\$\([^()]*\)/g, '').replace(/`[^`]*`/g, '');
+if (/\b(cat|type|head|tail|less|more|grep|egrep|sed|awk|sort|strings|findstr|Get-Content|gc|Select-String)\b[^|;&\n]*\b(secrets|keystore)\.properties\b/i.test(visible)) {
   denyPreToolUse(
     'Gizli dosyanın içeriği ekrana basılmaz. Değeri değişkene al ve yazdırmadan kullan: K=$(grep "^GEMINI_API_KEY=" secrets.properties | cut -d= -f2-)',
   );
@@ -55,7 +57,8 @@ if (/\bgit\b[^\n]*\b(commit|add)\b/.test(cmd)) {
 }
 
 // 1) Push
-if (/\bgit\b[^\n]*\bpush\b/.test(cmd)) {
+// "git push" alt komutu; "git stash push" gibi başka alt komutların argümanı değil.
+if (/\bgit(\s+-[cC]\s+\S+)*\s+push\b/.test(cmd)) {
   askPreToolUse('git push dışarıya yayındır. Kural: push yalnız Kullanıcı açıkça isteyince; ilk push öncesi API anahtarı yenilenmiş olmalı (yol haritası F2.18).');
 }
 

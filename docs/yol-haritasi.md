@@ -3,7 +3,7 @@
 Projenin sıfırdan bitişe tek durum kaynağı. Her oturumda buradan okunur, burada işaretlenir.
 Kapsam `docs/BLUEPRINT.md` (M1–M30) + `docs/decisions/` kararlarıdır; bu dosya kapsam eklemez.
 
-**Son güncelleme:** 8 Ekim 2026, 00:05
+**Son güncelleme:** 8 Ekim 2026, 02:00
 
 ## Nasıl okunur
 
@@ -63,6 +63,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 - ☑ F0.5 `CLAUDE.md` (A6 + blueprint'i ezen kararlar) — `4ca872c`
 - ☑ F0.6 Belge iskeleti: `progress`, `platform-bulgulari`, `hyperos-baglantilar`, `ideas`, `decisions/` — `4ca872c`
 - ☑ F0.7 Gradle çok modüllü iskelet (7 modül), sürüm kataloğu resmi kaynaktan doğrulandı — `65c129f`
+- ☑ F0.11 Gece kontrolü usulü (`/gece-kontrolu`, `kontrol.mjs --gece`) ve ilk tam kontrol — `docs/gece-kontrolleri.md`
 - ☑ F0.8 Yol haritası (bu dosya) — `0cf287b`
 - ☑ F0.9 Proje beyni (`docs/proje-beyni.md`) ve zorunlu güncelleme kuralı (K3) — `81f1c19`
 - ☑ F0.10 Claude Code altyapısı: ayarlar ve izinler, 4 kanca (17 sınama), 5 kural dosyası, 7 yetenek, 3 denetçi alt ajan, `AGENTS.md` — `docs/claude-code-duzeni.md`
@@ -425,4 +426,5 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 
 - **7 Ekim 2026:** İlk sürüm. F0 kapalı; F1 ve F2-A sürüyor.
 - **8 Ekim 2026:** Her faza K3 (proje beyni güncellemesi) kapanış şartı eklendi; F0.9.
+- **8 Ekim 2026:** F0.11 gece kontrolü usulü ve ilk kontrol (9 bulgu düzeltildi; 58 birim testi).
 - **8 Ekim 2026:** F0.10 Claude Code altyapısı. Faz kapısı artık kancayla zorunlu; tutarlılık `/dogrula` ile denetlenir.

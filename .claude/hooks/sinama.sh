@@ -18,7 +18,7 @@ t() {
 }
 
 t "blueprint duzenlenemez" dosya-koruma.mjs deny "{\"tool_input\":{\"file_path\":\"$R/docs/BLUEPRINT.md\",\"old_string\":\"a\",\"new_string\":\"b\"}}"
-t "git bash yoluyla da duzenlenemez" dosya-koruma.mjs deny '{"tool_input":{"file_path":"/c/Users/ahmet/Desktop/toparla/docs/BLUEPRINT.md","content":"x"}}'
+t "git bash yoluyla da duzenlenemez" dosya-koruma.mjs deny "{\"tool_input\":{\"file_path\":\"$(pwd)/docs/BLUEPRINT.md\",\"content\":\"x\"}}"
 t "arsiv duzenlenemez" dosya-koruma.mjs deny "{\"tool_input\":{\"file_path\":\"$R/docs/arsiv/TOPARLA_v3.md\",\"content\":\"x\"}}"
 t "siradan dosya yazilir" dosya-koruma.mjs izin "{\"tool_input\":{\"file_path\":\"$R/docs/ideas.md\",\"content\":\"merhaba\"}}"
 t "belgeye anahtar yazilamaz" dosya-koruma.mjs deny "{\"tool_input\":{\"file_path\":\"$R/docs/ideas.md\",\"content\":\"k=$FAKE\"}}"
@@ -28,6 +28,10 @@ t "yol haritasi siradan duzenleme" dosya-koruma.mjs izin "{\"tool_input\":{\"fil
 t "git push sorulur" komut-koruma.mjs ask '{"tool_input":{"command":"git push origin main"}}'
 t "gizli dosya ekrana basilamaz" komut-koruma.mjs deny '{"tool_input":{"command":"cat secrets.properties"}}'
 t "gizli deger degiskene alinabilir" komut-koruma.mjs izin '{"tool_input":{"command":"K=$(grep ^GEMINI secrets.properties | cut -d= -f2-)"}}'
+t "grep ile ekrana basma da engellenir" komut-koruma.mjs deny '{"tool_input":{"command":"grep GEMINI secrets.properties"}}'
+t "gizli dosyanin varligina bakilabilir" komut-koruma.mjs izin '{"tool_input":{"command":"git check-ignore -q secrets.properties && ls -la secrets.properties"}}'
+t "git stash push sorulmaz" komut-koruma.mjs izin '{"tool_input":{"command":"git stash push -m gecici"}}'
+t "git -C ile push sorulur" komut-koruma.mjs ask '{"tool_input":{"command":"git -C . push"}}'
 t "siradan komut" komut-koruma.mjs izin '{"tool_input":{"command":"ls"}}'
 t "temiz agacta commit" komut-koruma.mjs izin '{"tool_input":{"command":"git add -A && git commit -m x"}}'
 printf 'k=%s\n' "$FAKE" > sizinti-deneme.txt
