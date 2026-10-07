@@ -74,3 +74,11 @@ _Henüz cihaz bulgusu yok._
 7. **Araç notu:** Git Bash, `adb shell` argümanlarındaki `/data/...` yollarını Windows yoluna çeviriyor; betiklerde `MSYS_NO_PATHCONV=1` şart. `kur.sh` ve diğer betikler buna göre yazılır.
 
 **Açık kalanlar:** gerçek Doze · gece (uzun bekleme) · 1 saat · son uygulamalardan kaydırarak kapatma · yeniden başlatma · kilitli yeniden başlatma · kısıtlı kova · madde 2'nin tekrar testi.
+
+### 7 Ekim 2026 — Spike 1: son uygulamalardan kaydırarak kapatma
+
+Kullanıcı uygulamada 2 dk'lık çifti kurdu, uygulamayı son uygulamalardan kaydırıp kapattı, telefona dokunmadı. HyperOS ayarları varsayılan (otomatik başlatma verilmedi, pil kısıtı değiştirilmedi, kilit rozeti yok).
+
+- İki alarm da çaldı: `setExactAndAllowWhileIdle` +130 ms, `setAlarmClock` +152 ms; bildirim gönderildi. Sapmanın önceki ~15–40 ms'den yüksek olması sürecin soğuk başlatıldığını (yani kaydırmanın süreci gerçekten öldürdüğünü) düşündürüyor.
+- Paket durumu `stopped=false`: HyperOS 3'te kaydırarak kapatma **zorla durdurma değil**; alarmlar korunuyor.
+- Sınır: tek deneme, 2 dk ufuk, ekran kapalı ama USB bağlı. Uzun ufuk (1 sa, gece) ve Güvenlik uygulamasının "Bellek temizleme"si ayrıca denenecek.
