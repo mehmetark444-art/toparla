@@ -12,7 +12,9 @@ burada kapanır: **ne denendi · nasıl · sonuç · karar**.
 | JDK | Android Studio JBR 21.0.8 (ayrı JDK yok; `JAVA_HOME` tanımsız) |
 | Android SDK | `%LOCALAPPDATA%\Android\Sdk`; platformlar 33, 34, **36**; build-tools 35.0.0, 36.1.0; NDK 28.2 |
 | adb | 36.0.2, PATH'te değil (`…\Sdk\platform-tools\adb.exe`) |
-| Gradle | Sistemde yok; sarmalayıcı önbelleğinde 8.12 ve 8.14 |
+| Gradle | Sarmalayıcı 9.6.0 (AGP 9.4.1 gereği); JBR 21 ile koşar |
+| Derleme | `JAVA_HOME` = Android Studio `jbr` verilerek `./gradlew :domain:test :app:assembleDebug` başarılı (ilk derleme 2 dk 36 sn) |
+| Not | Kurulu Android Studio 2025.2.2, AGP 9.4.1 projesini açmak için eski olabilir `[DOĞRULA]`; komut satırı derlemesi etkilenmez |
 | Git | 2.52 |
 | Telefon | `adb devices` listesi boş: henüz bağlı değil |
 

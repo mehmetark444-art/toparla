@@ -26,3 +26,8 @@ belge iskeletini ve ilk karar kayıtlarını kurmak.
 
 **Sıradaki:** Gradle çok modüllü iskelet (sürümler resmi kaynaktan doğrulanıp
 `libs.versions.toml`'a kilitlenecek) → ilk spike: alarm teslim testi.
+
+**Ek (aynı oturum):** Gradle çok modüllü iskelet kuruldu (`:domain`, `:data`, `:reminders`,
+`:ai`, `:sensors`, `:ui`, `:app`). Sürümler resmi depolardan doğrulandı: AGP 9.4.1,
+Kotlin 2.4.20, Gradle 9.6.0, JUnit Jupiter 6.1.3. `./gradlew :domain:test :app:assembleDebug`
+başarılı (3 test, boş debug APK). Sıradaki: ilk spike — alarm teslim testi (telefon bağlanınca).

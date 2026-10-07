@@ -1,0 +1,17 @@
+# Sürümler resmi kaynaktan doğrulanıp buraya kilitlenir (blueprint A0-3).
+# Doğrulama: 7 Ekim 2026 — Google Maven, Maven Central, developer.android.com.
+[versions]
+agp = "9.4.1"            # Gradle 9.6.0 ister; JDK 17+; en yüksek API 37
+kotlin = "2.4.20"
+junit = "6.1.3"          # JUnit Jupiter (blueprint'teki "JUnit 5" ailesinin güncel sürümü)
+sdk = "36"
+
+[libraries]
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
