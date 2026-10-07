@@ -1,131 +1,92 @@
 # CLAUDE.md — Toparla · Güneş çalışma protokolü
 
 Kaynak: `docs/BLUEPRINT.md` Bölüm A6. Blueprint değiştirilmez; ondan sapan her karar
-`docs/decisions/` altındadır ve **karar kaydı blueprint'i ezer**. Kod yazmadan önce
-ilgili karar kayıtlarını oku.
+`docs/decisions/` altındadır ve **karar kaydı blueprint'i ezer**.
+
+## Proje
+DEHB'li tek bir kullanıcı için, tek telefonda (Xiaomi 17T Pro, Android 16, HyperOS 3) çalışan,
+sunucusuz kişisel yaşam asistanı. İki bağımsız parça: AI'sız güvenilir çekirdek (Katman 0) ve
+AI ajanı **Güneş** (cihaz içi Gemma + bulutta Gemini). Kapsam M1–M30'un tamamı; fazlar F0–F10.
+
+## Belgeler (hangisi neyi yanıtlar)
+| Dosya | Soru |
+|---|---|
+| `docs/proje-beyni.md` | Buraya nasıl geldik, ne öğrendik, hangi hatalar yapıldı? (hafıza) |
+| `docs/yol-haritasi.md` | Neredeyiz, sırada ne var? (tek durum kaynağı) |
+| `docs/decisions/` | Blueprint'ten nerede, neden saptık? |
+| `docs/BLUEPRINT.md` | Ne inşa ediyoruz? (değiştirilmez; yalnız ilgili bölümü oku) |
+| `docs/platform-bulgulari.md` | Bu telefonda ne ölçtük? |
+| `docs/claude-code-duzeni.md` | Kancalar, yetenekler, alt ajanlar, kurallar nasıl kurulu? |
 
 ## Blueprint'i ezen kararlar (özet)
-
-- **0001:** Bulut katmanı (Katman 2) Anthropic Claude değil **Google Gemini API**'dir.
-  Blueprint'te "Claude / Anthropic / Sonnet / Haiku / Opus" geçen her yer buna göre okunur.
-- **0002:** Yasak kelime listesi ve kelime tabanlı ton doğrulayıcısı **yoktur**.
-- **0003:** Günlük proaktif bildirim bütçesi varsayılan **10** (alt sınır 10).
-  **Israrlı takip:** Kullanıcı'nın "yapacağım" dediği işin hatırlatması, "Yaptım"
-  denene kadar 30 dakikada bir tekrarlanır.
+- **0001:** Bulut katmanı Anthropic Claude değil **Google Gemini API**. Blueprint'te
+  "Claude / Anthropic / Sonnet / Haiku / Opus" geçen her yer buna göre okunur.
+- **0002:** Yasak kelime listesi ve kelime tabanlı ton doğrulayıcısı **yok**.
+- **0003:** Günlük proaktif bildirim bütçesi **10** (alt sınır 10). **Israrlı takip:** Kullanıcı'nın
+  üstlendiği işin hatırlatması, "Yaptım" denene kadar 30 dakikada bir tekrarlanır.
 - **0004:** İlk odak alışkanlıklar: Sigara (bırakma) + Uyku Ritmi.
-- **0005:** Dil, yedek parolası, paralel dilim çalışması, CI ve belge boşlukları.
+- **0005:** Dil, yedek parolası, paralel faz çalışması, CI ve belge boşlukları.
 
-## Kimlik ve amaç
-
-Sen bu projenin tek geliştiricisisin; Kullanıcı ürün sahibi ve tek kullanıcı. Amaç
-Kullanıcı'nın gerçekten her gün kullanacağı, güvenilir, sakin ve kişisel bir uygulama.
-Kullanıcı'nın teknik bilgisi yoktur: elle yapacağı her adım sıfır bilgi varsayımıyla,
-numaralı ve tek eylemli anlatılır. Yapabildiğin her şeyi kendin yap.
+## Kimlik ve iletişim
+Sen bu projenin tek geliştiricisisin; Kullanıcı ürün sahibi ve tek kullanıcı (DEHB'li).
+**Kullanıcı'nın teknik bilgisi yok:** elle yapacağı her adım sıfır bilgi varsayımıyla, numaralı
+ve tek eylemli anlatılır; yapabildiğin her şeyi kendin yap.
+- Kısa durum raporu (≤ 5 madde), tek soru, önerilen varsayılanla karar: "Şunu yapıyorum; itiraz etmezsen devam."
+- Oturum sonunda üç başlık: **Ne bitti** · **Telefonda neyi dene** (3 madde) · **Sıradaki**.
+- Kullanıcı'nın kararı blueprint'in kaygısıyla çelişiyorsa bedelini açıkça söyle, sonra uygula ve kaydet.
+- "Oldu / geldi / yükledim" beyanı kanıt değildir; kayıttan doğrula.
 
 ## Dil
-
-Belgeler, karar kayıtları, commit mesajları, kod yorumları ve kullanıcıya görünen
-metinler **Türkçe**. Kod tanımlayıcıları (sınıf, fonksiyon, değişken, tablo adları)
-blueprint'teki gibi İngilizce kalır (`NowSelector`, `ReminderPlanner`).
+Belgeler, karar kayıtları, commit mesajları, kod yorumları, kullanıcı metinleri **Türkçe**.
+Kod tanımlayıcıları İngilizce (`NowSelector`, `ReminderPlanner`).
 
 ## Her oturum başında
-
-0. `docs/proje-beyni.md` oku (projenin hafızası: gerekçeler, bulgular, yapılan hatalar, tuzaklar).
-1. `docs/yol-haritasi.md` (tek durum kaynağı), `docs/progress.md` ve `git log -10` oku.
-2. `docs/BLUEPRINT.md`'nin ilgili bölümünü ve `docs/decisions/` kayıtlarını oku.
-3. Yol haritasından bu oturumun **tek** maddesini (ör. F2.11) seç.
-4. Hedefi iki cümleyle `docs/progress.md`'ye yaz.
-5. Önce testleri, sonra kodu yaz.
+Oturum başlangıç kancası güncel durumu bağlama ekler; ayrıntı için `/oturum-basla`.
+1. `docs/proje-beyni.md` → `docs/yol-haritasi.md` → `git log -10`.
+2. İlgili blueprint bölümü ve karar kayıtları.
+3. Yol haritasından bu oturumun **tek** maddesini seç (ör. F2.11); hedefi iki cümleyle `docs/progress.md`'ye yaz.
+4. Önce test, sonra kod.
 
 ## Yol haritası kuralları
-
-- Projenin gidişatı `docs/yol-haritasi.md` üzerinden işaretlenir. `progress.md` yalnız
-  oturum günlüğüdür.
-- Bir madde ancak kanıtı gösterilebiliyorsa ☑ olur; kanıt (commit, test, bulgu başlığı)
-  satırın sonuna yazılır. Yarım iş ◐, engelli iş ⛔ + neyi beklediği.
-- Her iş bitiminde aynı commit'te yol haritası güncellenir: madde işareti, "Genel durum"
-  tablosu, "Şu an / Sıradaki tek adım / Açık engeller" ve "Son güncelleme".
-- Faz, çift kontrolün **ikisi de** (K1 makine, K2 gerçek dünya) geçmeden kapanmaz. K2'yi
-  yalnız Kullanıcı'nın açık onayı işaretler; varsayılmaz.
-- Yol haritası kapsam eklemez. Yeni iş çıkarsa önce karar kaydı ya da `ideas.md`.
+- Gidişat `docs/yol-haritasi.md` üzerinden işaretlenir; `progress.md` yalnız oturum günlüğüdür.
+- Madde ancak kanıtıyla ☑ olur (commit, test, bulgu başlığı satır sonunda). Yarım ◐, engelli ⛔.
+- Her iş bitiminde aynı commit'te yol haritası güncellenir (madde, genel durum, şu an / sıradaki / engeller).
+- Faz üç kontrolle kapanır: **K1** makine · **K2** gerçek dünya (yalnız Kullanıcı'nın açık onayı) ·
+  **K3** proje beyni güncellemesi. Usul: `/faz-kapat`.
+- Yol haritası kapsam eklemez; yeni iş → karar kaydı ya da `docs/ideas.md`.
 
 ## Proje beyni kuralları (zorunlu)
+- `docs/proje-beyni.md` tek başına okunduğunda projeyi anlatabilmelidir.
+- **Faz kapısı (K3):** proje beyni o faz için güncellenmeden faz ☑ işaretlenemez (kanca engeller).
+- Aynı gün yazılır: her karar (Bölüm 5), **her hata / yanlış varsayım / geri alınan iş** (Bölüm 8,
+  `/hata-kaydi`), her cihaz bulgusunun özeti (Bölüm 7), mimari ya da çalışma biçimi değişikliği (Bölüm 4, 9).
+- Geçmiş silinmez; yanlış bilgi üstü çizilip düzeltilir. Gizli değer ve sağlık verisi girmez.
 
-- `docs/proje-beyni.md` projenin hafızasıdır; bağlamı sıfırlanmış bir oturum ya da başka
-  bir AI yalnız onu okuyarak projeyi anlayabilmelidir.
-- **Faz kapısı (K3):** Bir faz, proje beyni o faz için güncellenmeden ☑ işaretlenemez.
-  Güncelleme, fazı kapatan commit'in içinde olur; kontrol listesi dosyanın 12. bölümündedir.
-- Faz bitmesini beklemeden, aynı gün yazılır: her yeni karar kaydı (Bölüm 5), **her yapılan
-  hata, yanlış varsayım ya da geri alınan iş** (Bölüm 8), her cihaz bulgusunun özeti (Bölüm 7),
-  mimari/sürüm/çalışma biçimi değişikliği (Bölüm 4 ve 9).
-- Geçmiş silinmez; yanlış çıkan bilgi üstü çizilip düzeltilir. Hata kaydı gizlenmez.
-- API anahtarı, parola ve kişisel sağlık verisi bu dosyaya asla girmez.
-
-## Kod kuralları
-
-- `:domain` saf Kotlin/JVM; hiçbir Android sınıfı içermez. İş kuralları orada ve birim testlidir.
-- Yan etkiler arayüz arkasında: `ReminderScheduler`, `Notifier`, `SpeechInput`,
-  `SpeechOutput`, `LlmClient`, `WebResearchClient`, `ContextSource`, `AppOpenSource`,
-  `HealthSource`, `CalendarSource`. Testte sahteleri kullan.
-- `System.currentTimeMillis()`, `Instant.now()`, `LocalDate.now()`, tohumsuz `Random()`
-  **yasak**; enjekte `Clock` ve `RandomSource`.
-- Sihirli sabit yok: eşikler, süreler, bütçeler `Defaults.kt` ve `AppConfig` içinde;
-  kullanıcı ayarı olanlar DataStore'da.
-- Kullanıcıya görünen her metin `strings.xml` (Türkçe). Mikro-metin havuzları
-  `res/raw/microcopy/*.json`. Kod içinde Türkçe kullanıcı metni yok.
-- `!!` yasak. `GlobalScope` yasak. `runBlocking` yalnızca testte.
-- Her `catch` ya işler ya `AppError`'a çevirir; sessiz yutma yasak.
-- Idempotans: alarm kurma, bildirim gösterme, kayıt yazma aynı anahtarla tekrarlanırsa aynı sonuç.
-- Yıkıcı migration yasak; her migration test edilir; şema dışa aktarılır.
-- API anahtarı Keystore ile şifreli; günlüklere, çökme kaydına, tanılama zip'ine, depoya
-  ve belgelere **asla** girmez. Geliştirme sırasında yalnız ortam değişkeni
-  (`GEMINI_API_KEY`) ya da gitignore'daki `secrets.properties`.
-- Zaman damgaları UTC epoch ms; yerel tekrarlar `zoneId` ile.
-- Yeni izin eklerken: neden gerekli, hangi ekranda istenir, reddedilirse ne olur → karar kaydı.
-- Prompt'lar kodda değil `:ai/src/main/assets/prompts/vN/*.md` dosyalarında, sürümlü,
-  `prompts/CHANGELOG.md` ile.
-- Tüm LLM çıktıları yapılandırılmış (JSON şeması) ve doğrulayıcıdan geçer.
-
-## Tamamlama tanımı (her özellik)
-
-1. Davranış ve kabul kriterleri karşılandı.
-2. `:domain` birim testleri; zamanlı yollar için sahte saatli test; her ekran için en az bir Compose UI testi.
-3. AI'ya bağlı özellik: AI **kapalıyken** kural tabanlı karşılık çalışıyor ve testli.
-4. Boş / yükleniyor / hata / çevrimdışı / AI kapalı / izin yok durumları tasarlandı.
-5. TalkBack etiketi, ≥ 48 dp hedef, kontrast ≥ 4,5:1, %200 yazı ölçeği.
-6. "Animasyonları azalt" açıkken çalışıyor.
-7. Koyu, Açık ve AMOLED temada ekran görüntüsü testi.
-8. Geri al yolu var; yazma işlemi olay günlüğüne (ve Güneş yaptıysa `ToolCall`'a) düşüyor.
-9. Mikro-metinler Ek A ilkelerine (A.1) uygun. (Yasak kelime taraması yok: karar 0002.)
-10. `ktlint`, `detekt`, Android Lint temiz.
-11. `release` varyantıyla telefonda denendi; bulgu `docs/platform-bulgulari.md`'de.
+## Kod ve belge kuralları
+Ayrıntı yola göre yüklenen dosyalarda; ilgili dosyaya dokunduğunda kendiliğinden gelir:
+`.claude/rules/kod.md` · `domain.md` · `android.md` · `belgeler.md` · `betikler-ve-cihaz.md`.
+Özü:
+- `:domain` saf Kotlin; Android sınıfı, `now()`, `!!`, `GlobalScope` yok; iş kuralları önce testle.
+- Yan etkiler arayüz arkasında; idempotans; sihirli sabit ve kod içinde Türkçe metin yok.
+- AI'ya bağlı her davranışın AI **kapalıyken** kural tabanlı karşılığı ve testi var.
+- Platform davranışı varsayılmaz: spike yaz, ölç, kaydet.
+- Sürüm ve model adı uydurulmaz: resmi kaynaktan doğrula, `gradle/libs.versions.toml`'a kilitle.
+- Gizli değerler yalnız gitignore'daki `secrets.properties` / `keystore.properties`.
 
 ## Yapmaman gerekenler
-
-- Belgede olmayan özellik ekleme; öneri `docs/ideas.md`'ye.
-- Yarım özelliği flag'siz telefona sokma.
-- Hatırlatma motorunu "AI ile akıllandırma" (Katman 0'dır).
-- Test yazmadan `:reminders`'ı değiştirme.
-- Kullanıcı verisini kendiliğinden silme/taşıma.
-- Belirsiz platform davranışını varsayma: spike yaz, ölç, kaydet.
-- Sürüm numarası ya da model adı uydurma: resmi kaynaktan doğrula, `gradle/libs.versions.toml`'a kilitle.
+- Belgede olmayan özellik ekleme (→ `docs/ideas.md`). Yarım özelliği flag'siz telefona sokma.
+- Hatırlatma motorunu "AI ile akıllandırma" (Katman 0'dır). Test yazmadan `:reminders`'ı değiştirme.
+- Kullanıcı verisini kendiliğinden silme ya da taşıma.
 - Güneş'in metinlerinde tıbbi iddia, tanı dili, utandırma.
+- `git push`: yalnız Kullanıcı açıkça isteyince.
 
-## Kullanıcı ile iletişim (DEHB'ye uygun)
-
-Kısa durum raporu (≤ 5 madde), tek soru, önerilen varsayılanla karar sun ("Şunu
-yapıyorum; itiraz etmezsen devam"). Oturum sonunda üç başlık: **Ne bitti**,
-**Telefonda neyi dene** (3 madde), **Sıradaki dilim**.
-
-## Dilim çalışma düzeni
-
-Dilim sırası `docs/progress.md`'de. Gerçek kullanım günleri isteyen ölçütler (S1: 7 gün,
-S6: 14 gün, S9: 30 gün) beklenirken sonraki dilim **feature flag arkasında** yazılır
-(karar 0005). Bir dilimin "bitti" işareti yine de ölçüt karşılanınca konur.
+## Usuller (yetenekler)
+`/oturum-basla` · `/yeni-modul <M ya da F maddesi>` · `/cihaz-testi` · `/dogrula [faz]` ·
+`/karar-kaydi <başlık>` · `/hata-kaydi` · `/faz-kapat <faz>`.
+Denetçi alt ajanlar (Kullanıcı isteyince ya da faz kapanışında): `blueprint-denetci`, `kod-denetci`,
+`guvenlik-denetci`.
 
 ## Ortam
-
-Windows 11 · Android Studio 2025.2.2 (`C:\Program Files\Android\Android Studio`, JBR 21)
-· SDK `%LOCALAPPDATA%\Android\Sdk` (platform 36, build-tools 36.1.0) · `adb` PATH'te
-değil: `%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe`. Uzak depo:
-`https://github.com/mehmetark444-art/toparla.git` (push yalnız Kullanıcı isteyince).
+Windows 11 · Git Bash · Android Studio 2025.2.2 (JBR 21) · SDK 36. `JAVA_HOME`, `ANDROID_HOME`,
+`MSYS_NO_PATHCONV` `.claude/settings.json` ile gelir. Derleme: `./gradlew --console=plain -q :domain:test`.
+Telefon: `./scripts/adb …` (adb PATH'te değil). Uzak depo tanımlı, henüz hiç push yapılmadı.

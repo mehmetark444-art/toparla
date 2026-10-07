@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# adb sarmalayıcısı: adb PATH'te değil ve Git Bash, "adb shell" argümanlarındaki /data/... yollarını
+# Windows yoluna çeviriyor (proje-beyni H2). Bu betik ikisini de çözer.
+# Kullanım: ./scripts/adb devices   |   ./scripts/adb shell dumpsys alarm
+export MSYS_NO_PATHCONV=1
+SDK="${ANDROID_HOME:-$LOCALAPPDATA/Android/Sdk}"
+exec "$SDK/platform-tools/adb.exe" "$@"

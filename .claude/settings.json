@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "JAVA_HOME": "C:\\Program Files\\Android\\Android Studio\\jbr",
+    "ANDROID_HOME": "C:\\Users\\ahmet\\AppData\\Local\\Android\\Sdk",
+    "MSYS_NO_PATHCONV": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew *)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git show*)",
+      "Bash(git grep*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(./scripts/adb devices*)",
+      "Bash(./scripts/adb shell getprop*)",
+      "Bash(./scripts/adb shell dumpsys*)",
+      "Bash(./scripts/adb shell date*)",
+      "Bash(./scripts/adb shell pm list*)",
+      "Bash(./scripts/adb shell am get-standby-bucket*)",
+      "Bash(./scripts/adb logcat -d*)",
+      "Bash(node .claude/skills/dogrula/kontrol.mjs*)",
+      "WebFetch(domain:developer.android.com)",
+      "WebFetch(domain:ai.google.dev)",
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:dl.google.com)",
+      "WebFetch(domain:repo1.maven.org)"
+    ],
+    "ask": [
+      "Bash(git push*)",
+      "Bash(./scripts/adb reboot*)",
+      "Bash(./scripts/adb uninstall*)",
+      "Bash(./scripts/adb shell pm clear*)"
+    ],
+    "deny": [
+      "Read(./secrets.properties)",
+      "Read(./keystore.properties)",
+      "Read(./**/*.jks)",
+      "Read(./**/*.keystore)",
+      "Edit(./docs/BLUEPRINT.md)",
+      "Edit(./docs/arsiv/**)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/oturum-baslangici.mjs\"",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/dosya-koruma.mjs\"",
+            "timeout": 15
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/komut-koruma.mjs\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/kod-kurallari.mjs\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

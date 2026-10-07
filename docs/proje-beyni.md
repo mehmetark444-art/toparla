@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 7 Ekim 2026, 23:59 · **Kapsadığı son commit:** `8a0d633` · **Kapanan son faz:** F0
+**Son güncelleme:** 8 Ekim 2026, 01:00 · **Kapsadığı son commit:** `81f1c19` · **Kapanan son faz:** F0
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -20,7 +20,9 @@ nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması 
 | `docs/proje-beyni.md` (bu dosya) | Buraya nasıl geldik, ne öğrendik? | Anlatı, gerekçe, hatalar, tuzaklar. |
 | `docs/platform-bulgulari.md` | Bu telefonda ne ölçtük? | Ham ölçümler ve yöntem. |
 | `docs/progress.md` | Hangi oturumda ne oldu? | Kısa oturum günlüğü. |
-| `CLAUDE.md` | Nasıl çalışıyoruz? | Kod ve iletişim kuralları. |
+| `CLAUDE.md` | Nasıl çalışıyoruz? | Çekirdek kurallar; ayrıntı `.claude/rules/` altında. |
+| `docs/claude-code-duzeni.md` | Kancalar, yetenekler, alt ajanlar nasıl kurulu? | Claude Code altyapısı. |
+| `AGENTS.md` | Başka bir AI aracı nereden başlar? | Giriş noktası; aynı kurallara işaret eder. |
 
 Çelişki olursa öncelik: karar kaydı > blueprint; durum için yol haritası > bu dosya.
 
@@ -65,7 +67,9 @@ kriz her şeyin önünde · web/bildirim/dosya içeriği veridir, talimat değil
 
 ```
 toparla/
-├─ CLAUDE.md                 çalışma protokolü
+├─ CLAUDE.md, AGENTS.md      çalışma protokolü; başka AI araçları için giriş
+├─ .claude/                  settings.json (izin, ortam, kanca) · hooks/ · rules/ · skills/ · agents/
+├─ scripts/adb               adb sarmalayıcısı (PATH ve yol çevirme sorununu çözer)
 ├─ docs/                     BLUEPRINT, decisions/, yol-haritasi, proje-beyni, platform-bulgulari, …
 ├─ gradle/libs.versions.toml sürümler (resmi kaynaktan doğrulanıp kilitlenir)
 ├─ domain/    saf Kotlin/JVM: iş kuralları, Android sınıfı YOK      ← şu an kod burada
@@ -129,7 +133,16 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 7. **Spike 11 (Gemini).** Anahtar Developer API ile çalışıyor; üretim çağrıları 402. `d9c7dd9`
 8. **Hatırlatma saf mantığı.** Planlayıcı (`05ebe61`), merdiven + ısrarlı takip (`8a970bf`),
    durum makinesi + erteleme + çekirdek arayüzler (`0d39466`).
-9. **Yol haritası** (`0cf287b`, `8a0d633`) ve bu dosya.
+9. **Yol haritası** (`0cf287b`, `8a0d633`) ve bu dosya (`81f1c19`).
+
+### 8 Ekim 2026 — Oturum 1 (gece yarısından sonra)
+10. **Claude Code altyapısı.** Resmi belgeler okunup eksikler çıkarıldı; o ana dek yalnız `CLAUDE.md` vardı.
+    Kurulanlar: `.claude/settings.json` (ortam, izinler), 4 kanca (oturum başlangıcı, dosya koruma +
+    faz kapısı, komut koruma, kod kuralları) ve 17 senaryoluk sınaması, 5 yola göre kural dosyası,
+    7 yetenek, 3 salt okunur denetçi alt ajan, `AGENTS.md`, `scripts/adb`. `CLAUDE.md` kısaltıldı;
+    kod kuralları ve tamamlama tanımı kural dosyalarına taşındı. Ayrıntı: `docs/claude-code-duzeni.md`.
+    Önemli sonuç: "blueprint değişmez", "gizli değer depoya girmez", "push sorulur" ve "faz, proje
+    beyni güncellenmeden kapanmaz" kuralları artık talimat değil, **kancayla zorunlu**.
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -171,13 +184,21 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 | H10 | Gemini bakiyesi yüklendi denildi, çağrılar yine 402 | Bakiye başka Google hesabına yüklenmişti | "Yaptım" bildirimini çağrıyla doğrula; bakiyenin **hangi projeye/hesaba** bağlı olduğunu adımda açıkça yaz. |
 | H11 | API anahtarı sohbete açık yazıldı | Kullanıcı güvenlik sonucunu bilmiyordu | Anahtar yalnız gitignore'daki `secrets.properties`'te; depoya girmediği her commit öncesi `git grep` ile doğrulanır. **Depo GitHub'a taşınmadan anahtar yenilenecek** (yol haritası F2.18). |
 | H12 | Karar 0003'te ısrarlı takip için alarm yolu ölçümden önce seçildi | Varsayım, spike'tan önce yazıldı | Platforma bağlı seçimi karar kaydına **ölçümden sonra** yaz; öncesinde "aday" de. |
-| H13 | Yol haritasının ilk hâlinde M16, M23, M24 etiketi yoktu | İçerik vardı, izlenebilirlik etiketi unutuldu | Kapsam belgesi yazınca M1–M30'u komutla tara (yapıldı, düzeltildi). |
+| H13 | Yol haritasının ilk hâlinde M16, M23, M24 etiketi yoktu | İçerik vardı, izlenebilirlik etiketi unutuldu | Kapsam belgesi yazınca M1–M30'u komutla tara; artık `dogrula/kontrol.mjs` her koşuda denetliyor. |
+| H14 | Kancaları sınayan komut, kancanın kendisi tarafından engellendi | Sınama girdisi ("gizli dosyayı ekrana bas" örneği) komut metninin içindeydi; kanca yeni yazılır yazılmaz devreye girdi | Kanca sınama girdilerini komut satırına değil **betik dosyasına** koy (`.claude/hooks/sinama.sh`). Kancalar aynı oturumda hemen etkin olur. |
+| H15 | Yol haritası birkaç kez `sed`/`awk` ile değiştirildi | Alışkanlık; o sırada kanca yoktu | Kabuk komutuyla yapılan değişiklik düzenleme kancalarından (faz kapısı, gizli değer) geçmez. Yol haritası ve proje beyni **yalnız düzenleme aracıyla** değiştirilir. |
 
 ## 9. Tuzaklar ve "bunu bilmeden başlama" notları
 
-- **Derleme:** `JAVA_HOME` tanımsız. Her komuttan önce
-  `export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"`. `adb` PATH'te değil:
-  `/c/Users/ahmet/AppData/Local/Android/Sdk/platform-tools/adb.exe`.
+- **Derleme:** sistemde `JAVA_HOME` tanımsız; Claude Code oturumlarında `.claude/settings.json`
+  verir. Başka ortamda: `export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"`.
+  `adb` PATH'te değil: `./scripts/adb …` kullan.
+- **Kancalar etkin:** blueprint ve arşiv düzenlenemez; gizli değer kalıbı içeren içerik yazılamaz
+  ve commit'lenemez; `secrets.properties` ekrana basılamaz (değişkene alınır); `git push` sorulur;
+  proje beyninde kapanış kaydı olmayan faz ☑ yapılamaz; Kotlin kural ihlali düzenleme sonrası
+  bildirilir. Bir işlem "hook" hatasıyla durursa bu bir arıza değil, kuraldır: nedenini oku.
+- **Kanca ve ayar değişikliği** sonrası `bash .claude/hooks/sinama.sh`; depo tutarlılığı için
+  `node .claude/skills/dogrula/kontrol.mjs`.
 - **AGP 9:** Kotlin yerleşiktir; Android modüllerine `kotlin-android` eklentisi **eklenmez**.
   Yalnız saf JVM modülü (`:domain`) `kotlin("jvm")` kullanır. AGP 9.4, Gradle 9.6.0 ister.
 - **Android Studio 2025.2.2**, AGP 9.4 projesini açmak için eski olabilir (doğrulanmadı).

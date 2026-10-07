@@ -27,3 +27,8 @@ secrets.properties
 *.task
 *.tflite
 yedek/
+
+# Claude Code: kisisel, depoya girmeyen dosyalar
+.claude/settings.local.json
+CLAUDE.local.md
+.claude/agent-memory-local/
