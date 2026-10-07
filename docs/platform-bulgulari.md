@@ -47,3 +47,9 @@ Sıra: önce ürünü taşıyan ve en kırılgan varsayımlar.
 ## Bulgular
 
 _Henüz cihaz bulgusu yok._
+
+### 7 Ekim 2026 — Cihaz kimliği ve ilk kurulum denemesi
+
+- **Cihaz:** Xiaomi 17T Pro (`2602EPTC0G`, `warhol_global`), Android 16 (API 36), HyperOS `OS3.0.310.0.WPSMIXM`, güvenlik yaması 2026-08-01, `arm64-v8a`.
+- **Sayfa boyutu:** `getconf PAGE_SIZE` = **4096**. Cihaz 16 KB sayfa kullanmıyor; yerel kütüphanelerde 16 KB uyumu yine de korunur (ileriye dönük), ama bu cihazda engel değil.
+- **`adb install` engeli:** İlk deneme `INSTALL_FAILED_USER_RESTRICTED: Install canceled by user` ile reddedildi. HyperOS, Geliştirici seçenekleri → **USB ile yükle** açık değilse ya da telefondaki onay penceresi 10 sn içinde onaylanmazsa kurulumu reddeder. `kur.sh` bu hatayı yakalayıp Türkçe yönerge göstermeli. Durum: Kullanıcı'nın ayarı açması bekleniyor.

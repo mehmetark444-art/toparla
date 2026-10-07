@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Toparla Spike</string>
+    <string name="btn_test_2min">2 dakika sonra sına</string>
+    <string name="btn_test_60min">1 saat sonra sına</string>
+    <string name="btn_refresh">Günlüğü yenile</string>
+    <string name="btn_clear">Günlüğü temizle</string>
+    <string name="channel_name">Deneme alarmları</string>
+    <string name="notif_title">Deneme alarmı çaldı</string>
+    <string name="notif_body">%1$s · sapma %2$d ms</string>
+    <string name="log_empty">Henüz kayıt yok.</string>
+</resources>

@@ -1,6 +1,6 @@
 # 0003 — Bildirim bütçesi 10 ve ısrarlı takip
 
-Tarih: 7 Ekim 2026  Durum: Kabul (sınır varsayılanları Kullanıcı'ya teyit ettirilecek)
+Tarih: 7 Ekim 2026  Durum: Kabul (susturan durumlar Kullanıcı tarafından aynı gün onaylandı)
 
 **Bağlam:** Blueprint A5-3 proaktif bildirimi günde ≤ 8 (gözlem modunda ≤ 4) ile
 sınırlıyor; Normal sınıf hatırlatma tek tekrar yapıyor, 3 ertelemeden sonra "yarına
