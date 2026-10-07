@@ -95,4 +95,5 @@ Denetçi alt ajanlar (Kullanıcı isteyince ya da faz kapanışında): `blueprin
 ## Ortam
 Windows 11 · Git Bash · Android Studio 2025.2.2 (JBR 21) · SDK 36. `JAVA_HOME`, `ANDROID_HOME`,
 `MSYS_NO_PATHCONV` `.claude/settings.json` ile gelir. Derleme: `./gradlew --console=plain -q :domain:test`.
-Telefon: `./scripts/adb …` (adb PATH'te değil). Uzak depo tanımlı, henüz hiç push yapılmadı.
+Telefon: `./scripts/adb …` (adb PATH'te değil). Uzak depo: GitHub `mehmetark444-art/toparla` (**gizli**; ilk push 8 Ekim 2026). Bu bilgisayarın
+varsayılan GitHub girişi başka hesap (Emire221); uzak adres kullanıcı adıyla tanımlıdır, değiştirme.

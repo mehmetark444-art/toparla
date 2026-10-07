@@ -157,7 +157,10 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 - ☐ F2.15 Kalite araçları: ktlint, detekt, Android Lint, StrictMode ve LeakCanary (dev), Timber döner günlük
 - ☐ F2.16 Yapı varyantları: `debug` (.dev) / `release` (R8, imzalı); imza anahtarı üretimi ve **iki yerde yedeği** (Kullanıcı ile)
 - ☐ F2.17 `scripts/kur.sh`, `log-cek.sh`; `versionCode = yyMMddNN`
-- ☐ F2.18 Depo GitHub'a taşındı, Actions ile `check` koşuyor; API anahtarı yenilendi (karar 0005-1, 0001)
+- ◐ F2.18 Depo GitHub'a taşındı, Actions ile `check` koşuyor; API anahtarı yenilendi (karar 0005-1, 0001)
+  - ☑ Depo gizli yapıldı ve ilk push tamamlandı (8 Ekim 2026; yerel = uzak `6bc3304`)
+  - ☐ GitHub Actions ile `check`
+  - ☐ API anahtarı yenilendi ve yalnız Gemini API'sine kısıtlandı
 
 ### F2-C Tasarım sistemi (`:ui`)
 - ☐ F2.19 Renk jetonları: Koyu / Açık / AMOLED + 6 vurgu; `ExtendedColors`

@@ -147,7 +147,10 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 11. **İlk gece kontrolü ve gece kontrolü usulü.** Projenin tamamı satır satır yeniden okundu; 9 bulgu
     düzeltildi (yakalanmayan bozma, eksik kurucu denetimleri, kullanılmayan sabitler, gereksiz Gradle
     satırları, iki kanca açığı, bayat belge satırları). Bundan sonra çalışılan her günün son işi
-    `/gece-kontrolu`; sonuçlar `docs/gece-kontrolleri.md`'de. Birim testi 58, kanca sınaması 21.
+    `/gece-kontrolu`; sonuçlar `docs/gece-kontrolleri.md`'de. Birim testi 58, kanca sınaması 21. (`2ac3000`)
+12. **GitHub'a ilk push.** Depo herkese açık çıktı; Kullanıcı gizli yaptı. Bilgisayardaki varsayılan
+    GitHub girişi başka hesap olduğu için uzak adres kullanıcı adıyla tanımlandı; 19 commit gönderildi,
+    yerel ve uzak eşit (`6bc3304`), kimliksiz erişim 404.
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -194,6 +197,8 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 | H16 | Betik dosyası `/tmp/…` yoluyla Node'a verildi, "modül bulunamadı" hatası alındı | `MSYS_NO_PATHCONV=1` artık oturum genelinde açık; Git Bash yolları Windows programlarına **çevrilmeden** gidiyor (H2'nin çözümünün yan etkisi) | Windows programına (node, java, adb.exe) yol verirken göreli yol kullan ya da `cygpath -w` ile çevir. |
 | H17 | Planlayıcıdaki bir karşılaştırma hiçbir testle korunmuyordu; ilk gece kontrolünde kasıtlı bozmayla ortaya çıktı | Testler "geçiyor" diye yeterli sayıldı; yakalayıp yakalamadıkları sınanmamıştı | İş kuralı değişen her gün gece kontrolünde kasıtlı bozma yapılır; yakalanmayan bozma = eksik test ya da gereksiz kod. |
 | H18 | Kullanılmayan sabitler ve geçersiz girdiyi kabul eden veri sınıfları ilk yazımda fark edilmedi | "İleride lazım olur" eklemesi; kurucu denetimi düşünülmedi | Kullanılmayan şey eklenmez (ait olduğu fazda gelir); dışarıdan değer alan her model geçersiz değeri kurucuda reddeder. |
+| H19 | Kullanıcı "GitHub'a pushla" dedi; depo **herkese açıktı** ve belgelerde sağlıkla ilgili kişisel bilgiler vardı | Depo açılırken görünürlük seçilmemiş; Kullanıcı sonucunu bilmiyordu | Dışarıya yayın öncesi hedefin görünürlüğünü komutla doğrula (kimliksiz istek 200 = açık, 404 = gizli) ve neyin görüneceğini Kullanıcı'ya söyle. Push'tan önce Kullanıcı depoyu gizli yaptı. |
+| H20 | Gizli yapılan depoya push "Repository not found" verdi | Bilgisayarda kayıtlı GitHub girişi başka hesaptı (Emire221); gizli depoyu göremiyordu. Depo açıkken `ls-remote` çalıştığı için fark edilmemişti | Push öncesi kayıtlı hesabı kontrol et (`git credential-manager github list`). Çözüm: uzak adrese kullanıcı adı eklendi; Kullanıcı doğru hesapla giriş yaptı. |
 | H15 | Yol haritası birkaç kez `sed`/`awk` ile değiştirildi | Alışkanlık; o sırada kanca yoktu | Kabuk komutuyla yapılan değişiklik düzenleme kancalarından (faz kapısı, gizli değer) geçmez. Yol haritası ve proje beyni **yalnız düzenleme aracıyla** değiştirilir. |
 
 ## 9. Tuzaklar ve "bunu bilmeden başlama" notları
@@ -217,7 +222,14 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
   (v3'te o şemalar yok; biz tasarlayacağız).
 - **`:domain` kuralları:** Android sınıfı yok; `System.currentTimeMillis()` / `Instant.now()` yok
   (zaman parametre ya da `Clock` ile gelir); `!!` yok. `:spike` bu kurallardan bilerek muaftır.
-- **Git:** her şey yerelde, `origin` tanımlı ama **hiç push yapılmadı**. Push yalnız Kullanıcı isteyince.
+- **Git:** ~~her şey yerelde, hiç push yapılmadı~~ → 8 Ekim 2026'da ilk push yapıldı. Uzak depo
+  `mehmetark444-art/toparla`, **gizli**. Bu bilgisayarın varsayılan GitHub girişi başka bir hesap
+  (Emire221); bu yüzden uzak adres kullanıcı adıyla tanımlı
+  (`https://mehmetark444-art@github.com/…`). Adresi sadeleştirme: push "depo bulunamadı" verir.
+  Push yalnız Kullanıcı isteyince (kanca her seferinde sorar). GitHub Actions henüz kurulmadı;
+  API anahtarı henüz yenilenmedi (depoda anahtar yok, geçmiş tarandı).
+- **Depo gizli kalmalı:** belgeler Kullanıcı'nın sağlıkla ilgili kişisel bilgilerini içeriyor.
+  Görünürlüğü değiştirmeden ya da başka bir yere yayınlamadan önce Kullanıcı'ya açıkça sor.
 - **Telefonun ekran kilidi** 7 Ekim 22:08'de kaldırılmış, sonra PIN olarak geri kondu.
   Direct Boot'a bağlı her test öncesi `dumpsys lock_settings | grep CredentialType` ile doğrula.
 - **Kullanıcı'nın "oldu / geldi / yükledim" demesi kanıt değildir;** her seferinde kayıttan doğrula
