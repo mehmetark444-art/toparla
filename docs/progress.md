@@ -31,3 +31,13 @@ belge iskeletini ve ilk karar kayıtlarını kurmak.
 `:ai`, `:sensors`, `:ui`, `:app`). Sürümler resmi depolardan doğrulandı: AGP 9.4.1,
 Kotlin 2.4.20, Gradle 9.6.0, JUnit Jupiter 6.1.3. `./gradlew :domain:test :app:assembleDebug`
 başarılı (3 test, boş debug APK). Sıradaki: ilk spike — alarm teslim testi (telefon bağlanınca).
+
+### 7 Ekim 2026 — Oturum 1 (devam): S0 spike'ları ve S1 ön çalışması
+**Biten:**
+- Spike 1 (alarm teslimi): ekran açık/kapalı, kaydırıp kapatma, yeniden başlatma ve kilitli yeniden başlatma (Direct Boot) geçti. Gece testi (8 saat, 3 yöntem, 24 alarm) kuruldu; sonuç 8 Ekim sabahı okunacak.
+- Spike 11 (Gemini API): anahtar Developer API ile çalışıyor, modeller listelendi; üretim çağrıları **402 bakiye bitti** engelinde.
+- S1 ön çalışması (flag gerekmez, saf `:domain`): `ReminderPlanner` ilk kesit — ana teslimler, tekrar kuralları, 48 sa pencere, fark alma, 200 alarm sınırı, yaz saati kuralları; 20 birim testi.
+
+**Açık:** gece testi sonucu · Gemini bakiyesi (Kullanıcı) · `setExactAndAllowWhileIdle` gecikmesinin tekrar testi → ısrarlı takibin alarm yolu kararı.
+
+**Sıradaki:** gece kaydını oku → `ReminderPlanner`'a merdiven ve ısrarlı takip (karar 0003) → spike 3 (tam ekran bildirim) ve spike 5 (erişilebilirlik).
