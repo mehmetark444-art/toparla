@@ -43,3 +43,7 @@ başarılı (3 test, boş debug APK). Sıradaki: ilk spike — alarm teslim test
 **Sıradaki:** gece kaydını oku → `ReminderPlanner`'a merdiven ve ısrarlı takip (karar 0003) → spike 3 (tam ekran bildirim) ve spike 5 (erişilebilirlik).
 
 **Ek (23:15):** Gemini çağrıları bakiye yüklemesinden sonra da 402. Beklerken `:domain`'e merdiven (`Ladder`) ve ısrarlı takip zamanlaması (`PersistentFollowUp`, karar 0003: 30 dk aralık, uyku penceresi ve sessizlikte susar, sabah sürer) eklendi; toplam 37 birim testi geçiyor.
+
+**Ek (23:40):** Gemini bakiyesi yanlis hesaba yuklenmis; Kullanici 8 Ekim'de dogru hesaba yukleyecek, spike 11 yarina kaldi. `:domain`'e cekirdek arayuzler (`Clock`, `RandomSource`, `IdGenerator`, `AppError`), teslim durum makinesi (`OccurrenceStateMachine`) ve erteleme kurallari (`SnoozePolicy`) eklendi; toplam 54 birim testi geciyor.
+
+**Yarin (8 Ekim) sirasi:** gece kaydini oku -> israrli takibin alarm yolu karari -> Gemini spike (bakiye gelince) -> spike 3 (tam ekran) ve 5 (erisilebilirlik).
