@@ -112,3 +112,12 @@ Ekran kilidi PIN olarak kuruldu (`CredentialType: PIN`). 5,5 dk'lık çift kurul
 **Kayıt:** her teslimde sapma (ms), Doze (`idle`), hafif Doze (`light`), ekran, pil yüzdesi, bekleme kovası.
 
 **Okunacaklar:** yöntem başına sapma dağılımı · çalmayan alarm var mı · `MISSED_DETECTED` / `RESCHEDULE` satırı var mı (süreç/alarm temizliği izi) · Doze'a girildi mi · gece pil tüketimi.
+
+### 7 Ekim 2026 — Spike 11: Gemini API (ilk bakış, ücret engeline takıldı)
+
+- **Uç nokta:** Anahtar **Gemini Developer API** ile çalışıyor (`https://generativelanguage.googleapis.com/v1beta`, başlık `x-goog-api-key`). Model listesi HTTP 200. Vertex AI uç noktası (`aiplatform.googleapis.com`) 403 `SERVICE_DISABLED`: projede açık değil, gerek de yok. → `GeminiClient` Developer API'yi hedefler.
+- **Listelenen modeller (seçme):** `gemini-3.8-flash`, `gemini-3.7-flash`, `gemini-3.6-flash`, `gemini-3.5-flash`, `gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`, `gemini-3.1-pro-preview`, takma adlar `gemini-flash-latest` / `gemini-flash-lite-latest` / `gemini-pro-latest`, gömme `gemini-embedding-2`, barındırılan `gemma-4-26b-a4b-it` ve `gemma-4-31b-it`. Hepsi 1 048 576 giriş / 65 536 çıkış token sınırı ve "thinking" destekli. `gemini-2.5-flash-lite` yeni kullanıcılara kapalı (404).
+- **Kademe adayları (doğrulanmadı):** hızlı = Flash-Lite ailesi · günlük = Flash ailesi · derin = Pro ailesi. Kesin kimlik ve fiyat, üretim çağrıları açılınca resmi fiyat sayfasıyla birlikte kilitlenecek.
+- **ENGEL:** Her üretim ve gömme çağrısı **HTTP 402** döndü: "Your prepayment credits are depleted" (ön ödemeli bakiye bitmiş). Ücretsiz çalışan model yok (Gemma dahil). Akış, şemalı çıktı, işlev çağrısı, Google Arama temellendirmesi, önbellekleme ve maliyet ölçümü bakiye yüklenene kadar denenemiyor.
+- **Ürün notu:** 402 "bakiye bitti" durumu `AiUnavailable` olarak ele alınmalı (Katman 1'e düş) ve Ayarlar → AI'da açık bir satırla gösterilmeli; kullanıcıya hata olarak yansımaz.
+- Anahtar yalnız gitignore'daki `secrets.properties` dosyasında; depoya girmedi.
