@@ -64,6 +64,11 @@ class SpikeActivity : Activity() {
         val api = intent.getStringExtra("api") ?: "both"
         if (api == "both") {
             scheduleBoth(delaySec)
+        } else if (api == "all") {
+            // Gece testi: üç yöntem aynı ana.
+            val at = System.currentTimeMillis() + delaySec * 1000L
+            listOf(AlarmSpike.API_CLOCK, AlarmSpike.API_IDLE, AlarmSpike.API_INEXACT)
+                .forEach { AlarmSpike.schedule(this, it, at) }
         } else {
             AlarmSpike.schedule(this, api, System.currentTimeMillis() + delaySec * 1000L)
         }

@@ -17,7 +17,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val nm = context.getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(
-            NotificationChannel(CHANNEL, context.getString(R.string.channel_name), NotificationManager.IMPORTANCE_HIGH),
+            NotificationChannel(CHANNEL, context.getString(R.string.channel_name), NotificationManager.IMPORTANCE_LOW),
         )
         val notification = Notification.Builder(context, CHANNEL)
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
@@ -30,7 +30,8 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     private companion object {
-        const val CHANNEL = "spike_alarm"
+        // Gece testi uyandırmasın diye sessiz kanal; ölçüm kayıttan okunur.
+        const val CHANNEL = "spike_alarm_silent"
     }
 }
 

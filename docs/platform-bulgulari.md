@@ -100,3 +100,15 @@ Ekran kilidi PIN olarak kuruldu (`CredentialType: PIN`). 5,5 dk'lık çift kurul
 - İkisi de kilitliyken çaldı: `setExactAndAllowWhileIdle` +132 ms, `setAlarmClock` +153 ms; bildirim gönderildi (`notifEnabled=true`), Kullanıcı kilit ekranında gördü.
 - **Sonuç:** G1'deki Direct Boot tasarımı (alarm kurmaya yetecek en küçük veri cihaz korumalı depolamada + `directBootAware` alıcılar) bu cihazda çalışıyor.
 - Araç notu: kilitliyken `run-as` çalışmıyor (kimlik korumalı dizin yok); kayıt `logcat -s TOPARLA_SPIKE` ile okundu. Ürün tanılamasında da kilitli dönem kayıtları cihaz korumalı depolamaya yazılmalı.
+
+### 7–8 Ekim 2026 — Spike 1: gece testi (KURULDU, sonuç bekleniyor)
+
+**Amaç:** gerçek Doze, uzun ufuk (1–8 sa), HyperOS'in gece süreç/alarm temizliği, üç yöntemin karşılaştırması, ikinci yöntemdeki 3,5 dk gecikmenin tekrarı.
+
+**Kurulum (22:35):** saat başı 8 üçlü, toplam 24 alarm: 23:35 · 00:35 · 01:35 · 02:35 · 03:35 · 04:35 · 05:35 · 06:35. Her üçlüde `setAlarmClock` (kritik adayı), `setExactAndAllowWhileIdle` (önemli adayı), `setAndAllowWhileIdle` (normal adayı; esnek). Sistemde 24 alarm kayıtlı olduğu `dumpsys alarm` ile doğrulandı.
+
+**Koşullar:** USB çekili, ekran kapalı, dokunulmadan. HyperOS ayarları varsayılan: otomatik başlatma yok, pil muafiyeti yok, son uygulamalarda kilit yok. Ekran kilidi PIN. Pil başlangıç %66. Bildirim kanalı sessiz (`IMPORTANCE_LOW`).
+
+**Kayıt:** her teslimde sapma (ms), Doze (`idle`), hafif Doze (`light`), ekran, pil yüzdesi, bekleme kovası.
+
+**Okunacaklar:** yöntem başına sapma dağılımı · çalmayan alarm var mı · `MISSED_DETECTED` / `RESCHEDULE` satırı var mı (süreç/alarm temizliği izi) · Doze'a girildi mi · gece pil tüketimi.

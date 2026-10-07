@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.Intent
+import android.os.BatteryManager
 import android.os.PowerManager
 import android.util.Log
 import java.io.File
@@ -18,6 +19,7 @@ object AlarmSpike {
     const val TAG = "TOPARLA_SPIKE"
     const val API_CLOCK = "clock" // setAlarmClock
     const val API_IDLE = "idle" // setExactAndAllowWhileIdle
+    const val API_INEXACT = "inexact" // setAndAllowWhileIdle (Normal sınıf adayı)
     const val EXTRA_KEY = "key"
 
     private const val PREFS = "pending"
@@ -34,7 +36,8 @@ object AlarmSpike {
         val usm = context.getSystemService(UsageStatsManager::class.java)
         val line = listOf(
             now, event, key, plannedAt, if (plannedAt > 0) now - plannedAt else 0,
-            "idle=${pm.isDeviceIdleMode}", "screen=${pm.isInteractive}",
+            "idle=${pm.isDeviceIdleMode}", "light=${pm.isDeviceLightIdleMode}", "screen=${pm.isInteractive}",
+            "batt=${context.getSystemService(BatteryManager::class.java).getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)}",
             "bucket=${usm.appStandbyBucket}", detail,
         ).joinToString(",")
         Log.i(TAG, line)
@@ -84,6 +87,8 @@ object AlarmSpike {
                 context, 0, Intent(context, SpikeActivity::class.java), PendingIntent.FLAG_IMMUTABLE,
             )
             am.setAlarmClock(AlarmManager.AlarmClockInfo(plannedAt, show), fire)
+        } else if (api == API_INEXACT) {
+            am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, plannedAt, fire)
         } else {
             am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, plannedAt, fire)
         }
