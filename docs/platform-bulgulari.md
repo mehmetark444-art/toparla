@@ -121,3 +121,7 @@ Ekran kilidi PIN olarak kuruldu (`CredentialType: PIN`). 5,5 dk'lık çift kurul
 - **ENGEL:** Her üretim ve gömme çağrısı **HTTP 402** döndü: "Your prepayment credits are depleted" (ön ödemeli bakiye bitmiş). Ücretsiz çalışan model yok (Gemma dahil). Akış, şemalı çıktı, işlev çağrısı, Google Arama temellendirmesi, önbellekleme ve maliyet ölçümü bakiye yüklenene kadar denenemiyor.
 - **Ürün notu:** 402 "bakiye bitti" durumu `AiUnavailable` olarak ele alınmalı (Katman 1'e düş) ve Ayarlar → AI'da açık bir satırla gösterilmeli; kullanıcıya hata olarak yansımaz.
 - Anahtar yalnız gitignore'daki `secrets.properties` dosyasında; depoya girmedi.
+
+### 7 Ekim 2026 (23:10) — Spike 11: bakiye yüklendi denildi, çağrılar hâlâ 402
+
+Kullanıcı bakiye sorununu çözdüğünü bildirdi. 23:09–23:14 arasında 6 üretim çağrısı (üç model) yine HTTP 402 "prepayment credits are depleted" döndü. Resmi belgeye göre (ai.google.dev/gemini-api/docs/billing): bakiye **faturalandırma hesabına** bağlıdır, kart ödemesi çoğunlukla anında, güncelleme gecikebilir; anahtar yenilemek gerekmez. Olası nedenler: ödeme henüz yansımadı · bakiye bu anahtarın projesinin (662439627265) bağlı olmadığı başka bir faturalandırma hesabına yüklendi · ödeme tamamlanmadı. Kullanıcı'dan AI Studio'daki durum istenecek.
