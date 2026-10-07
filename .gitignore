@@ -1,0 +1,29 @@
+# Gradle / derleme
+.gradle/
+build/
+**/build/
+local.properties
+*.apk
+*.aab
+captures/
+.cxx/
+.kotlin/
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+
+# Gizli bilgiler: asla depoya girmez
+keystore.properties
+*.jks
+*.keystore
+secrets.properties
+.env
+*.env
+
+# Model dosyaları ve yedekler
+*.litertlm
+*.task
+*.tflite
+yedek/
