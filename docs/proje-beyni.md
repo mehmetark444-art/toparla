@@ -149,7 +149,7 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     satırları, iki kanca açığı, bayat belge satırları). Bundan sonra çalışılan her günün son işi
     `/gece-kontrolu`; sonuçlar `docs/gece-kontrolleri.md`'de. Birim testi 58, kanca sınaması 21. (`2ac3000`)
 12. **GitHub'a ilk push.** Depo herkese açık çıktı; Kullanıcı gizli yaptı. Bilgisayardaki varsayılan
-    GitHub girişi başka hesap olduğu için uzak adres kullanıcı adıyla tanımlandı; 19 commit gönderildi,
+    GitHub girişi başka hesap olduğu için uzak adres kullanıcı adıyla tanımlandı; 18 commit gönderildi,
     yerel ve uzak eşit (`6bc3304`), kimliksiz erişim 404.
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
