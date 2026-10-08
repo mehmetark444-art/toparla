@@ -44,7 +44,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
 **Şu an:** F1 (alarm yolu ve Gemini kademeleri kararlaştırıldı) ve F2-A (saf mantık) paralel.
-**Sıradaki tek adım:** F1.7'nin kalanı: yeniden başlatma sonrası erişilebilirlik servisi ve kilit duruyor mu; ardından F1.15 (cihaz içi model).
+**Sıradaki tek adım:** F1.15: beş cihaz içi adayın aynı Türkçe setle karşılaştırması, ardından gömme modeli ve RAG denemesi (kararlar 0009, 0008).
 
 **Açık engeller**
 - Yok. (Gemini bakiyesi 8 Ekim'de geldi; çağrıyla doğrulandı.)
@@ -107,7 +107,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 
 ### F1-C Ses ve yapay zekâ
 - ☐ F1.14 Türkçe cihaz içi konuşma tanıma: 30 cümlelik set, WER; yetersizse yerel Whisper
-- ☐ F1.15 Cihaz içi model: LiteRT-LM + Gemma güncel adları, GPU/NPU, token/sn, ilk token, 10 dk sıcaklık, 50 örnek Türkçe kalite; model dosyasını edinme yolu
+- ◐ F1.15 (çalışma zamanı ve model edinme yolu ☑; Gemma 4 E2B cihazda çalıştı ve ilk hız ölçümü ☑ — `platform-bulgulari.md` § Spike 10; aday karşılaştırması, gömme/RAG, ısı ve 50 örnek ☐) Cihaz içi model: LiteRT-LM + Gemma güncel adları, GPU/NPU, token/sn, ilk token, 10 dk sıcaklık, 50 örnek Türkçe kalite; model dosyasını edinme yolu
 - ◐ F1.16 Gemini API — `platform-bulgulari.md` § Spike 11: Gemini API ölçümleri
   - ☑ Uç nokta: Developer API; model listesi alındı
   - ☑ Kademe modelleri (hızlı / günlük / derin) ve fiyatlar resmi sayfadan kilitlendi — karar 0007 (`pricing.json` F6.4'te yazılır)

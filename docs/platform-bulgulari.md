@@ -315,4 +315,36 @@ Kaynaklar: developers.google.com/edge/litert-lm/android, Google Maven, Hugging F
 | LFM2.5 2.6B | 1,67 / 2,87 GB | "other" (lisans okunacak) |
 | Gömme: EmbeddingGemma 2 text 270m | 0,16 GB (MT6993 NPU sürümü 0,39 GB) | Apache 2.0 |
 
-Ölçüm düzeneği `:spike/LlmSpike` (yükleme süresi, ilk parça, hız, ısı, Türkçe çıktı). Sonuçlar ölçülünce eklenecek.
+Ölçüm düzeneği `:spike/LlmSpike` (yükleme süresi, ilk parça, hız, ısı, Türkçe çıktı).
+
+### 8 Ekim 2026 — Spike 10: Gemma 4 E2B ilk ölçüm (cihazda çalışıyor)
+
+Dosya `gemma-4-E2B-it.litertlm` (2 588 147 712 bayt; boyut kaynakla eşit), bilgisayara indirilip
+`adb push` ile uygulamanın harici dosya alanına atıldı (60 sn, 41 MB/sn). 4 Türkçe istem, her koşuda
+bir kez; 3 koşu (GPU, GPU, CPU). USB bağlı, ekran açık.
+
+| Ölçüm | GPU 1. koşu | GPU 2. koşu | CPU |
+|---|---|---|---|
+| Yükleme (`initialize`) | **34,4 sn** (ilk kez) | 2,2 sn | 2,1 sn |
+| İlk parça | 0,27–2,0 sn | 0,37–0,95 sn | 0,57–0,72 sn |
+| Bölme (JSON, ~270 karakter) | 10,2 sn | 11,5 sn | 9,2 sn |
+| Mikro-adım | 0,8 sn | 1,1 sn | 1,9 sn |
+| Sınıflama (tek kelime) | 0,4 sn | 0,5 sn | 0,9 sn |
+| Bildirim metni | 1,8 sn | 2,4 sn | 2,7 sn |
+| Isıl durum | 0 (yok) | 0 | 0 |
+
+**Hız:** kısa işler 0,4–2,7 sn (blueprint hedefi: cihaz içi adım ≤ 4 sn ✓, ilk parça ≤ 2 sn ✓).
+Uzun JSON ~25–33 karakter/sn. İlk yükleme 34 sn (hedef ≤ 6 sn ✗); sonraki yüklemeler ~2 sn ✓ —
+ilk kullanımda bir kez ısındırma gerekir. GPU ile CPU arasında bu kısa işlerde belirgin fark yok.
+
+**Türkçe kalite (4 örnek; ölçüm değil izlenim):**
+- Bölme: üç iş doğru ayrıldı, Türkçesi düzgün. **Şemaya uymadı:** `items` yerine `tasks`, izinli
+  olmayan `APPOINTMENT` türü, kod çitleri. Şema doğrulayıcısı ve toleranslı ayrıştırma şart.
+- Sınıflama: "bırakmalı mıyım" → `ENDISE` (doğru).
+- Mikro-adım: "Yazmaya şimdi başla." — fiil var, nesne yok; blueprint kuralını karşılamıyor.
+- Bildirim: "Faturanızın ödemesini hatırlatmak isterim. Lütfen ödeme planınızı kontrol edin." —
+  suçlamıyor ama iki cümle ve "siz" diliyle; Güneş "sen" der.
+
+**Açık:** diğer adaylarla karşılaştırma (iniyor) · 10 dk sürekli kullanımda ısı ve pil · bellek
+(tek okuma: süreç 237 MB PSS, model belleği ayrı sayılıyor olabilir; doğrulanmadı) · şemaya zorlamanın
+yolu (kütüphanede `ResponseFormat` var, denenmedi) · gömme modeli ve RAG · 50 örnekli Türkçe set.

@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 8 Ekim 2026, akşam · **Kapsadığı son commit:** `caa9a8a` · **Kapanan son faz:** F0
+**Son güncelleme:** 8 Ekim 2026, akşam (cihaz içi model) · **Kapsadığı son commit:** `5f0b2e5` · **Kapanan son faz:** F0
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -166,6 +166,11 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 16. **Spike 5 (erişilebilirlik).** İki olumsuz bulgu: kaydırınca servis ölüp geri gelmiyor (`caa9a8a`);
     uygulama açılışı ~2,9 sn geç algılanıyor. Olumlu: servisten kart açma hızlı ve engelsiz.
     Üç yapılandırma değişikliği gecikmeyi düzeltmedi; ölçüm betiği `scripts/spike-a11y-olc.sh`.
+    Sonra: son uygulamalarda kilit servisi koruyor; yeniden başlatmada servis kendiliğinden bağlanıyor.
+17. **Kullanıcı kararları 0008 ve 0009.** Ekran okuma (yalnız cihaz içi, dışlama yok; aday) ve
+    "önce yerel model" (bulut yalnız gerektiğinde; model Gemma olmak zorunda değil; APK eşiği 150 MB).
+18. **Spike 10 (cihaz içi model).** LiteRT-LM 0.18.0 `:spike`'a eklendi; Gemma 4 E2B telefonda çalıştı
+    ve ölçüldü. Dört aday model ve gömme modeli indiriliyor; karşılaştırma sırada.
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -189,6 +194,11 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   telefondaki onay penceresi ~10 sn içinde onaylanmalı; yoksa `INSTALL_FAILED_USER_RESTRICTED`.
 - **USB bağlıyken Doze zorlanamıyor** (`force-idle` → "stopped at INACTIVE"; cihaz şarjda sayılıyor).
   `am set-standby-bucket … rare` kalıcı olmuyor.
+- **Cihaz içi model çalışıyor (8 Ekim):** LiteRT-LM 0.18.0 + `.litertlm` dosyaları; modeller
+  `huggingface.co/litert-community`'den girişsiz iniyor, `adb push` ile telefona atılıyor. Gemma 4 E2B:
+  ilk yükleme 34 sn, sonrakiler ~2 sn; kısa işler 0,4–2,7 sn; ısınma yok (kısa koşu). Türkçesi düzgün
+  ama istenen JSON şemasına kendiliğinden uymuyor: doğrulayıcı ve onarım şart. Model seçimi açık
+  (karar 0009: Gemma şart değil); beş aday karşılaştırılacak.
 - **Erişilebilirlik servisi kaydırmayla ölüyor (8 Ekim):** uygulama son uygulamalardan kaldırılınca
   HyperOS süreci öldürüyor (`SwipeUpClean`); servis "Crashed" durumuna düşüyor, ayarda açık görünüyor
   ama olay almıyor ve uygulama yeniden başlasa da geri bağlanmıyor. Müdahale ekranının (M25-I)
