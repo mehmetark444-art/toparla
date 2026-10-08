@@ -70,7 +70,9 @@ class SpikeActivity : Activity() {
             "tile" -> AGroup.requestTile(this)
             "db" -> DbSpike.run(this)
             "fgsaction" -> FinalSpikes.postActionNotification(this)
-            "tilefgs" -> FinalSpikes.tileStartsService = true
+            "rebind" -> FinalSpikes.rebindListener(this, toggle = false)
+            "nlstoggle" -> FinalSpikes.rebindListener(this, toggle = true)
+            "tilefgs" -> FinalSpikes.armTileService(this)
             "audiowatch" -> startForegroundService(Intent(this, SpikeService::class.java).putExtra(SpikeService.EXTRA_HOLD, true).putExtra(SpikeService.EXTRA_AUDIO_WATCH, true))
         }
         intent.removeExtra("a")

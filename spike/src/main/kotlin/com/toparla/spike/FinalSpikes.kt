@@ -6,6 +6,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.pm.PackageManager
+import android.service.notification.NotificationListenerService
 import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
@@ -14,9 +17,24 @@ import android.view.accessibility.AccessibilityNodeInfo
 
 /** F1 kapanış denemeleri: servis başlatmanın kalan yolları ve ekran okuma ön ölçümü. */
 object FinalSpikes {
-    /** Bir sonraki kutucuk dokunuşu yakalama yerine servis başlatmayı dener (spike 2, kutucuk yolu). */
-    @Volatile
-    var tileStartsService = false
+    private const val PREFS = "final"
+    private const val KEY_TILE_FGS = "tileStartsService"
+
+    /**
+     * Bir sonraki kutucuk dokunuşu yakalama yerine servis başlatmayı dener (spike 2, kutucuk yolu).
+     * Bellekteki bayrak ilk denemede kayboldu (süreç yeniden başlamış olmalı); bu yüzden diske yazılır.
+     */
+    fun armTileService(context: Context) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_TILE_FGS, true).commit()
+        AlarmSpike.log(context, "TILE_FGS_ARMED", "fgs-tile", 0)
+    }
+
+    fun consumeTileService(context: Context): Boolean {
+        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val armed = prefs.getBoolean(KEY_TILE_FGS, false)
+        if (armed) prefs.edit().putBoolean(KEY_TILE_FGS, false).commit()
+        return armed
+    }
 
     /** Spike 2: bildirim eyleminden (uygulama açılmadan) foreground service başlatma. */
     fun postActionNotification(context: Context) {
@@ -36,6 +54,20 @@ object FinalSpikes {
                 .build(),
         )
         AlarmSpike.log(context, "ACTION_NOTIFICATION_POSTED", "fgs-action", 0)
+    }
+
+    /** Spike 6: kopan bildirim dinleyicisini uygulama içinden geri bağlama (blueprint G4: önce requestRebind, olmazsa kapat-aç). */
+    fun rebindListener(context: Context, toggle: Boolean) {
+        val component = ComponentName(context, SpikeNotificationListener::class.java)
+        if (toggle) {
+            val pm = context.packageManager
+            pm.setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
+            pm.setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
+            AlarmSpike.log(context, "NLS_TOGGLED", "listener", 0)
+        } else {
+            NotificationListenerService.requestRebind(component)
+            AlarmSpike.log(context, "NLS_REBIND_REQUESTED", "listener", 0)
+        }
     }
 
     fun startService(context: Context, path: String) {

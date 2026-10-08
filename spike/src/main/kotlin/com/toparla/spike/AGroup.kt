@@ -173,8 +173,7 @@ class SpikeNotificationListener : NotificationListenerService() {
 class CaptureTile : TileService() {
     override fun onClick() {
         AlarmSpike.log(this, "TILE_CLICK", "tile", 0, "locked=$isLocked secure=$isSecure")
-        if (FinalSpikes.tileStartsService) {
-            FinalSpikes.tileStartsService = false
+        if (FinalSpikes.consumeTileService(this)) {
             FinalSpikes.startService(this, "fgs-tile")
             return
         }

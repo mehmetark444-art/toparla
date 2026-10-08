@@ -755,6 +755,60 @@ başarısız tarama sayılır ve yeniden denenir. Aksi hâlde konu sessizce öl�
 doğrulanmadı); yineleme ayıklama, telif örtüşmesi ve gerçek adres çözme bu ölçümde yok; fiyatlar 7 Ekim 2026
 tarihli, günlük kademe 1 Ocak 2027'de iki katına çıkıyor.
 
+### 8 Ekim 2026 (gece) — F1 kapanış ölçümleri: servis yolları, tam ekran, süreç ölümü ve otomatik başlatma
+
+Kod: `:spike/FinalSpikes.kt`. USB bağlı, kilit açık, her satır tek deneme (aksi yazılmadıkça).
+
+**Foreground service başlatma yolları (spike 2 tamamı)**
+
+| Yol | Sonuç |
+|---|---|
+| `setAlarmClock` alıcısı (8 Ekim sabah) | Başladı (29 ms) |
+| `setExactAndAllowWhileIdle` alıcısı, uygulama arka planda | Başladı (alarmdan 35 ms sonra) |
+| Bildirim eylemi → `BroadcastReceiver` → `startForegroundService` (uygulama açılmadan) | Başladı |
+| Kutucuk (`TileService.onClick`) | Başladı |
+
+Hiçbirinde `ForegroundServiceStartNotAllowedException` görülmedi. Ölçülmeyen: yeniden başlatma alıcısından
+ve WorkManager'dan başlatma (blueprint'te izinli yol olarak sayılmıyor).
+
+**Tam ekran bildirim, ekran açık ve kilitsizken (spike 3):** `setFullScreenIntent` kartı tam ekran **açılmadı**;
+üstte bildirim şeridi olarak geldi (Kullanıcı gördü; `FSI_POSTED` var, `FSI_SHOWN` yalnız şeride dokununca).
+Android'in olağan davranışı. Ürün: ekran açıkken kritik teslimin yüzeyi şerittir; eylem düğmeleri şeritte olmalı.
+
+**Kritik ses, ekran kapalı ve kilitliyken (spike 7):** `setAlarmClock` + alarm sesli kanal: 17 ms sapmayla
+çaldı, ekran yandı (Kullanıcı duydu ve gördü).
+
+**Kutucuk → mikrofon, ek ölçümler (spike 8):** kilit açıkken 348 ms ve 318 ms (toplam 3 ölçüm: 287–348 ms).
+
+**Süreç ölümü sonrası servisler (spike 5 ve 6) — önemli**
+
+Yöntem: `adb shell am crash com.toparla.spike` ile süreç çökertildi; uygulama son uygulamalarda kilitliydi.
+
+| Koşul | Süreç | Bildirim dinleyicisi | Erişilebilirlik servisi |
+|---|---|---|---|
+| Otomatik başlatma **kapalı**, 50 sn beklendi | Yeniden başlamadı | Bağlanmadı. Sistem kaydı: `AutoStartManagerService: MIUILOG- Reject service … NotificationListenerService` | "Crashed", bağlanmadı |
+| aynı, uygulama elle açıldıktan 20 sn sonra | Çalışıyor | Hâlâ bağlı değil | Hâlâ "Crashed" |
+| aynı + `NotificationListenerService.requestRebind` | — | **Etkisiz** (8 sn) | — |
+| aynı + bileşeni kapat-aç (`setComponentEnabledSetting`) | — | **1 sn'de bağlandı**, bildirim okudu | — |
+| Otomatik başlatma **açık** (`MIUIOP(10008): allow`), uygulama açılmadan | **Kendiliğinden başladı** | **~18 sn'de bağlandı**, bildirim okudu | Hâlâ "Crashed" (60 sn) |
+
+Erişilebilirlik servisi her iki durumda da yalnız şunlarla geri geldi: paket güncellemesi (yeniden kurulum),
+telefonu yeniden başlatma (8 Ekim öğle ölçümü) ya da Kullanıcı'nın ayardan kapatıp açması.
+
+**Ürün için sonuçlar:**
+1. HyperOS "Otomatik başlatma" izni kurulum sihirbazında **zorunlu adım**dır: yokken çöken uygulama hiçbir
+   servisini geri alamıyor (alarm teslimi ayrı: alarmlar süreç ölse de çalıyor, 7 Ekim ölçümleri).
+2. Bildirim dinleyicisi için kurtarma sırası: `requestRebind` yetmiyor → bileşeni kapat-aç. Blueprint G4'teki
+   sıra doğru, ama ilk adım bu telefonda etkisiz.
+3. Erişilebilirlik servisi çökme sonrası kendiliğinden dönmüyor ve uygulama içinden döndürülemiyor.
+   Hatırlatma Sağlığı bunu algılayıp (`getEnabledAccessibilityServiceList`) Kullanıcı'yı ayara götürmeli;
+   müdahale ekranı (M25-I) "her zaman çalışır" varsayımıyla tasarlanamaz.
+4. Otomatik başlatma durumu kabuktan `cmd appops get PKG` çıktısındaki `MIUIOP(10008)` satırından okunabiliyor;
+   uygulama içinden okunup okunamadığı denenmedi.
+
+**Sınırlar:** her koşul tek deneme; "çökme" yapay (`am crash`), gerçek bellek baskısı ya da HyperOS temizliği
+farklı davranabilir; otomatik başlatma açıkken kaydırıp kapatma sonrası davranış ölçülmedi.
+
 **Ortam notu:** PowerShell'de `bash` komutu Windows'un kendi bash'ini (WSL) açıyor; telefon aracı bulunamıyor.
 Kullanıcı'ya verilecek komut Git Bash'i tam yoluyla çağırmalı: `& "C:\Program Files\Git\bin\bash.exe" scripts/…`.
 
