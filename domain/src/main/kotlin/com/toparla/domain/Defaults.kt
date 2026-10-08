@@ -16,4 +16,13 @@ object Defaults {
     /** Israrlı takip tekrar aralığı, dakika (karar 0003). */
     const val PERSISTENT_REMINDER_INTERVAL_MIN = 30
     val PERSISTENT_REMINDER_INTERVAL_OPTIONS_MIN = listOf(15, 30, 60)
+
+    /** Teslim bu süreden fazla gecikirse "geç teslim" sayılır (kritikte ±1 dk sözü). */
+    const val LATE_DELIVERY_TOLERANCE_SEC = 60L
+
+    /** Kritik bekçinin ileriye baktığı süre, dakika (v3 §10.6). */
+    const val CRITICAL_WATCHDOG_LOOKAHEAD_MIN = 20L
+
+    /** Hatırlatma penceresinin en geç yeniden doldurulma aralığı, saat. */
+    const val MAINTENANCE_INTERVAL_HOURS = 12L
 }
