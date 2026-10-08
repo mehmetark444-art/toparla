@@ -286,5 +286,33 @@ uygulamasının derin temizliği · saatler sonra.
 - Servis kendiliğinden bağlandı: `LOCKED_BOOT_COMPLETED`'den 19 sn sonra `A11Y_CONNECTED`
   (kilit açılmadan önce bağlanmıyor; servis `directBootAware` değil). `Bound services` içinde, `Crashed` boş.
 - Ardından iki açılış algılandı (olay → kart 2 785 ve 2 939 ms; gecikme aynı).
-- Son uygulamalardaki kilidin yeniden başlatmadan sonra durup durmadığı komutla okunamadı;
-  Kullanıcı'nın gözle bakması gerekiyor.
+- Son uygulamalardaki kilidin yeniden başlatmadan sonra durup durmadığı komutla okunamadı.
+  Kullanıcı gözle baktı: "kilit duruyor" (beyan; komutla doğrulanmadı).
+
+### 8 Ekim 2026 — Spike 10: cihaz içi model, kaynak araştırması
+
+Kaynaklar: developers.google.com/edge/litert-lm/android, Google Maven, Hugging Face API (8 Ekim 2026).
+
+- **Çalışma zamanı:** LiteRT-LM, `com.google.ai.edge.litertlm:litertlm-android:0.18.0`. Kotlin API:
+  `Engine(EngineConfig(modelPath, backend))` → `initialize()` → `createConversation(ConversationConfig(…))`
+  → `sendMessageAsync(…)`. Arka uçlar `Backend.CPU()`, `Backend.GPU()`, `Backend.NPU(…)`. Araç çağrısı
+  (`ToolSet`, `@Tool`), düşünme ayarı, görsel ve ses girdisi, ayrıca `EmbeddingEngine` var.
+  Kütüphane APK'yı 2,7 MB'tan 56 MB'a çıkardı (blueprint APK bütçesi ≤ 60 MB: sınırda).
+- **Model biçimi:** `.litertlm`; kaynak `huggingface.co/litert-community`. Denenen bütün adaylar
+  **girişsiz ve açık lisanslı** indiriliyor (blueprint'in "lisans onayı gerekebilir" kaygısı geçersiz;
+  Kullanıcı'nın elle indirmesine gerek yok).
+- **Cihaz:** SoC MediaTek MT6993, RAM ~11 GB, 421 GB boş. Hazır NPU derlemesi yalnız gömme modelinde
+  var (`…_MediaTek_MT6993.litertlm`); üretici modellerde CPU/GPU kullanılacak.
+- **Adaylar (Kullanıcı kararı: Gemma şart değil; en iyi Türkçe ve RAG sonucu veren seçilir):**
+
+| Model | Dosya | Lisans |
+|---|---|---|
+| Gemma 4 E2B | 2,59 GB (GPU sürümü 2,01 GB) | Apache 2.0 |
+| Gemma 4 E4B | 3,66 GB (GPU sürümü 2,97 GB) | Apache 2.0 |
+| Qwen3 4B Instruct 2507 | 2,66 GB | Apache 2.0 |
+| Phi-4 mini instruct | 3,91 GB | MIT |
+| Ministral 3 3B Instruct | 2,34 GB | Apache 2.0 |
+| LFM2.5 2.6B | 1,67 / 2,87 GB | "other" (lisans okunacak) |
+| Gömme: EmbeddingGemma 2 text 270m | 0,16 GB (MT6993 NPU sürümü 0,39 GB) | Apache 2.0 |
+
+Ölçüm düzeneği `:spike/LlmSpike` (yükleme süresi, ilk parça, hız, ısı, Türkçe çıktı). Sonuçlar ölçülünce eklenecek.

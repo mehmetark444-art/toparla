@@ -59,6 +59,10 @@ class SpikeActivity : Activity() {
     }
 
     private fun handle(intent: Intent) {
+        intent.getStringExtra("llm")?.let {
+            LlmSpike.run(this, it)
+            intent.removeExtra("llm")
+        }
         when (intent.getStringExtra("fgsHold")) {
             "on" -> startForegroundService(Intent(this, SpikeService::class.java).putExtra(SpikeService.EXTRA_HOLD, true))
             "off" -> stopService(Intent(this, SpikeService::class.java))
