@@ -20,6 +20,7 @@ enum class FeatureFlag(val defaultOn: Boolean) {
 /** Kullanıcı ayarlarının geçerlilik kuralları: saklanan ham değer buradan geçmeden kullanılmaz. */
 object SettingsRules {
     private const val MINUTES_PER_DAY = 24 * 60
+    private const val SECONDS_PER_MINUTE = 60L
 
     fun notificationBudget(stored: Int?): Int =
         (stored ?: Defaults.DAILY_NOTIFICATION_BUDGET).coerceIn(Defaults.DAILY_NOTIFICATION_BUDGET_MIN, Defaults.DAILY_NOTIFICATION_BUDGET_MAX)
@@ -30,7 +31,7 @@ object SettingsRules {
     /** Gün içi saat, "günün dakikası" olarak saklanır (0..1439). */
     fun timeOfDay(storedMinuteOfDay: Int?, defaultMinuteOfDay: Int): LocalTime {
         val minute = storedMinuteOfDay?.takeIf { it in 0 until MINUTES_PER_DAY } ?: defaultMinuteOfDay
-        return LocalTime.ofSecondOfDay(minute * 60L)
+        return LocalTime.ofSecondOfDay(minute * SECONDS_PER_MINUTE)
     }
 }
 

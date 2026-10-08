@@ -43,7 +43,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F9 | S8 | Konu Motoru | ☐ |
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
-**Şu an:** F1 kapanışa yakın (kalan: kablosuz gece testinin okunması, gürültüde ses tanıma, K1–K3). F2-A (hatırlatma saf mantığı) **bitti** (103 birim testi); sırada F2-B (altyapı).
+**Şu an:** F1 kapanışa yakın (kalan: kablosuz gece testinin okunması, gürültüde ses tanıma, K1–K3). F2-A (hatırlatma saf mantığı) ve F2-B (altyapı) yazıldı: 113 JVM testi + cihazda 15 test. F2-B'de Kullanıcı'ya bağlı üç iş açık: imza anahtarının iki yerde yedeği, API anahtarının yenilenmesi, push sonrası Actions'ın ilk koşusu. Sırada F2-C (tasarım sistemi).
 **Sıradaki tek adım:** F1 "B grubu": F1.12 konum (geofence) → F1.13 Mi Band / Health Connect → F1.14 gürültüde ses tanıma. Kullanıcı durumu (8 Ekim): evden çıkamıyor (F1.12 bekler), Mi Band siparişte (F1.13 bekler), gürültü ölçümü 9 Ekim'de iş yerinde. C grubu 8 Ekim gecesi ölçüldü (F1.16–F1.19, F1.24, F1.25). **9 Ekim sabahı ilk iş:** kablosuz gece testinin kaydını okumak (F1.1 derin Doze). F1'de bundan sonra kalanlar: Kullanıcı'ya bağlı üç ölçüm (F1.12, F1.13, F1.14 gürültü), günler isteyen kısıtlı kova ölçümü ve her maddenin kendi satırında yazılı küçük açık koşullar; ardından F1 kapanışı (K1 + K2 + K3). "A grubu" (F1.4–F1.6, F1.8–F1.11) 8 Ekim gecesi ölçüldü; her maddenin açık kalan koşulu kendi satırında.
 
 **Açık engeller**
@@ -156,17 +156,17 @@ F1'de kapanıştan önce kalan iki ölçüm: kablosuz gece testinin okunması (F
 - ☑ F2.9 Özellik tabanlı testler: Bölüm I invaryantlarının tamamı; 18 zorunlu sahte saatli senaryo — `PlannerInvariantsTest` (8 invaryant × 300 tohumlu deneme + bir yıllık simülasyon), `MandatoryScenariosTest`: 18 senaryodan saf mantıkla ifade edilebilen 12'si burada; Android'e bağlı 6'sı F2.46'da. Kasıtlı bozma: 16/16 yakalandı
 
 ### F2-B Altyapı
-- ☐ F2.10 Hilt, Coroutines, `DispatcherProvider`; üretim `Clock` / `IdGenerator` / `RandomSource`
-- ☐ F2.11 Room + KSP: H2 tabloları (`Reminder`, `ReminderOccurrence`, `ScheduledAlarm`, `DeliveryLog`), şema dışa aktarımı, DAO testleri
-- ☐ F2.12 Migration düzeni: `MigrationTestHelper`, migration öncesi DB kopyası ve geri dönüş
-- ☐ F2.13 DataStore ayarları, `FeatureFlags`, `Defaults` / `AppConfig`
-- ☐ F2.14 `SecretStore` (Keystore AES-GCM)
-- ☐ F2.15 Kalite araçları: ktlint, detekt, Android Lint, StrictMode ve LeakCanary (dev), Timber döner günlük
-- ☐ F2.16 Yapı varyantları: `debug` (.dev) / `release` (R8, imzalı); imza anahtarı üretimi ve **iki yerde yedeği** (Kullanıcı ile)
-- ☐ F2.17 `scripts/kur.sh`, `log-cek.sh`; `versionCode = yyMMddNN`
+- ☑ F2.10 Hilt, Coroutines, `DispatcherProvider`; üretim `Clock` / `IdGenerator` / `RandomSource` — `54be010`: `:app` Hilt kökü (`ToparlaApp`, `di/AppModule`), `:data/core/SystemSources`; Hilt 2.60.1 + KSP 2.3.12 + AGP 9.4.1 derlendi; uygulama telefonda açılıp günlüğüne yazdı
+- ☑ F2.11 Room + KSP: H2 tabloları (`Reminder`, `ReminderOccurrence`, `ScheduledAlarm`, `DeliveryLog`), şema dışa aktarımı, DAO testleri — `29b5948`: Room 3.0.3, `data/schemas/…/1.json`, `ReminderStore` (planlayıcıyla uçtan uca), cihazda 10 test
+- ☑ F2.12 Migration düzeni: `MigrationTestHelper`, migration öncesi DB kopyası ve geri dönüş — `29b5948`: `PreMigrationBackup` (kopya + geri dönüş cihazda testli), dışa aktarılan şemadan v1 kurulumu testli. İlk gerçek migration testi şema v2'ye çıkınca yazılır
+- ☑ F2.13 DataStore ayarları, `FeatureFlags`, `Defaults` / `AppConfig` — `29b5948`: `SettingsStore`, `:domain/SettingsRules` ve `FeatureFlag` (3 anahtar, hepsi kapalı başlar); JVM 4 + cihaz 1 test
+- ☑ F2.14 `SecretStore` (Keystore AES-GCM) — `29b5948`: `KeystoreSecretStore` (AES-256-GCM, ad = ek doğrulama verisi, `noBackupFilesDir`); cihazda 3 test (düz metin diskte yok, bozuk/taşınmış dosya çözülmüyor)
+- ☑ F2.15 Kalite araçları: ktlint, detekt, Android Lint, StrictMode ve LeakCanary (dev), Timber döner günlük — ktlint-gradle 14.2.0 + detekt 1.23.8 (tüm ürün modülleri, `:spike` hariç), `.editorconfig`, `config/detekt.yml`; `RotatingLogFile` (4 test) + `FileLogTree`; `debug` kaynak kümesinde `DevTools`
+- ◐ F2.16 Yapı varyantları: `debug` (.dev) / `release` (R8, imzalı); imza anahtarı üretimi ve **iki yerde yedeği** (Kullanıcı ile) — varyantlar ☑, R8 ☑ (release 4,4 MB), imza anahtarı üretildi ve imza doğrulandı ☑, iki sürüm telefona yan yana kuruldu ☑ (`54be010`); **anahtarın iki yerde yedeği ☐ (Kullanıcı)**
+- ☑ F2.17 `scripts/kur.sh`, `log-cek.sh`; `versionCode = yyMMddNN` — `kur.sh` (F1.6), `log-cek.sh` (telefonda denendi), `versionCode = 26100801`; `kur.sh`'ın asıl uygulamada tam koşusu F2.43'te
 - ◐ F2.18 Depo GitHub'a taşındı, Actions ile `check` koşuyor; API anahtarı yenilendi (karar 0005-1, 0001)
   - ☑ Depo gizli yapıldı ve ilk push tamamlandı (8 Ekim 2026; yerel = uzak `6bc3304`)
-  - ☐ GitHub Actions ile `check`
+  - ◐ GitHub Actions ile `check`: iş akışı yazıldı (`.github/workflows/check.yml`: testler, ktlint, detekt, Lint, derleme, tutarlılık); **ilk koşusu push'tan sonra doğrulanacak** ☐
   - ☐ API anahtarı yenilendi ve yalnız Gemini API'sine kısıtlandı
 
 ### F2-C Tasarım sistemi (`:ui`)

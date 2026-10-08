@@ -180,7 +180,10 @@ class ReminderDatabaseTest {
 
     @Test
     fun surumYukselirkenDosyaninKopyasiAlinirVeGeriKonabilir() {
-        val dir = File(context.cacheDir, "migration-test").apply { deleteRecursively(); mkdirs() }
+        val dir = File(context.cacheDir, "migration-test").apply {
+            deleteRecursively()
+            mkdirs()
+        }
         val dbFile = File(dir, "eski.db")
         val driver = BundledSQLiteDriver()
         driver.open(dbFile.path).apply {
@@ -205,7 +208,10 @@ class ReminderDatabaseTest {
         }
         PreMigrationBackup.restore(requireNotNull(backup), dbFile)
         val restored = driver.open(dbFile.path)
-        val value = restored.prepare("SELECT v FROM t").use { it.step(); it.getText(0) }
+        val value = restored.prepare("SELECT v FROM t").use {
+            it.step()
+            it.getText(0)
+        }
         restored.close()
         assertEquals("ilk", value)
     }

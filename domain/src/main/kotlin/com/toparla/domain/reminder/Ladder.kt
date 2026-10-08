@@ -36,6 +36,7 @@ object Ladder {
         LadderStep(min(10), LadderAction.FULL_SCREEN),
     )
     private val trustedContactStep = LadderStep(min(15), LadderAction.TRUSTED_CONTACT_SMS)
+
     // Önemli sınıfta yanıtsız kalan iş ayrıca akşam özetine taşınır; o bir alarm basamağı değil,
     // gün kapanışı akışının işidir (M14).
     private val singleRepeat = listOf(

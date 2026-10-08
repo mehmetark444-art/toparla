@@ -14,8 +14,9 @@ object RecurrenceCodec {
     private const val WEEKLY = "WEEKLY"
     private const val MONTHLY = "MONTHLY"
     private const val HOURS = "HOURS"
-    /** `HOURS:4:08:00:20:30` iki nokta ile bölününce 6 parça eder. */
-    private const val HOURS_PARTS = 6
+
+    /** `HOURS:` sonrası: aralık, pencere başı, pencere sonu (`4:08:00:20:30`). */
+    private val HOURS_PATTERN = Regex("""(\d+):(\d{2}:\d{2}):(\d{2}:\d{2})""")
 
     fun encode(rule: Recurrence): String = when (rule) {
         Recurrence.Once -> ONCE
@@ -26,6 +27,7 @@ object RecurrenceCodec {
     }
 
     /** Bozuk metinde null döner; çağıran kaydı geçersiz sayar (hatırlatma sessizce yanlış kurulmaz). */
+    @Suppress("SwallowedException") // Bozuk metnin karşılığı bilerek null'dur; çağıran atlar ve günlüğe yazar.
     fun decode(text: String): Recurrence? = try {
         val head = text.substringBefore(':')
         val rest = text.substringAfter(':', "")
@@ -34,8 +36,8 @@ object RecurrenceCodec {
             DAILY -> Recurrence.Daily.takeIf { rest.isEmpty() }
             WEEKLY -> Recurrence.Weekly(rest.split(',').map { DayOfWeek.valueOf(it) }.toSet())
             MONTHLY -> Recurrence.MonthlyOnDay(rest.toInt())
-            HOURS -> text.split(':').takeIf { it.size == HOURS_PARTS }?.let {
-                Recurrence.EveryHours(it[1].toInt(), LocalTime.parse("${it[2]}:${it[3]}"), LocalTime.parse("${it[4]}:${it[5]}"))
+            HOURS -> HOURS_PATTERN.matchEntire(rest)?.destructured?.let { (hours, start, end) ->
+                Recurrence.EveryHours(hours.toInt(), LocalTime.parse(start), LocalTime.parse(end))
             }
             else -> null
         }

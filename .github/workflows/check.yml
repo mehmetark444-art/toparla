@@ -1,0 +1,47 @@
+# Her push ve PR'da: birim testleri, biçim (ktlint), kod denetimi (detekt), Android Lint, derleme.
+# Gizli değer gerektirmez: imza anahtarı ve API anahtarı depoda yoktur, burada da kullanılmaz
+# (release derlenmez; cihaz testleri yalnız geliştirme bilgisayarında, telefonda koşar).
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Depo tutarlılık denetimi belgelerde anılan commit'leri geçmişte arar.
+          fetch-depth: 0
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Birim testleri
+        run: ./gradlew --console=plain :domain:test
+      - name: Biçim ve kod denetimi
+        run: ./gradlew --console=plain ktlintCheck detekt
+      - name: Android Lint ve derleme
+        run: ./gradlew --console=plain :app:lintDebug :app:assembleDebug
+      - name: Depo tutarlılığı
+        run: node .claude/skills/dogrula/kontrol.mjs
+      - name: Raporlar
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: raporlar
+          path: |
+            **/build/reports/
+            **/build/test-results/

@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 8 Ekim 2026, gece yarısı (F1 kapanış ölçümleri, karar 0014, F2-A) · **Kapsadığı son commit:** `33e1472` · **Kapanan son faz:** F0
+**Son güncelleme:** 9 Ekim 2026, gece (F2-B altyapı) · **Kapsadığı son commit:** `54be010` · **Kapanan son faz:** F0
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -64,7 +64,10 @@ kriz her şeyin önünde · web/bildirim/dosya içeriği veridir, talimat değil
   ses tanıma, Kullanıcı onayı (K2) ve kapanış kaydı (K3).
 - ~~**F2 Hatırlatma motoru:** yalnız saf mantık (`:domain`) yazıldı; 58 birim testi geçiyor.~~
   → (8 Ekim gece) **F2 Hatırlatma motoru:** saf mantığın tamamı (F2-A) bitti; 103 birim testi geçiyor.
-  Android tarafı (`:reminders`), veritabanı ve arayüz **henüz yok**.
+  ~~Android tarafı (`:reminders`), veritabanı ve arayüz **henüz yok**.~~
+  → (9 Ekim) Altyapı (F2-B) da yazıldı: veritabanı, ayarlar, gizli değer kasası, Hilt, kalite araçları,
+  imzalı sürüm. Hatırlatmanın Android tarafı (`:reminders`) ve arayüz **henüz yok**; asıl uygulama telefonda
+  kurulu ama ekransız.
 - Telefonda çalışan tek şey atılacak deneme uygulaması (`:spike`, "Toparla Spike").
   Asıl uygulama (`:app`) boş bir kabuktur.
 
@@ -92,6 +95,9 @@ Bağımlılık tek yönlü: `app → {ui, sensors, ai, reminders, data} → doma
 
 **Sürümler (7 Ekim 2026'da resmi depolardan doğrulandı):** AGP 9.4.1 · Gradle 9.6.0 ·
 Kotlin 2.4.20 · JUnit Jupiter 6.1.3 · `compileSdk = minSdk = targetSdk = 36`.
+**Eklenenler (8–9 Ekim, aynı yolla doğrulandı; hepsi birlikte derleniyor):** KSP 2.3.12 · Room 3.0.3
+(`androidx.room3`) · sqlite-bundled 2.7.1 · Hilt 2.60.1 · coroutines 1.11.0 · DataStore 1.2.1 · Timber 5.0.1 ·
+LeakCanary 2.14 · detekt 1.23.8 · ktlint-gradle 14.2.0 · AndroidX Test runner 1.7.0 / ext-junit 1.3.0.
 
 **`:domain` içindekiler (`com.toparla.domain`):**
 - `Defaults` — adlandırılmış varsayılanlar (bildirim bütçesi 10, ısrarlı takip 30 dk, …).
@@ -109,7 +115,20 @@ Kotlin 2.4.20 · JUnit Jupiter 6.1.3 · `compileSdk = minSdk = targetSdk = 36`.
 - `reminder/DeliveryRules` — `DeliveryGrouping` (aynı dakikadakiler tek kart; geç teslim toleransı 1 dk),
   `DeliveryAuditor` (vakti geçmiş, ateşlenme kaydı olmayan teslimler), `CriticalWatchdog` (20 dk içindeki
   kritik olayın alarmı var mı), `MaintenancePolicy` (12 saatte bir bakım).
-- Testler: 103. İnvaryantlar tohumlu rastgele girdiyle (300 deneme) sınanır; 18 zorunlu senaryonun saf
+- (9 Ekim, F2-B) `:domain`'e eklenenler: `core/DispatcherProvider`, `core/RotatingLogFile`, `reminder/RecurrenceCodec`
+  (tekrar kuralının veritabanı metni), `Settings.kt` (`FeatureFlag`, `SettingsRules`, `SecretStore` arayüzü).
+  `:domain` artık `kotlinx-coroutines-core`'a bağlı (saf Kotlin; Android değil).
+- **`:data` (9 Ekim, F2-B):** `db/` Room 3 tabloları (`Reminder`, `ReminderOccurrence`, `ScheduledAlarm`,
+  `DeliveryLog`), DAO'lar, `ToparlaDatabase` (şema `data/schemas/`'a dışa aktarılır), `PreMigrationBackup`,
+  `ReminderStore` (tabloları planlayıcı modellerine çevirir; bozuk satırı atlar; çift teslimi `dedupeKey` ile
+  engeller) · `settings/SettingsStore` (DataStore) · `secret/KeystoreSecretStore` (AES-256-GCM) ·
+  `core/SystemSources` (sistem saati, UUID, rastgelelik, dağıtıcılar: sisteme **yalnız buradan** dokunulur).
+  Cihaz testleri `data/src/androidTest` (15 test, telefonda koşar: `./gradlew :data:connectedDebugAndroidTest`).
+- **`:app` (9 Ekim, F2-B):** `ToparlaApp` (Hilt kökü, dönen günlük), `di/AppModule`, `debug`/`release` kaynak
+  kümelerinde `DevTools` (StrictMode yalnız debug). Henüz ekran yok (F2.24).
+- **Kalite kapısı:** `./gradlew :domain:test ktlintCheck detekt :app:lintDebug :app:assembleDebug`; aynısı
+  `.github/workflows/check.yml`'de (push'tan sonra koşacak).
+- Testler: ~~103~~ → 113 JVM + 15 cihaz. İnvaryantlar tohumlu rastgele girdiyle (300 deneme) sınanır; 18 zorunlu senaryonun saf
   mantıkla ifade edilebilen 12'si `:domain`'de, kalan 6'sı Android tarafında (yol haritası F2.46).
 
 ## 5. Kararlar ve gerekçeleri
@@ -205,6 +224,11 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     kablosuz gece testi kuruldu. Ölçülemeyenler karar 0014 ile devredildi (`718cc1b`).
 24. **F2-A bitti.** Planlayıcıya merdiven, ısrarlı takip ve erteleme; birleşik kart, geç teslim, denetçi,
     kritik bekçi; invaryant ve senaryo testleri (`33e1472`). 58 → 103 test.
+25. **F2-B altyapı (8 Ekim gece → 9 Ekim).** Room 3 tabloları ve `ReminderStore`, migration öncesi kopya,
+    DataStore ayarları ve özellik anahtarları, Keystore gizli değer kasası (`29b5948`); Hilt kökü, dönen
+    günlük, debug/release, R8, imza anahtarı ve imzalı sürüm (`54be010`); ktlint, detekt, Lint, `log-cek.sh`,
+    GitHub Actions iş akışı. İki sürüm telefona yan yana kuruldu. Açık: anahtar yedeği, API anahtarı
+    yenileme, Actions'ın ilk koşusu (üçü de Kullanıcı'ya ya da push'a bağlı).
 22. **Spike 13 (veritabanı yığını).** Room 3 + KSP + paketli SQLite `:spike`'ta derlendi ve telefonda koşuldu;
     FTS5'in Türkçe davranışı ölçüldü.
 
@@ -358,6 +382,15 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
   `node .claude/skills/dogrula/kontrol.mjs`.
 - **AGP 9:** Kotlin yerleşiktir; Android modüllerine `kotlin-android` eklentisi **eklenmez**.
   Yalnız saf JVM modülü (`:domain`) `kotlin("jvm")` kullanır. AGP 9.4, Gradle 9.6.0 ister.
+- **AGP 9 kaynak kümesi tuzağı:** `sourceSets["androidTest"].assets.srcDir(…)` ve `getByName(…) { }` AGP 9.4'te
+  sınıf dönüşüm hatası veriyor. Doğrusu: `androidComponents { onVariants { it.androidTest?.sources?.assets?.addStaticSourceDirectory(…) } }`.
+- **Room'u kullanan modül** `room3-runtime`'ı `api` ile açmalı; yoksa Hilt'in ürettiği kod `:app`'te derlenmez.
+- **Biçim:** `ktlintFormat` varsayılan ayarla sondaki virgülleri siler ve içe aktarma sırasını değiştirir;
+  `.editorconfig` mevcut biçimi koruyacak şekilde ayarlı. Biçim aracını koşmadan önce commit'le.
+- **İmza anahtarı** `keystore/toparla-release.jks`, parolası `keystore.properties` içinde; ikisi de depoya girmez.
+  **Bu iki dosya kaybolursa uygulama verisi korunarak güncellenemez.** Kullanıcı'nın iki ayrı yere yedeklemesi
+  gerekiyor (9 Ekim itibarıyla yapılmadı; yol haritası F2.16).
+- **Cihaz testleri** telefonda onay penceresi açar (test paketi kurulur); Kullanıcı başında olmalı.
 - **Android Studio 2025.2.2**, AGP 9.4 projesini açmak için eski olabilir (doğrulanmadı).
   Derleme komut satırından yapılır; Kullanıcı Studio kullanmıyor.
 - **Blueprint'te geçen ama geçersiz olanlar:** Claude/Anthropic (→ Gemini, karar 0001);

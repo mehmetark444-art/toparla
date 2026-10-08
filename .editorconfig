@@ -1,0 +1,30 @@
+# Biçim kuralları (ktlint bu dosyayı okur). Proje kuralları: .claude/rules/kod.md
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+
+[*.{kt,kts}]
+indent_size = 4
+max_line_length = 180
+ktlint_code_style = android_studio
+# Test adları Türkçe cümledir (ters tırnaklı ya da bitişik); ad kuralı testlerde aranmaz.
+ktlint_standard_function-naming = disabled
+# Tek satırlık kısa tanımlar ve Hilt'in yan yana açıklamaları bilinçli tercih.
+ktlint_standard_annotation = disabled
+ktlint_standard_class-signature = disabled
+ktlint_standard_function-signature = disabled
+ktlint_standard_multiline-expression-wrapping = disabled
+ktlint_standard_string-template-indent = disabled
+ktlint_standard_argument-list-wrapping = disabled
+ktlint_standard_parameter-list-wrapping = disabled
+ktlint_standard_function-expression-body = disabled
+ktlint_standard_chain-method-continuation = disabled
+ktlint_standard_blank-line-before-declaration = disabled
+ktlint_standard_kdoc = disabled
+# Mevcut kod biçimi korunur: sondaki virgül serbest, içe aktarma sırası Kotlin resmi düzeni.
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+ij_kotlin_imports_layout = *,java.**,javax.**,kotlin.**,^

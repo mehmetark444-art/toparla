@@ -19,6 +19,7 @@ class RotatingLogFile(private val directory: File, private val maxBytes: Long, p
 
     /** Satırı ekler. Disk hatası günlüğü durdurur ama uygulamayı çökertmez: false döner. */
     @Synchronized
+    @Suppress("SwallowedException") // Günlük yazılamıyorsa hatayı yazacak yer de yoktur; sonuç false ile bildirilir.
     fun append(line: String): Boolean = try {
         if (!directory.exists() && !directory.mkdirs()) throw IOException("günlük klasörü oluşturulamadı")
         if (current.exists() && current.length() >= maxBytes) rotate()

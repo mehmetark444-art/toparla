@@ -15,6 +15,13 @@ enum class AlarmApi { ALARM_CLOCK, EXACT_IDLE, INEXACT }
 
 /** Tekrar kuralı (blueprint Bölüm I). Saatler yereldir; anlık zamana `zoneId` ile çevrilir. */
 sealed interface Recurrence {
+    companion object {
+        const val MAX_DAY_OF_MONTH = 31
+
+        /** Bir günden kısa en büyük adım. */
+        const val MAX_HOUR_STEP = 23
+    }
+
     data object Once : Recurrence
 
     data object Daily : Recurrence
@@ -28,14 +35,14 @@ sealed interface Recurrence {
     /** Ayın günü. Kısa aylarda ayın son gününe çekilir (31 → Şubat'ta 28/29). */
     data class MonthlyOnDay(val day: Int) : Recurrence {
         init {
-            require(day in 1..31) { "MonthlyOnDay günü 1..31 olmalı: $day" }
+            require(day in 1..MAX_DAY_OF_MONTH) { "MonthlyOnDay günü 1..$MAX_DAY_OF_MONTH olmalı: $day" }
         }
     }
 
     /** Her gün [windowStart]'tan başlayıp [windowEnd]'i geçmeyecek şekilde her [hours] saatte bir. */
     data class EveryHours(val hours: Int, val windowStart: LocalTime, val windowEnd: LocalTime) : Recurrence {
         init {
-            require(hours in 1..23) { "EveryHours aralığı 1..23 saat olmalı: $hours" }
+            require(hours in 1..MAX_HOUR_STEP) { "EveryHours aralığı 1..$MAX_HOUR_STEP saat olmalı: $hours" }
             require(!windowEnd.isBefore(windowStart)) { "EveryHours penceresi gün içinde olmalı" }
         }
     }

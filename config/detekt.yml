@@ -1,0 +1,47 @@
+# detekt ayarları: varsayılanların üstüne yalnız projeye özgü farklar (buildUponDefaultConfig).
+# Proje kuralları .claude/rules/kod.md; `!!`, GlobalScope, runBlocking ve now() ayrıca kancayla denetlenir.
+
+style:
+  MaxLineLength:
+    maxLineLength: 180
+  MagicNumber:
+    # Sihirli sabit yasağı üretim kodunda geçerli; testlerde örnek değerler serbest.
+    excludes: ['**/test/**', '**/androidTest/**']
+    ignoreEnums: true
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+  ReturnCount:
+    max: 4
+  ForbiddenComment:
+    active: false
+  UnusedPrivateMember:
+    active: true
+  WildcardImport:
+    active: true
+
+complexity:
+  TooManyFunctions:
+    # DAO arayüzleri ve Hilt modülleri doğal olarak çok fonksiyonludur.
+    thresholdInInterfaces: 20
+    thresholdInObjects: 20
+    thresholdInClasses: 20
+  LongParameterList:
+    constructorThreshold: 16
+    functionThreshold: 9
+  LongMethod:
+    excludes: ['**/test/**', '**/androidTest/**']
+
+naming:
+  FunctionNaming:
+    excludes: ['**/test/**', '**/androidTest/**']
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: true
+  SwallowedException:
+    # Sessiz catch yasak; bilinçli "null dön" durumları tek tek gerekçeli bastırılır.
+    active: true
+
+potential-bugs:
+  UnsafeCallOnNullableType:
+    active: true

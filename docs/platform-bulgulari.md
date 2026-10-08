@@ -905,3 +905,17 @@ Kullanıcı'ya verilecek komut Git Bash'i tam yoluyla çağırmalı: `& "C:\Prog
 **Açık (model):** düşünme kipiyle karta dayalı yanıt · kablosuz pil tüketimi · çok turlu sohbet, araç API'si, görsel/ses · bellek
 (tek okuma: süreç 237 MB PSS, model belleği ayrı sayılıyor olabilir; doğrulanmadı) · şemaya zorlamanın
 yolu (kütüphanede `ResponseFormat` var, denenmedi) · gömme modeli ve RAG · 50 örnekli Türkçe set.
+
+### 9 Ekim 2026 — F2-B: altyapı yığınının uyumu ve cihaz testleri
+
+- **Derleme uyumu:** Hilt 2.60.1 (KSP ile) + Room 3.0.3 + KSP 2.3.12 + DataStore 1.2.1, Kotlin 2.4.20 / AGP 9.4.1 /
+  Gradle 9.6.0 ile birlikte derleniyor; `release` R8 ile küçülüyor (4,4 MB) ve PKCS12 anahtarla imzalanıyor
+  (`apksigner verify` geçti). detekt 1.23.8 ve ktlint-gradle 14.2.0 bu Kotlin sürümüyle çalışıyor.
+- **Cihazda (`:data:connectedDebugAndroidTest`, tek koşu, 15/15):** Room 3 + paketli SQLite ile tablolar ve
+  DAO'lar; `MigrationTestHelper` dışa aktarılan şemadan v1'i kuruyor; migration öncesi kopya ve geri dönüş;
+  DataStore; Android Keystore'da AES-256-GCM anahtar üretimi, şifreleme, çözme, bozuk dosyada reddetme.
+- **Kurulum:** `com.toparla.app` (imzalı release) ve `com.toparla.app.dev` (debug) aynı telefonda yan yana kurulu.
+  Geliştirme sürümü süreç olarak açıldı ve dönen günlüğüne ilk satırı yazdı (Hilt enjeksiyonu cihazda çalışıyor).
+- **Sınırlar:** release sürümü cihazda hiç çalıştırılmadı (ekranı yok); R8'in Room/Hilt üretilmiş kodunu
+  bozmadığı ancak ilk ekranla (F2.24) görülecek. Keystore anahtarının yeniden başlatma ve kilitli durumda
+  davranışı ölçülmedi (Direct Boot'ta kullanılmayacak; o dönem için ayrı kopya F2.32).

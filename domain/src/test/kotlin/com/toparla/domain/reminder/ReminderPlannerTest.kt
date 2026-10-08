@@ -124,8 +124,10 @@ class ReminderPlannerTest {
     fun `her x saatte bir pencere icinde kalir`() {
         val rule = Recurrence.EveryHours(4, LocalTime.of(9, 0), LocalTime.of(21, 0))
         val result = plan(at("2026-10-07T23:00"), listOf(def(start = "2026-10-01T09:00", recurrence = rule)))
-        val expected = listOf("2026-10-08T09:00", "2026-10-08T13:00", "2026-10-08T17:00", "2026-10-08T21:00",
-            "2026-10-09T09:00", "2026-10-09T13:00", "2026-10-09T17:00", "2026-10-09T21:00").map { at(it) }
+        val expected = listOf(
+            "2026-10-08T09:00", "2026-10-08T13:00", "2026-10-08T17:00", "2026-10-08T21:00",
+            "2026-10-09T09:00", "2026-10-09T13:00", "2026-10-09T17:00", "2026-10-09T21:00",
+        ).map { at(it) }
         assertEquals(expected, result.toSchedule.map { it.fireAt })
     }
 
