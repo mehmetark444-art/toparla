@@ -260,6 +260,21 @@ ilk çizimi. Kullanıcı kartı iki kez kendi gözüyle gördü.
 5. Yan etki: erişilebilirlik servisi açıkken YouTube, oynatıcı için erişilebilirlik denetimlerini
    açmayı öneren kendi penceresini gösterdi. Başka uygulamalar servisin açık olduğunu görebiliyor.
 
-**Denenmedi:** içerik okuma yetkisi açık sürüm (K17'ye aykırı; Kullanıcı kararı gerekir) · pil
-muafiyeti / otomatik başlatma / son uygulamalarda kilit · kullanım istatistiklerini sık sorgulama ·
-release yapısı · uzun süre sonra servis ömrü.
+**Denenmedi:** içerik okuma yetkisi açık sürüm (karar 0008, F1.24) · pil muafiyeti / otomatik
+başlatma · kullanım istatistiklerini sık sorgulama · release yapısı · uzun süre sonra servis ömrü.
+
+### 8 Ekim 2026 — Spike 5: son uygulamalarda kilit servisi "tümünü temizle"den koruyor
+
+Kullanıcı Toparla Spike kartını son uygulamalarda kilitledi, sonra "tümünü temizle"ye bastı
+(sistem günlüğü sıfırlandıktan sonra, tek kontrollü deneme).
+
+- Günlük: `ProcessSceneCleaner: OneKeyClean` YouTube, kamera ve diğer süreçleri öldürdü;
+  `com.toparla.spike` için öldürme satırı yok.
+- Süreç kimliği değişmedi (6121), görev son uygulamalarda kaldı, `dumpsys accessibility`:
+  **Bound services** içinde, **Crashed** boş. Öncesindeki ölçümde servis iki açılışı da algıladı.
+- Kilitsizken aynı işlem (7 Ekim: `SwipeUpClean`) süreci öldürmüş ve servisi düşürmüştü.
+
+**Sonuç:** kilit, "tümünü temizle"ye karşı koruyor (tek deneme). Kurulum sihirbazı bu adımı zorunlu
+göstermeli; sağlık denetimi "servis açık ama bağlı değil" durumunu yakalamalı.
+**Açık:** kilit yeniden başlatmadan ve uygulama güncellemesinden sonra kalıyor mu · yeniden başlatma
+sonrası servis kendiliğinden bağlanıyor mu · Güvenlik uygulamasının derin temizliği · saatler sonra.
