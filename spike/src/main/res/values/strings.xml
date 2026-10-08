@@ -13,5 +13,9 @@
     <string name="fsi_title">Tam ekran deneme kartı</string>
     <string name="fsi_ok">Tamam</string>
     <string name="fgs_title">Servis denemesi çalışıyor</string>
+    <string name="a11y_label">Toparla Spike uygulama algılama</string>
+    <string name="a11y_description">Toparla yalnızca hangi uygulamanın açıldığını görür; ekrandaki hiçbir içeriği okumaz.</string>
+    <string name="intercept_question">Bu uygulamayı açtın. Şu an neye ihtiyacın var?</string>
+    <string name="intercept_skip">Geç</string>
     <string name="log_empty">Henüz kayıt yok.</string>
 </resources>

@@ -207,3 +207,5 @@ HyperOS ayarlarına elle dokunulmadı; pil muafiyeti yok. Her biri **tek deneme*
 `setExactAndAllowWhileIdle` alarmından servis başlatma · bildirim eylemi, Tile ve widget'tan servis
 başlatma · uzun süre arka planda kaldıktan sonra tekrar · release yapısında tekrar ·
 Kullanıcı'nın gördüğünün teyidi.
+
+Kullanici teyidi (8 Ekim): tam ekran karti kilit ekraninda kendi gozuyle gordu ve Tamam dugmesine basti (kayit: FSI_TAPPED).
