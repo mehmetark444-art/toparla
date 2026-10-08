@@ -18,6 +18,13 @@ Ayrıca: cihaz içi model Gemma olmak zorunda değil; en iyi Türkçe ve RAG son
      `TaskSpec.minTier = 2` yalnız ölçümle verilir, varsayımla değil).
    Buluta her çıkış "Buluta ne gitti?" kaydında nedeniyle görünür.
 2. Gizlilik renkleri, bütçe, Katman 0 önceliği ve "AI kapalıyken her şey çalışır" kuralı değişmez.
+   **Kişisel (Sarı) veri içeren işte cihaz içi model yetersiz kalırsa iş cihazda kalır**; kendiliğinden
+   buluta çıkılmaz. Kullanıcı o soruya özel "Gemini'ye sor" eylemiyle, neyin gideceğini görerek
+   yönlendirir (Kullanıcı kararı, 8 Ekim 2026: "ben yönlendireyim"). Kategori bazlı kalıcı
+   "buluta açık" anahtarları (K6) Ayarlar'da durmaya devam eder.
+   **Rol dağılımı:** Gemini "öğretmen" (web araştırması, bilgi kartı yazımı, müfredat, yetkinlik
+   sınavı hazırlama); cihaz içi model "günlük asistan" (kişisel veri, kısa ve sık işler, bilgi
+   kartlarından yanıt). Bir konuda yetkinlik sınavı geçilince o konu cihaz içi modele devrolur.
 3. Cihaz içi model seçimi karşılaştırmalı ölçümle yapılır (yol haritası F1.15, F1.23); aday listesi
    `platform-bulgulari.md`'de.
 4. **APK sınırı** (model hariç) 60 MB'tan **150 MB**'a çıkar; sınır değil izleme eşiğidir.
