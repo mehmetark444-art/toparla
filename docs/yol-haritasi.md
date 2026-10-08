@@ -44,7 +44,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
 **Şu an:** F1 (alarm yolu ve Gemini kademeleri kararlaştırıldı) ve F2-A (saf mantık) paralel.
-**Sıradaki tek adım:** F1.3 tam ekran bildirim + F1.2 alarmdan foreground service (telefon bağlı).
+**Sıradaki tek adım:** F1.7 erişilebilirlikle uygulama açılışı algılama (en kırılgan varsayım); ardından F1.3/F1.2'nin kalan koşulları.
 
 **Açık engeller**
 - Yok. (Gemini bakiyesi 8 Ekim'de geldi; çağrıyla doğrulandı.)
@@ -90,8 +90,8 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
   - ☐ Kısıtlı bekleme kovası (uygulama günlerce açılmadan)
   - ☐ Güvenlik uygulaması "Bellek temizleme" sonrası teslim
   - ☐ Saat elle değişti / saat dilimi değişti → yeniden planlama
-- ☐ F1.2 Kesin alarmdan foreground service başlatma; `specialUse` FGS; her başlatma yolu
-- ☐ F1.3 Tam ekran bildirim + HyperOS "Kilit ekranında göster", "Arka planda açılır pencere"
+- ◐ F1.2 Kesin alarmdan foreground service başlatma; `specialUse` FGS; her başlatma yolu — `setAlarmClock` yolu ☑ (tek deneme, `platform-bulgulari.md` § Spike 2 ve 3); diğer yollar ☐
+- ◐ F1.3 Tam ekran bildirim + HyperOS "Kilit ekranında göster", "Arka planda açılır pencere" — kilitliyken ☑ (tek deneme, özel izin verilmeden); ekran açıkken davranış ☐
 - ☐ F1.4 Bildirim "cooldown" davranışı, alarm ses akışı, DND aşımı
 - ☐ F1.5 HyperOS ayar derin bağlantıları → `hyperos-baglantilar.md`
 - ☐ F1.6 `kur.sh`: her komutun HyperOS'teki davranışı; `USER_RESTRICTED` ve yol çevirme hatası ele alınmış

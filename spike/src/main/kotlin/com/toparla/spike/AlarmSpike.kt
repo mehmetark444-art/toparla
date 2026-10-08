@@ -20,6 +20,8 @@ object AlarmSpike {
     const val API_CLOCK = "clock" // setAlarmClock
     const val API_IDLE = "idle" // setExactAndAllowWhileIdle
     const val API_INEXACT = "inexact" // setAndAllowWhileIdle (Normal sınıf adayı)
+    const val API_FSI = "fsi" // setAlarmClock + tam ekran bildirim (spike 3)
+    const val API_FGS = "fgs" // setAlarmClock + foreground service başlatma (spike 2)
     const val EXTRA_KEY = "key"
 
     private const val PREFS = "pending"
@@ -82,7 +84,7 @@ object AlarmSpike {
             Intent(context, AlarmReceiver::class.java).putExtra(EXTRA_KEY, key),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        if (api == API_CLOCK) {
+        if (api == API_CLOCK || api == API_FSI || api == API_FGS) {
             val show = PendingIntent.getActivity(
                 context, 0, Intent(context, SpikeActivity::class.java), PendingIntent.FLAG_IMMUTABLE,
             )

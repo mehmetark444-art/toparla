@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 8 Ekim 2026, öğle · **Kapsadığı son commit:** `f43db56` · **Kapanan son faz:** F0
+**Son güncelleme:** 8 Ekim 2026, öğleden sonra · **Kapsadığı son commit:** `0d2f7ab` · **Kapanan son faz:** F0
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -158,7 +158,9 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     girdiği, 8 yeteneğin ve 3 alt ajanın listelendiği de görüldü (gece kontrolünün iki açık maddesi kapandı). (`f43db56`)
 14. **Gemini ölçümleri, karar 0007.** Bakiye geldi (çağrıyla doğrulandı). Üç kademe, düşünme ayarı,
     şemalı çıktı, işlev çağrısı, arama temellendirmesi ve akış tek çağrılarla ölçüldü; kademeler ve
-    fiyatlar kilitlendi. Görsel girdi, önbellekleme ve gerçek konu taraması henüz denenmedi.
+    fiyatlar kilitlendi. Görsel girdi, önbellekleme ve gerçek konu taraması henüz denenmedi. (`0d2f7ab`)
+15. **Spike 2 ve 3.** Deneme uygulamasına servis ve tam ekran kartı eklendi; alarmdan servis başlatma
+    ve kilitliyken tam ekran bildirim tek denemede çalıştı. Kalan koşullar yol haritasında açık.
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -182,6 +184,10 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   telefondaki onay penceresi ~10 sn içinde onaylanmalı; yoksa `INSTALL_FAILED_USER_RESTRICTED`.
 - **USB bağlıyken Doze zorlanamıyor** (`force-idle` → "stopped at INACTIVE"; cihaz şarjda sayılıyor).
   `am set-standby-bucket … rare` kalıcı olmuyor.
+- **Alarmdan servis ve tam ekran (8 Ekim, tek denemeler):** `setAlarmClock` alıcısından `specialUse`
+  foreground service başlatılabiliyor (29 ms). Kilitliyken tam ekran bildirim, HyperOS'e özgü hiçbir
+  izin elle verilmeden kilit ekranının üstünde açılıyor ve ekranı uyandırıyor (270 ms). Blueprint'in
+  kritik teslim hattı (alarm → servis → tam ekran) bu telefonda kurulabilir görünüyor.
 - **Gemini ölçümleri (8 Ekim, tek çağrılar):** flash-lite ~1 sn; 3.8-flash varsayılan düşünmeyle
   ~8 sn, `thinkingLevel:"low"` ile ~2 sn; pro ~11 sn. Düşünme tokenleri çıktı fiyatından ücretlenir.
   Şemalı çıktı, işlev çağrısı, akış ve Google Arama temellendirmesi çalışıyor. Arama atıflarındaki
@@ -216,6 +222,7 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 | H18 | Kullanılmayan sabitler ve geçersiz girdiyi kabul eden veri sınıfları ilk yazımda fark edilmedi | "İleride lazım olur" eklemesi; kurucu denetimi düşünülmedi | Kullanılmayan şey eklenmez (ait olduğu fazda gelir); dışarıdan değer alan her model geçersiz değeri kurucuda reddeder. |
 | H19 | Kullanıcı "GitHub'a pushla" dedi; depo **herkese açıktı** ve belgelerde sağlıkla ilgili kişisel bilgiler vardı | Depo açılırken görünürlük seçilmemiş; Kullanıcı sonucunu bilmiyordu | Dışarıya yayın öncesi hedefin görünürlüğünü komutla doğrula (kimliksiz istek 200 = açık, 404 = gizli) ve neyin görüneceğini Kullanıcı'ya söyle. Push'tan önce Kullanıcı depoyu gizli yaptı. |
 | H20 | Gizli yapılan depoya push "Repository not found" verdi | Bilgisayarda kayıtlı GitHub girişi başka hesaptı (Emire221); gizli depoyu göremiyordu. Depo açıkken `ls-remote` çalıştığı için fark edilmemişti | Push öncesi kayıtlı hesabı kontrol et (`git credential-manager github list`). Çözüm: uzak adrese kullanıcı adı eklendi; Kullanıcı doğru hesapla giriş yaptı. |
+| H21 | Cihaz betiğinin ilk komutları "no devices" verdi; kayıt başlangıç satırı 0 okundu ve bütün günlük ekrana döküldü | adb arka plan süreci yeniden başlarken ilk birkaç komut cihazı görmüyor; betik bağlantıyı beklemeden ölçüm başlangıcını aldı | Cihaz betiğinin ilk satırı `./scripts/adb wait-for-device`; başlangıç değeri okunamazsa (boş ya da 0) betik dursun. Ölçüm bu kez etkilenmedi. |
 | H15 | Yol haritası birkaç kez `sed`/`awk` ile değiştirildi | Alışkanlık; o sırada kanca yoktu | Kabuk komutuyla yapılan değişiklik düzenleme kancalarından (faz kapısı, gizli değer) geçmez. Yol haritası ve proje beyni **yalnız düzenleme aracıyla** değiştirilir. |
 
 ## 9. Tuzaklar ve "bunu bilmeden başlama" notları

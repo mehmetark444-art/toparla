@@ -8,5 +8,10 @@
     <string name="channel_name">Deneme alarmları</string>
     <string name="notif_title">Deneme alarmı çaldı</string>
     <string name="notif_body">%1$s · sapma %2$d ms</string>
+    <string name="channel_fsi">Tam ekran denemesi</string>
+    <string name="channel_fgs">Servis denemesi</string>
+    <string name="fsi_title">Tam ekran deneme kartı</string>
+    <string name="fsi_ok">Tamam</string>
+    <string name="fgs_title">Servis denemesi çalışıyor</string>
     <string name="log_empty">Henüz kayıt yok.</string>
 </resources>

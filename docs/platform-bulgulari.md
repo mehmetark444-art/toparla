@@ -185,3 +185,25 @@ Bakiye doğru hesaba yüklendi; üretim çağrıları HTTP 200. Uç nokta
 davranışı · gerçek bir konu taramasının uçtan uca maliyeti · Türkçe kalite (altın set).
 
 **Karar:** `docs/decisions/0007-gemini-model-kademeleri.md`.
+
+### 8 Ekim 2026 — Spike 2 ve 3: alarmdan servis başlatma, kilitliyken tam ekran bildirim
+
+**Koşul:** USB bağlı, ekran kapalı ve kilitli (`isKeyguardShowing=true`, `Dozing`), kilit türü PIN.
+HyperOS ayarlarına elle dokunulmadı; pil muafiyeti yok. Her biri **tek deneme**.
+
+- **Servis (spike 2):** `setAlarmClock` alarmının alıcısından `startForegroundService` çağrısı kabul
+  edildi; `specialUse` tipli servis `startForeground`'u alarmdan 29 ms sonra başarıyla çağırdı
+  (`FGS_REQUESTED` → `FGS_STARTED`, istisna yok).
+- **Tam ekran (spike 3):** `canUseFullScreenIntent()` = `true` (appop `USE_FULL_SCREEN_INTENT: allow`,
+  kendiliğinden). `setFullScreenIntent` taşıyan bildirim gönderildikten 245 ms sonra (alarmdan 270 ms)
+  `showWhenLocked` + `turnScreenOn` Activity açıldı: `keyguardLocked=true`, ekran uyandı,
+  en üstteki Activity `FullScreenActivity`.
+- HyperOS'e özgü "Kilit ekranında göster" / "Arka planda açılır pencere" izinleri elle verilmeden
+  çalıştı. Ham appop dökümü: `MIUIOP(10020): allow`, `MIUIOP(10008): ignore`, `MIUIOP(10017): ask`,
+  `MIUIOP(10053): ignore`, `SYSTEM_ALERT_WINDOW: default` (reddedildi). Bu numaraların hangi izne
+  karşılık geldiği doğrulanmadı.
+
+**Sınırlar / açık:** ekran açık ve kilitsizken davranış (beklenen: tam ekran yerine üstten bildirim) ·
+`setExactAndAllowWhileIdle` alarmından servis başlatma · bildirim eylemi, Tile ve widget'tan servis
+başlatma · uzun süre arka planda kaldıktan sonra tekrar · release yapısında tekrar ·
+Kullanıcı'nın gördüğünün teyidi.

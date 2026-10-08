@@ -15,6 +15,7 @@ Aşağıdaki sıra o hataları önlemek için var.
 
 ## 1. Bağlantı ve ön koşullar (komutla doğrula, varsayma)
 ```bash
+./scripts/adb wait-for-device              # adb süreci yeni başladıysa ilk komutlar cihazı görmez (H21)
 ./scripts/adb devices                      # "device" görünmeli
 ./scripts/adb shell dumpsys user | grep -m1 "State:"            # RUNNING_UNLOCKED / RUNNING_LOCKED
 ./scripts/adb shell dumpsys lock_settings | grep CredentialType # NONE ise kilitli senaryo sınanamaz
