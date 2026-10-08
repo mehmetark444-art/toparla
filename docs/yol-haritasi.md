@@ -44,7 +44,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
 **Şu an:** F1 (alarm yolu ve Gemini kademeleri kararlaştırıldı) ve F2-A (saf mantık) paralel.
-**Sıradaki tek adım:** F1.15: Gemma 4 E2B ↔ E4B ↔ Qwen3 4B için 50 örnekli Türkçe set; ardından gömme modeli ve RAG denemesi, 10 dk ısı/pil (kararlar 0009, 0008).
+**Sıradaki tek adım:** Kullanıcı'nın karar 0010 onayı; sonra gömme modeli ve gerçek RAG denemesi. Eski: F1.15: Gemma 4 E2B ↔ E4B ↔ Qwen3 4B için 50 örnekli Türkçe set; ardından gömme modeli ve RAG denemesi, 10 dk ısı/pil (kararlar 0009, 0008).
 
 **Açık engeller**
 - Yok. (Gemini bakiyesi 8 Ekim'de geldi; çağrıyla doğrulandı.)
@@ -107,7 +107,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 
 ### F1-C Ses ve yapay zekâ
 - ☐ F1.14 Türkçe cihaz içi konuşma tanıma: 30 cümlelik set, WER; yetersizse yerel Whisper
-- ◐ F1.15 (çalışma zamanı ve model edinme yolu ☑; beş adayın eleme turu ☑: Gemma 4 E2B, E4B ve Qwen3 4B kaldı; Phi-4 mini ve Ministral elendi — `platform-bulgulari.md` § Spike 10; 50 örnekli Türkçe set, gömme/RAG, ısı ve pil ☐) Cihaz içi model: LiteRT-LM + Gemma güncel adları, GPU/NPU, token/sn, ilk token, 10 dk sıcaklık, 50 örnek Türkçe kalite; model dosyasını edinme yolu
+- ◐ F1.15 (çalışma zamanı ve model edinme yolu ☑; beş adayın eleme turu ☑: Gemma 4 E2B, E4B ve Qwen3 4B kaldı; Phi-4 mini ve Ministral elendi — `platform-bulgulari.md` § Spike 10; 50 soruluk Türkçe set ☑ (E2B 46,5 · E4B 45,5 · Qwen3 32; karar adayı 0010); gömme modeli ve gerçek RAG, kablosuz pil, çok turlu sohbet ☐) Cihaz içi model: LiteRT-LM + Gemma güncel adları, GPU/NPU, token/sn, ilk token, 10 dk sıcaklık, 50 örnek Türkçe kalite; model dosyasını edinme yolu
 - ◐ F1.16 Gemini API — `platform-bulgulari.md` § Spike 11: Gemini API ölçümleri
   - ☑ Uç nokta: Developer API; model listesi alındı
   - ☑ Kademe modelleri (hızlı / günlük / derin) ve fiyatlar resmi sayfadan kilitlendi — karar 0007 (`pricing.json` F6.4'te yazılır)
