@@ -32,7 +32,8 @@ ksp {
 
 dependencies {
     api(project(":domain"))
-    implementation(libs.room.runtime)
+    // `ToparlaDatabase` genel arayüzde `RoomDatabase` türünü taşıdığı için dışa açık.
+    api(libs.room.runtime)
     implementation(libs.sqlite.bundled)
     implementation(libs.datastore.preferences)
     implementation(libs.coroutines.android)
