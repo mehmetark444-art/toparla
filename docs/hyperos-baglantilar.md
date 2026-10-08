@@ -3,13 +3,23 @@
 Cihazda denenip **çalıştığı görülen** bağlantılar buraya yazılır. Her bağlantı kodda
 `try/catch` ile denenir; açılmazsa uygulama bilgi sayfasına düşülür.
 
-| Ayar | Intent (paket / sınıf / eylem) | HyperOS sürümü | Sonuç | Tarih |
-|---|---|---|---|---|
-| Otomatik başlatma | — | — | Denenmedi | — |
-| Pil: Kısıtlama yok | — | — | Denenmedi | — |
-| Kilit ekranında göster / Arka planda açılır pencere | — | — | Denenmedi | — |
-| Tam ekran bildirim özel erişimi | — | — | Denenmedi | — |
-| Kısıtlı ayarlara izin ver | — | — | Denenmedi | — |
-| Bildirim erişimi | — | — | Denenmedi | — |
-| Erişilebilirlik | — | — | Denenmedi | — |
-| Gri tonlama | — | — | Denenmedi | — |
+Ölçüm: 8 Ekim 2026, HyperOS `OS3.0.310.0.WPSMIXM`, uygulama içinden `startActivity`, kilit açık,
+bağlantı başına 1–2 deneme (`:spike` `AGroup.openLink`). Ham kayıt: `platform-bulgulari.md` § Spike 4.
+"Açıldı" = sistem hedefi çözdü ve hata vermedi; sayfanın doğru uygulamayı gösterdiği Kullanıcı
+gözüyle ayrıca doğrulanmadı.
+
+| Ayar | Intent (paket / sınıf / eylem) | Sonuç |
+|---|---|---|
+| Otomatik başlatma | bileşen `com.miui.securitycenter` / `com.miui.permcenter.autostart.AutoStartManagementActivity` | Açıldı (liste sayfası; uygulamayı Kullanıcı listeden bulur) |
+| Pil: Kısıtlama yok | `Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` + `package:` → `com.miui.powercenter.legacypowerrank.PowerDetailActivity` | Açıldı (HyperOS'in uygulamaya özel pil sayfası) |
+| Pil kısıtı (eski yol) | bileşen `com.miui.powerkeeper` / `…ui.HiddenAppsConfigActivity` | **Yok** (`ActivityNotFoundException`); kullanılmaz |
+| Kilit ekranında göster / Arka planda açılır pencere | eylem `miui.intent.action.APP_PERM_EDITOR`, sınıf `com.miui.permcenter.permissions.PermissionsEditorActivity`, ek `extra_pkgname` | Açıldı ("Diğer izinler" sayfası) |
+| Uygulama bilgisi (yedek hedef) | `Settings.ACTION_APPLICATION_DETAILS_SETTINGS` + `package:` | Açıldı |
+| Tam ekran bildirim özel erişimi | `Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT` + `package:` | Açıldı |
+| Bildirim erişimi | `Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS` | Açıldı |
+| Erişilebilirlik | `Settings.ACTION_ACCESSIBILITY_SETTINGS` → `MiuiAccessibilitySettingsActivity` | Açıldı |
+| Rahatsız Etme erişimi | `Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS` | Açıldı |
+| Kullanım erişimi | `Settings.ACTION_USAGE_ACCESS_SETTINGS` | Açıldı |
+| Uygulama bildirim ayarları | `Settings.ACTION_APP_NOTIFICATION_SETTINGS` + `EXTRA_APP_PACKAGE` | Açıldı (1 deneme; ikinci koşuda kayıt düşmedi, yeniden denenecek) |
+| Kısıtlı ayarlara izin ver | — | Doğrudan bağlantısı yok; yol: Uygulama bilgisi → ⋮. Bu telefonda gerekip gerekmediği F1.8'de ölçülecek |
+| Gri tonlama | eylem `com.android.settings.ACCESSIBILITY_COLOR_SPACE_SETTINGS` → `Settings$AccessibilityDaltonizerSettingsActivity` | Hedef var (yalnız `resolve-activity`); açılış denenmedi |

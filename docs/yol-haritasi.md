@@ -3,7 +3,7 @@
 Projenin sıfırdan bitişe tek durum kaynağı. Her oturumda buradan okunur, burada işaretlenir.
 Kapsam `docs/BLUEPRINT.md` (M1–M30) + `docs/decisions/` kararlarıdır; bu dosya kapsam eklemez.
 
-**Son güncelleme:** 8 Ekim 2026, sabah (gece testi sonucu, karar 0006)
+**Son güncelleme:** 8 Ekim 2026, gece (A grubu: ayar bağlantıları, `kur.sh`)
 
 ## Nasıl okunur
 
@@ -44,7 +44,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
 **Şu an:** F1 (alarm yolu ve Gemini kademeleri kararlaştırıldı) ve F2-A (saf mantık) paralel.
-**Sıradaki tek adım:** F1.25 çıraklık ön ölçümü (Gemini örnekleriyle yerel model); ardından F1.8 bildirim erişimi ve F1.9 Tile. Eski: F1.15: Gemma 4 E2B ↔ E4B ↔ Qwen3 4B için 50 örnekli Türkçe set; ardından gömme modeli ve RAG denemesi, 10 dk ısı/pil (kararlar 0009, 0008).
+**Sıradaki tek adım:** F1 "A grubu" (telefonla kısa ölçümler): F1.9 Tile → F1.8 bildirim erişimi → F1.4 alarm sesi ve Rahatsız Etme → F1.10 canlı bildirim → F1.11 arama algılama → F1.6 `kur.sh`. Ardından B grubu (F1.12 konum, F1.13 Mi Band, F1.14 gürültüde ses) ve C grubu (F1.18 Room/KSP, F1.16 kalanlar, F1.24, F1.25).
 
 **Açık engeller**
 - Yok. (Gemini bakiyesi 8 Ekim'de geldi; çağrıyla doğrulandı.)
@@ -93,8 +93,8 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 - ◐ F1.2 Kesin alarmdan foreground service başlatma; `specialUse` FGS; her başlatma yolu — `setAlarmClock` yolu ☑ (tek deneme, `platform-bulgulari.md` § Spike 2 ve 3); diğer yollar ☐
 - ◐ F1.3 Tam ekran bildirim + HyperOS "Kilit ekranında göster", "Arka planda açılır pencere" — kilitliyken ☑ (tek deneme, özel izin verilmeden); ekran açıkken davranış ☐
 - ☐ F1.4 Bildirim "cooldown" davranışı, alarm ses akışı, DND aşımı
-- ☐ F1.5 HyperOS ayar derin bağlantıları → `hyperos-baglantilar.md`
-- ☐ F1.6 `kur.sh`: her komutun HyperOS'teki davranışı; `USER_RESTRICTED` ve yol çevirme hatası ele alınmış
+- ◐ F1.5 HyperOS ayar derin bağlantıları → `hyperos-baglantilar.md` (11 bağlantıdan 10'u açıldı, eski pil kısıtı sayfası yok — `platform-bulgulari.md` § Spike 4; gri tonlama açılışı ve sayfaların doğru uygulamayı gösterdiğinin göz doğrulaması ☐)
+- ◐ F1.6 `kur.sh`: her komutun HyperOS'teki davranışı; `USER_RESTRICTED` ve yol çevirme hatası ele alınmış (betik yazıldı, her adımı geri okuyarak doğruluyor — `scripts/kur.sh`; telefonda koşulmadı ☐)
 
 ### F1-B Algılama ve sistem yüzeyleri
 - ◐ F1.7 (`platform-bulgulari.md` § Spike 5: kaydırınca servis ölüyor ve geri gelmiyor; açılışta olay ~2,9 sn geç geliyor, hedef tutmuyor; servisten Activity başlatma ☑; son uygulamalarda kilit "tümünü temizle"den koruyor ☑ (tek deneme); yeniden başlatma sonrası servis kendiliğinden bağlanıyor ☑ (tek deneme); kilidin yeniden başlatma ve güncelleme sonrası kalması, uzun süre ömrü, gecikmenin nedeni ☐) Erişilebilirlik: açılış algılama gecikmesi (hedef ≤ 400 ms), servis ömrü, servisten Activity başlatma; olmazsa overlay yedeği
