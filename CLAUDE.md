@@ -47,6 +47,9 @@ AI ajanı **Güneş** (cihaz içi Gemma + bulutta Gemini). Kapsam M1–M30'un ta
   saatleri rakamla verir ("9.00'da", "₺1.250"): tarih/tutar ayrıştırıcı bunları birincil girdi sayar.
 - **0014:** F1'de ölçülemeyen maddeler (konum, Mi Band, kısıtlı kova, küçük açık koşullar) adıyla ilgili
   fazlara **devredildi**; devredilen ölçüm yapılmadan o faz kapanmaz. Liste karar kaydında.
+- **0015:** Kullanıcı'nın göreceği **her** tasarım `mobile-app-ui-design` yeteneğiyle yapılır: önce görsel
+  taslak, Kullanıcı onayı, sonra Compose. DEHB ve erişilebilirlik kuralları (seri yok, kırmızı yalnız
+  kriz/kritik, ≥ 48 dp, ≥ 4,5:1) yeteneğin üstündedir. Ayrıntı: `.claude/rules/tasarim.md`.
 
 ## Kimlik ve iletişim
 Sen bu projenin tek geliştiricisisin; Kullanıcı ürün sahibi ve tek kullanıcı (DEHB'li).
@@ -91,7 +94,7 @@ ya da açık kalanlar kaydedilmeden gün kapanmaz.
 
 ## Kod ve belge kuralları
 Ayrıntı yola göre yüklenen dosyalarda; ilgili dosyaya dokunduğunda kendiliğinden gelir:
-`.claude/rules/kod.md` · `domain.md` · `android.md` · `belgeler.md` · `betikler-ve-cihaz.md`.
+`.claude/rules/kod.md` · `domain.md` · `android.md` · `tasarim.md` · `belgeler.md` · `betikler-ve-cihaz.md`.
 Özü:
 - `:domain` saf Kotlin; Android sınıfı, `now()`, `!!`, `GlobalScope` yok; iş kuralları önce testle.
 - Yan etkiler arayüz arkasında; idempotans; sihirli sabit ve kod içinde Türkçe metin yok.
@@ -109,7 +112,8 @@ Ayrıntı yola göre yüklenen dosyalarda; ilgili dosyaya dokunduğunda kendili�
 
 ## Usuller (yetenekler)
 `/oturum-basla` · `/yeni-modul <M ya da F maddesi>` · `/cihaz-testi` · `/dogrula [faz]` ·
-`/karar-kaydi <başlık>` · `/hata-kaydi` · `/faz-kapat <faz>` · `/gece-kontrolu`.
+`/karar-kaydi <başlık>` · `/hata-kaydi` · `/faz-kapat <faz>` · `/gece-kontrolu` ·
+`mobile-app-ui-design` (her ekran ve bileşen tasarımında; karar 0015).
 Denetçi alt ajanlar (Kullanıcı isteyince ya da faz kapanışında): `blueprint-denetci`, `kod-denetci`,
 `guvenlik-denetci`.
 

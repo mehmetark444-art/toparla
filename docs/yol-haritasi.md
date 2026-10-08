@@ -170,6 +170,9 @@ F1'de kapanıştan önce kalan iki ölçüm: kablosuz gece testinin okunması (F
   - ☐ API anahtarı yenilendi ve yalnız Gemini API'sine kısıtlandı
 
 ### F2-C Tasarım sistemi (`:ui`)
+Karar 0015: bu başlıktan itibaren Kullanıcı'nın göreceği her yüzey `mobile-app-ui-design` yeteneğiyle tasarlanır;
+önce taslak (`docs/tasarim/`), Kullanıcı onayı, sonra Compose. Kurallar: `.claude/rules/tasarim.md`.
+- ☐ F2.47 Görsel dil taslağı: Şimdi ekranı + bir hatırlatma kartı + Hatırlatma Sağlığı satırları, koyu ve açık temada; blueprint C paleti ile yeteneğin önerdiği seçenek yan yana. **Kullanıcı onayı** olmadan F2.19–F2.24 kodlanmaz
 - ☐ F2.19 Renk jetonları: Koyu / Açık / AMOLED + 6 vurgu; `ExtendedColors`
 - ☐ F2.20 Otomatik kontrast testi (her tema × vurgu × metin/zemin ≥ 4,5:1)
 - ☐ F2.21 Tipografi, boşluk, şekil, hareket jetonları; "Animasyonları azalt"

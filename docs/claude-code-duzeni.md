@@ -48,6 +48,7 @@ Kişisel tercihler için `.claude/settings.local.json` ve `CLAUDE.local.md` giti
 | `android.md` | `app`, `reminders`, `sensors`, `ui`, `data`, `ai` |
 | `belgeler.md` | `docs/**`, `CLAUDE.md`, `AGENTS.md` |
 | `betikler-ve-cihaz.md` | `scripts/**`, `spike/**`, `.claude/hooks/**` |
+| `tasarim.md` | `ui/**`, `app/**`, `docs/tasarim/**` (karar 0015: tasarım yeteneğinin Toparla uyarlaması; çelişkide bu dosya kazanır) |
 
 ## Yetenekler
 
@@ -61,6 +62,7 @@ Kişisel tercihler için `.claude/settings.local.json` ve `CLAUDE.local.md` giti
 | `/hata-kaydi` | Hata, yanlış varsayım, geri alınan iş (aynı gün) |
 | `/faz-kapat <faz>` | Faz kapanış töreni: K1 + K2 + K3 |
 | `/gece-kontrolu` | Çalışılan her günün son işi: satır satır yeniden okuma, temizlik, kasıtlı bozmayla test sınaması, belge eşitleme; sonuç `docs/gece-kontrolleri.md` |
+| `mobile-app-ui-design` | **Üçüncü taraf** (kaynak ve inceleme: klasördeki `KAYNAK.md`). Kullanıcı'nın göreceği her ekran ve bileşenin tasarımında: 5 adım (bağlam → yapı → görsel → duygu → cila). Önce taslak, Kullanıcı onayı, sonra Compose (karar 0015) |
 
 `dogrula/kontrol.mjs` depo tutarlılığını denetler: gizli değer yok · belgelerdeki commit'ler gerçek ·
 M1–M30 kapsamı · her fazda K1/K2/K3 · kapanan fazın kapanış kaydı · karar kayıtları `CLAUDE.md`'de.
