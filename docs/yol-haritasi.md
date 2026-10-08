@@ -44,7 +44,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
 **Şu an:** F1 (alarm yolu ve Gemini kademeleri kararlaştırıldı) ve F2-A (saf mantık) paralel.
-**Sıradaki tek adım:** Kullanıcı'nın karar 0010 onayı; sonra gömme modeli ve gerçek RAG denemesi. Eski: F1.15: Gemma 4 E2B ↔ E4B ↔ Qwen3 4B için 50 örnekli Türkçe set; ardından gömme modeli ve RAG denemesi, 10 dk ısı/pil (kararlar 0009, 0008).
+**Sıradaki tek adım:** gömme modeli ve gerçek RAG denemesi (karar 0010 onaylandı: tek model Gemma 4 E4B). Eski: F1.15: Gemma 4 E2B ↔ E4B ↔ Qwen3 4B için 50 örnekli Türkçe set; ardından gömme modeli ve RAG denemesi, 10 dk ısı/pil (kararlar 0009, 0008).
 
 **Açık engeller**
 - Yok. (Gemini bakiyesi 8 Ekim'de geldi; çağrıyla doğrulandı.)
@@ -124,7 +124,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 ### F1-D Kararlar
 - ☑ F1.21 Karar kaydı: sınıf → alarm yolu (ısrarlı takip dahil) — karar 0006
 - ☑ F1.22 Karar kaydı: Gemini model kademeleri ve aylık bütçe dağılımı — karar 0007
-- ☐ F1.23 Karar kaydı: STT yolu; cihaz içi model (E2B / E4B) seçimi
+- ◐ F1.23 Karar kaydı: STT yolu ☐; cihaz içi model seçimi ☑ (karar 0010: Gemma 4 E4B, tek model)
 
 **Çift kontrol**
 - ☐ K1: `platform-bulgulari.md`'deki 19 spike satırının hiçbiri "Bekliyor" değil; her birinde ölçüm sayısı ve yöntem yazılı; `[DOĞRULA]` araması açık madde bırakmıyor.

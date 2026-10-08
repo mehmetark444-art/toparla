@@ -1,6 +1,14 @@
 # 0010 — Cihaz içi model seçimi
 
-Tarih: 8 Ekim 2026  Durum: Aday (ölçüm yapıldı; Kullanıcı onayı bekliyor)
+Tarih: 8 Ekim 2026  Durum: Kabul (ölçüme dayalı; Kullanıcı 8 Ekim 2026'da onayladı: tek model, Gemma 4 E4B)
+
+> **Kesinleşen karar:** cihaz içi tek üretici model **Gemma 4 E4B**. **Yedek model (E2B) tutulmaz.**
+> Aşağıdaki "E2B yedek model" maddesi ilk öneridir ve geçersizdir. Gerekçe: iki model aynı anda
+> belleğe sığmaz, geçiş her seferinde 4–11 sn yükleme ister (E2B'nin hız üstünlüğünü siler), ~5 GB ek
+> depolama ve ikinci bir doğrulama yükü getirir, E2B'nin metin kalitesi daha düşüktür. Bellek, ısı
+> ya da pil kısıtında yedek **Katman 0'dır** (kural tabanlı sonuç) ve ağır iş ertelenir; hızlı işler
+> (sınıflama, tarih) zaten önce kuralla çözülür. Gerçek kullanımda E4B bellekten öldürülür ya da
+> fazla yavaş kalırsa bu karar yeniden açılır (izleme: Hatırlatma Sağlığı / Debug HUD).
 
 **Bağlam:** Blueprint K4/B1: cihaz içi model "Gemma 4 ailesi, E2B varsayılan, E4B denenir". Karar 0009:
 model Gemma olmak zorunda değil; en iyi Türkçe ve karta dayalı yanıt (RAG) sonucunu veren seçilir ve

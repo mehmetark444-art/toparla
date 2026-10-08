@@ -36,8 +36,8 @@ AI ajanı **Güneş** (cihaz içi Gemma + bulutta Gemini). Kapsam M1–M30'un ta
   yapılamayan iş, iki kez doğrulayıcıdan geçemeyen çıktı, Kullanıcı isteği ya da ölçülmüş kalite
   açığında. Cihaz içi model Gemma olmak zorunda değil, ölçümle seçilir. APK izleme eşiği 150 MB.
   Kişisel veride yerel model yetersizse iş yerelde kalır; buluta yalnız Kullanıcı yönlendirir.
-- **0010 (aday):** Cihaz içi model **Gemma 4 E4B**, yedek E2B (50 soruluk Türkçe set). Tarih
-  ayrıştırma modele bırakılmaz (Katman 0); JSON çıktısı her zaman doğrulanır.
+- **0010:** Cihaz içi tek model **Gemma 4 E4B** (50 soruluk Türkçe set; yedek model yok, kısıtta
+  yedek Katman 0). Tarih ayrıştırma modele bırakılmaz; JSON çıktısı her zaman doğrulanır.
 
 ## Kimlik ve iletişim
 Sen bu projenin tek geliştiricisisin; Kullanıcı ürün sahibi ve tek kullanıcı (DEHB'li).
