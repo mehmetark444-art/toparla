@@ -44,7 +44,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
 **Şu an:** F1 (alarm yolu ve Gemini kademeleri kararlaştırıldı) ve F2-A (saf mantık) paralel.
-**Sıradaki tek adım:** F1.7'nin kalanı: servisi kaydırma ölümünden koruyan önlemler (kilit, otomatik başlatma, pil) ve ~2,9 sn gecikme için Kullanıcı kararı.
+**Sıradaki tek adım:** F1.7'nin kalanı: servisi kaydırma ölümünden koruyan önlemler (kilit, otomatik başlatma, pil). Gecikme kabul edildi (karar 0008).
 
 **Açık engeller**
 - Yok. (Gemini bakiyesi 8 Ekim'de geldi; çağrıyla doğrulandı.)
@@ -118,6 +118,8 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 - ☐ F1.18 Room + BundledSQLiteDriver ile FTS5; KSP'nin Kotlin 2.4 / AGP 9.4 ile uyumu
 - ☐ F1.19 ALO 171 hattının güncelliği
 - ☑ F1.20 16 KB sayfa: cihaz 4096 kullanıyor; engel değil — `platform-bulgulari.md`
+
+- ☐ F1.24 Ekran okuma ön ölçümü (karar 0008, aday): içerik yetkisiyle gecikme; ekran metnini toplama hızı, pil ve ısı; parola alanı ve hassas uygulama ayrımı. F1.15'e (cihaz içi model) bağlı.
 
 ### F1-D Kararlar
 - ☑ F1.21 Karar kaydı: sınıf → alarm yolu (ısrarlı takip dahil) — karar 0006
