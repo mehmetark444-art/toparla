@@ -525,6 +525,29 @@ biçimleri tarih ayrıştırıcının birincil girdisi olmalı. Karar: `docs/dec
 
 **Açık:** sokak gürültüsü · kulaklık mikrofonu · 2–3 dakikalık kesintisiz konuşma · Tile → mikrofon ≤ 1 sn (F1.9).
 
+### 8 Ekim 2026 — Spike 4: ayar derin bağlantıları (A grubu, yarım kaldı)
+
+Uygulama içinden `startActivity` ile, kilit açıkken, tek deneme (`AGroup.openLink`):
+
+| Ad | Hedef | Sonuç |
+|---|---|---|
+| Otomatik başlatma | `com.miui.securitycenter/com.miui.permcenter.autostart.AutoStartManagementActivity` | açıldı |
+| Pil kısıtı | `com.miui.powerkeeper/…HiddenAppsConfigActivity` | **yok** (`ActivityNotFoundException`) |
+| Pil (uygulama) | `ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` → `…powercenter.legacypowerrank.PowerDetailActivity` | açıldı (HyperOS'in kendi pil sayfası) |
+| Diğer izinler | `miui.intent.action.APP_PERM_EDITOR` → `…PermissionsEditorActivity` (`extra_pkgname`) | açıldı |
+| Uygulama bilgisi | `ACTION_APPLICATION_DETAILS_SETTINGS` → `…appmanager.ApplicationsDetailsActivity` | açıldı |
+| Tam ekran bildirim | `ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT` | açıldı |
+| Bildirim erişimi | `ACTION_NOTIFICATION_LISTENER_SETTINGS` | açıldı |
+| Erişilebilirlik | `ACTION_ACCESSIBILITY_SETTINGS` → `MiuiAccessibilitySettingsActivity` | açıldı |
+| Rahatsız Etme erişimi | `ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS` | açıldı |
+| Kullanım erişimi | `ACTION_USAGE_ACCESS_SETTINGS` | açıldı |
+| Uygulama bildirim ayarları | `ACTION_APP_NOTIFICATION_SETTINGS` | kilitli koşuda açıldı; kilit açık koşuda kayıt düşmedi (yeniden denenecek) |
+
+A grubunun kalanı (**yapılmadı**, kod `:spike/AGroup.kt` içinde hazır ve telefonda kurulu): Yakala kutucuğu
+(ekleme penceresi açıldı, Kullanıcı yanıtı ve ölçüm bekliyor) · bildirim erişimi · alarm sesi ve Rahatsız
+Etme · canlı bildirim (`ProgressStyle`; API 36 SDK'sında "promoted" isteği için genel yöntem yok, anahtar
+adı doğrulanmadı) · arama algılama · `kur.sh`.
+
 **Açık (model):** düşünme kipiyle karta dayalı yanıt · kablosuz pil tüketimi · çok turlu sohbet, araç API'si, görsel/ses · bellek
 (tek okuma: süreç 237 MB PSS, model belleği ayrı sayılıyor olabilir; doğrulanmadı) · şemaya zorlamanın
 yolu (kütüphanede `ResponseFormat` var, denenmedi) · gömme modeli ve RAG · 50 örnekli Türkçe set.

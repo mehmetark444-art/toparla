@@ -24,5 +24,13 @@
     <string name="stt_progress">%1$d / %2$d\n\n%3$s</string>
     <string name="stt_error">Anlayamadım (kod %1$d). Dinle\'ye yeniden bas.</string>
     <string name="stt_unavailable">Bu telefonda cihaz içi tanıma hazır değil.</string>
+    <string name="tile_label">Toparla Yakala</string>
+    <string name="nls_label">Toparla Spike bildirim okuma</string>
+    <string name="channel_critical">Kritik deneme</string>
+    <string name="channel_ongoing">Sürekli deneme</string>
+    <string name="critical_title">Kritik bildirim sesi denemesi</string>
+    <string name="ongoing_title">Odak oturumu denemesi</string>
+    <string name="ongoing_text">25 dakikanın 10. dakikası</string>
+    <string name="capture_saved">Tamam ✓</string>
     <string name="log_empty">Henüz kayıt yok.</string>
 </resources>

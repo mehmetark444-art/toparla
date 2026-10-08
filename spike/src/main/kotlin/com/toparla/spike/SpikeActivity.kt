@@ -59,6 +59,17 @@ class SpikeActivity : Activity() {
     }
 
     private fun handle(intent: Intent) {
+        intent.getStringExtra("link")?.let {
+            AGroup.openLink(this, it)
+            intent.removeExtra("link")
+        }
+        when (intent.getStringExtra("a")) {
+            "alarm" -> AGroup.alarmTest(this)
+            "progress" -> AGroup.progressTest(this)
+            "audio" -> AGroup.audioMode(this)
+            "tile" -> AGroup.requestTile(this)
+        }
+        intent.removeExtra("a")
         if (intent.hasExtra("rag")) {
             RagSpike.run(this)
             intent.removeExtra("rag")
