@@ -50,3 +50,16 @@ başarılı (3 test, boş debug APK). Sıradaki: ilk spike — alarm teslim test
 **Ek (23:40):** Gemini bakiyesi yanlis hesaba yuklenmis; Kullanici 8 Ekim'de dogru hesaba yukleyecek, spike 11 yarina kaldi. `:domain`'e cekirdek arayuzler (`Clock`, `RandomSource`, `IdGenerator`, `AppError`), teslim durum makinesi (`OccurrenceStateMachine`) ve erteleme kurallari (`SnoozePolicy`) eklendi; toplam 54 birim testi geciyor.
 
 **Yarin (8 Ekim) sirasi:** gece kaydini oku -> israrli takibin alarm yolu karari -> Gemini spike (bakiye gelince) -> spike 3 (tam ekran) ve 5 (erisilebilirlik).
+
+### 8 Ekim 2026 — Oturum 2 (akşam–gece)
+**Hedef:** F1'in "A grubu" kısa telefon ölçümlerini bitirmek; ardından F1'de yapılabilecek her şeyi ölçmek.
+
+**Biten:** A grubu (ayar bağlantıları, kutucuk, bildirim erişimi, kritik ses, canlı bildirim, arama, `kur.sh`);
+C grubu (Room 3 + KSP, ALO 171, Gemini kalanları, konu maliyeti, çıraklık ön ölçümü, ekran okuma ön ölçümü);
+kapanış ölçümleri (servis yolları, süreç ölümü ve otomatik başlatma, temizlik, saat değişimi). Karar 0014
+(açık ölçümlerin devri). F2-A: F2.6–F2.9 (103 birim testi).
+
+**Açık:** kablosuz gece testinin okunması · gürültüde ses tanıma · F1 kapanışı (K1–K3) · gece kontrolü ve push
+(Kullanıcı işaretini bekliyor).
+
+**Sıradaki:** F1 kapanışı → F2-B altyapı (Hilt, Room 3 tabloları, DataStore, `SecretStore`).

@@ -43,7 +43,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F9 | S8 | Konu Motoru | ☐ |
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
-**Şu an:** F1 (alarm yolu ve Gemini kademeleri kararlaştırıldı) ve F2-A (saf mantık) paralel.
+**Şu an:** F1 kapanışa yakın (kalan: kablosuz gece testinin okunması, gürültüde ses tanıma, K1–K3). F2-A (hatırlatma saf mantığı) **bitti** (103 birim testi); sırada F2-B (altyapı).
 **Sıradaki tek adım:** F1 "B grubu": F1.12 konum (geofence) → F1.13 Mi Band / Health Connect → F1.14 gürültüde ses tanıma. Kullanıcı durumu (8 Ekim): evden çıkamıyor (F1.12 bekler), Mi Band siparişte (F1.13 bekler), gürültü ölçümü 9 Ekim'de iş yerinde. C grubu 8 Ekim gecesi ölçüldü (F1.16–F1.19, F1.24, F1.25). **9 Ekim sabahı ilk iş:** kablosuz gece testinin kaydını okumak (F1.1 derin Doze). F1'de bundan sonra kalanlar: Kullanıcı'ya bağlı üç ölçüm (F1.12, F1.13, F1.14 gürültü), günler isteyen kısıtlı kova ölçümü ve her maddenin kendi satırında yazılı küçük açık koşullar; ardından F1 kapanışı (K1 + K2 + K3). "A grubu" (F1.4–F1.6, F1.8–F1.11) 8 Ekim gecesi ölçüldü; her maddenin açık kalan koşulu kendi satırında.
 
 **Açık engeller**
@@ -150,10 +150,10 @@ F1'de kapanıştan önce kalan iki ölçüm: kablosuz gece testinin okunması (F
 - ☑ F2.3 `PersistentFollowUp`: ısrarlı takip zamanlaması (karar 0003) — `8a970bf`, 14 test
 - ☑ F2.4 `OccurrenceStateMachine` + `SnoozePolicy` — `0d39466`, 17 test
 - ☑ F2.5 Çekirdek arayüzler: `Clock`, `RandomSource`, `IdGenerator`, `AppError` — `0d39466`
-- ☐ F2.6 Planlayıcıya merdiven ve ısrarlı takip teslimlerinin eklenmesi (alarm yolu F1.21'e bağlı)
-- ☐ F2.7 Aynı dakikadaki olayların birleşik kartı; geç teslim kuralı (geçmiş `fireAt`)
-- ☐ F2.8 Teslim denetçisi ve `CriticalWatchdog` kuralları (saf mantık)
-- ☐ F2.9 Özellik tabanlı testler: Bölüm I invaryantlarının tamamı; 18 zorunlu sahte saatli senaryo
+- ☑ F2.6 Planlayıcıya merdiven ve ısrarlı takip teslimlerinin eklenmesi (alarm yolu F1.21'e bağlı) — `33e1472`, `PlannerFollowUpTest` (18 test): yanıt bekleyen teslimin sıradaki basamağı, ısrarlı takip sorusu ve ertelemeler; vakti geçen `dueNow` ile döner
+- ☑ F2.7 Aynı dakikadaki olayların birleşik kartı; geç teslim kuralı (geçmiş `fireAt`) — `33e1472`, `DeliveryGrouping`, `DeliveryRulesTest`
+- ☑ F2.8 Teslim denetçisi ve `CriticalWatchdog` kuralları (saf mantık) — `33e1472`, `DeliveryAuditor`, `CriticalWatchdog`, `MaintenancePolicy`
+- ☑ F2.9 Özellik tabanlı testler: Bölüm I invaryantlarının tamamı; 18 zorunlu sahte saatli senaryo — `PlannerInvariantsTest` (8 invaryant × 300 tohumlu deneme + bir yıllık simülasyon), `MandatoryScenariosTest`: 18 senaryodan saf mantıkla ifade edilebilen 12'si burada; Android'e bağlı 6'sı F2.46'da. Kasıtlı bozma: 16/16 yakalandı
 
 ### F2-B Altyapı
 - ☐ F2.10 Hilt, Coroutines, `DispatcherProvider`; üretim `Clock` / `IdGenerator` / `RandomSource`
@@ -188,6 +188,7 @@ F1'de kapanıştan önce kalan iki ölçüm: kablosuz gece testinin okunması (F
 - ☐ F2.32 Direct Boot kopyası (cihaz korumalı depolama)
 - ☐ F2.33 Güvenlik ağları: `DailyMaintenanceWorker`, `CriticalWatchdogWorker`, teslim denetçisi, `HeartbeatWorker`, 12 sa bakım alarmı
 - ☐ F2.34 DND aşımı (izinliyse), alarm ses akışı
+- ☐ F2.46 Zorunlu senaryoların Android tarafı (F2.9'un devamı): DND açık · bildirim izni kapalı · tam ekran izni kapalı · ağ yok · depolama dolu · çift doz denemesi (sonuncusu F2.39 ile)
 
 ### F2-E Hatırlatma Sağlığı (D23)
 - ☐ F2.35 Kontrol satırları (izin, kanal, tam ekran, pil, DND, kova, son teslim, bekleyen alarm, kaçan)

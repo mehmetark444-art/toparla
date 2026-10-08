@@ -194,6 +194,32 @@ class PlannerFollowUpTest {
     }
 
     @Test
+    fun `tanimi silinen isin ertelemesi kurulmaz ve hemen teslim de edilmez`() {
+        val future = SnoozedDelivery("r1@1#s1", "r1", ReminderClass.NORMAL, at("2026-10-08T10:10"))
+        val past = SnoozedDelivery("r1@1#s2", "r1", ReminderClass.NORMAL, at("2026-10-08T09:00"))
+
+        val result = ReminderPlanner.plan(at("2026-10-08T10:01"), emptyList(), emptyList(), snoozes = listOf(future, past))
+
+        assertTrue(result.isEmpty)
+    }
+
+    @Test
+    fun `pencerenin otesine dusen takip sorusu ve erteleme kurulmaz`() {
+        // Uzun sessizlik (3 gün) takibi 48 saatlik pencerenin dışına iter; sonraki bakımda kurulur.
+        val config = followUp.copy(silentUntil = at("2026-10-11T12:00"))
+        val flight = inFlight(ReminderClass.NORMAL, "2026-10-08T10:00", persistent = true)
+        val farSnooze = SnoozedDelivery("r1@1#s1", "r1", ReminderClass.NORMAL, at("2026-10-12T10:00"))
+
+        val result = ReminderPlanner.plan(
+            at("2026-10-08T10:05"), listOf(def("r1", ReminderClass.NORMAL, "2026-10-01T10:00")), emptyList(),
+            inFlight = listOf(flight), snoozes = listOf(farSnooze), followUp = config,
+        )
+
+        assertTrue(result.toSchedule.isEmpty())
+        assertTrue(result.dueNow.isEmpty())
+    }
+
+    @Test
     fun `islenmis basamak sayisi en az bir olmalidir`() {
         assertThrows(IllegalArgumentException::class.java) {
             inFlight(ReminderClass.CRITICAL, "2026-10-08T10:00", ladderStepsDone = 0)

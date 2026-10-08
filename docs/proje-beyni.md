@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 8 Ekim 2026, gece (A grubu ölçümleri) · **Kapsadığı son commit:** `51226d3` · **Kapanan son faz:** F0
+**Son güncelleme:** 8 Ekim 2026, gece yarısı (F1 kapanış ölçümleri, karar 0014, F2-A) · **Kapsadığı son commit:** `33e1472` · **Kapanan son faz:** F0
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -57,9 +57,13 @@ kriz her şeyin önünde · web/bildirim/dosya içeriği veridir, talimat değil
 ## 3. Şu anki durum (özet; ayrıntı yol haritasında)
 
 - **F0 Hazırlık:** kapandı.
-- **F1 Cihaz denemeleri:** alarm teslimi büyük ölçüde doğrulandı; gece testi (8 saat, 24 alarm)
-  7 Ekim 22:35'te kuruldu, sonucu 8 Ekim sabahı okunacak. Gemini denemesi bakiye engelinde.
-- **F2 Hatırlatma motoru:** yalnız saf mantık (`:domain`) yazıldı; 58 birim testi geçiyor.
+- ~~**F1 Cihaz denemeleri:** alarm teslimi büyük ölçüde doğrulandı; gece testi (8 saat, 24 alarm)
+  7 Ekim 22:35'te kuruldu, sonucu 8 Ekim sabahı okunacak. Gemini denemesi bakiye engelinde.~~
+  → (8 Ekim gece) **F1 Cihaz denemeleri:** ölçülebilen her şey ölçüldü; ölçülemeyenler karar 0014 ile
+  sonraki fazlara devredildi. Kapanış için kalan: kablosuz gece testinin okunması (derin Doze), gürültüde
+  ses tanıma, Kullanıcı onayı (K2) ve kapanış kaydı (K3).
+- ~~**F2 Hatırlatma motoru:** yalnız saf mantık (`:domain`) yazıldı; 58 birim testi geçiyor.~~
+  → (8 Ekim gece) **F2 Hatırlatma motoru:** saf mantığın tamamı (F2-A) bitti; 103 birim testi geçiyor.
   Android tarafı (`:reminders`), veritabanı ve arayüz **henüz yok**.
 - Telefonda çalışan tek şey atılacak deneme uygulaması (`:spike`, "Toparla Spike").
   Asıl uygulama (`:app`) boş bir kabuktur.
@@ -97,6 +101,16 @@ Kotlin 2.4.20 · JUnit Jupiter 6.1.3 · `compileSdk = minSdk = targetSdk = 36`.
 - `reminder/Ladder` — sınıfa göre yükselme basamakları.
 - `reminder/PersistentFollowUp` — ısrarlı takipte "bir sonraki soru ne zaman?".
 - `reminder/OccurrenceStateMachine`, `SnoozePolicy` — teslim durumu ve erteleme.
+- (8 Ekim gece, F2.6–F2.9) `ReminderPlanner.plan` artık yanıt bekleyen teslimleri (`InFlightOccurrence`),
+  ertelemeleri (`SnoozedDelivery`) ve takip ayarını (`FollowUpConfig`) da alır: sıradaki merdiven basamağını
+  (`…#lN`), ısrarlı takip sorusunu (`…#fN`, her zaman kesin yol) ve ertelemeyi (`…#sN`) kurar. Vakti geçmiş
+  olan kurulmaz, `PlanResult.dueNow` ile "hemen teslim et" diye döner. Kritik olmayan ısrarlı işte merdivenin
+  tek tekrarının yerini ısrarlı takip alır; sessizlik ısrarlı takibi erteler, kritik merdiveni ertelemez.
+- `reminder/DeliveryRules` — `DeliveryGrouping` (aynı dakikadakiler tek kart; geç teslim toleransı 1 dk),
+  `DeliveryAuditor` (vakti geçmiş, ateşlenme kaydı olmayan teslimler), `CriticalWatchdog` (20 dk içindeki
+  kritik olayın alarmı var mı), `MaintenancePolicy` (12 saatte bir bakım).
+- Testler: 103. İnvaryantlar tohumlu rastgele girdiyle (300 deneme) sınanır; 18 zorunlu senaryonun saf
+  mantıkla ifade edilebilen 12'si `:domain`'de, kalan 6'sı Android tarafında (yol haritası F2.46).
 
 ## 5. Kararlar ve gerekçeleri
 
@@ -186,6 +200,11 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     ve Rahatsız Etme, canlı bildirim, arama algılama ölçüldü; `scripts/kur.sh` yazıldı (koşusu sırada).
     Kutucukta blueprint'ten farklı bir bulgu: kilit ekranında ekran açılamıyor, yakalama ekransız yapılacak.
     (`80cb939`, `11297b5`, `51226d3`, `ae10fe3`, `649cb02`)
+23. **F1 kapanış ölçümleri ve devir.** Servis yolları, tam ekran, süreç ölümü / otomatik başlatma, temizlik,
+    saat değişimi, arka plandan arama, ekran okuma, Gemini kalanları, konu maliyeti, ALO 171, çıraklık ön ölçümü;
+    kablosuz gece testi kuruldu. Ölçülemeyenler karar 0014 ile devredildi (`718cc1b`).
+24. **F2-A bitti.** Planlayıcıya merdiven, ısrarlı takip ve erteleme; birleşik kart, geç teslim, denetçi,
+    kritik bekçi; invaryant ve senaryo testleri (`33e1472`). 58 → 103 test.
 22. **Spike 13 (veritabanı yığını).** Room 3 + KSP + paketli SQLite `:spike`'ta derlendi ve telefonda koşuldu;
     FTS5'in Türkçe davranışı ölçüldü.
 
