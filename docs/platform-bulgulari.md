@@ -502,6 +502,29 @@ düşünme kipi ve iki adımlı yanıt denenmedi; FTS5/BM25 yerine basit kök ö
 
 **Karar:** `docs/decisions/0011-rag-gomme-ve-kart-bicimi.md`.
 
-**Açık:** düşünme kipiyle karta dayalı yanıt · kablosuz pil tüketimi · çok turlu sohbet, araç API'si, görsel/ses · bellek
+### 8 Ekim 2026 — Spike 9: Türkçe konuşma tanıma (cihaz içi, sessiz ortam)
+
+**Düzenek:** `SttActivity` 30 cümleyi sırayla gösterdi; Kullanıcı her birini doğal hızda okudu.
+`SpeechRecognizer.createOnDeviceSpeechRecognizer`, `tr-TR`, `EXTRA_PREFER_OFFLINE`. Puanlama
+`scripts/stt-puanla.mjs`. Tek konuşmacı, tek tur, sessiz oda, telefon elde.
+
+- `isOnDeviceRecognitionAvailable` = true; `checkRecognitionSupport`: **kurulu dil `tr-TR`** (indirme gerekmedi).
+- 30 cümlenin 30'u ilk denemede sonuç verdi (hata kodu yok). Mikrofon hazır olma ortanca 242 ms;
+  sonuç, konuşma bitişiyle aynı anda geldi.
+- **Ham WER %29,1 (50/172)** — yanıltıcı: farkların çoğu sayıların rakamla yazılması
+  ("dokuzda" → "9.00'da", "dört yüz otuz yedi lira" → "437", "bin iki yüz elli lira" → "₺1.250",
+  "yüzde yirmi" → "%20", "on beş otuzda" → "15.30'da"). Bunlar anlam olarak doğru.
+- **Gerçek sözcük hataları (elle sayım): ~10/172 ≈ %6.** 30 cümlenin 21'i anlamca tam doğru. Hatalar:
+  "dişçi" → "diş" · "Selin" → "selen" · "lira" düştü · "toplantıyı" → "toplantıya" · "Bey'e" → "bey" ·
+  "İstanbul'dan" iki kez yazıldı · "şişesi koy" → "şişkoy" · "Takvim'e" → "takvimi" · "Çöpü" → "çöp".
+- Uygulama adları (Instagram, YouTube, WhatsApp, Google) ve "MHRS" yerine konan "hastane" doğru tanındı.
+- Çıktı küçük harfli ve noktalamasız; kesme işaretli ekler çoğunlukla korunuyor.
+
+**Sonuç:** cihaz içi tanıyıcı yakalama için yeterli; Whisper yedeğine şimdilik gerek yok. Sayı ve saat
+biçimleri tarih ayrıştırıcının birincil girdisi olmalı. Karar: `docs/decisions/0013-konusma-tanima-yolu.md`.
+
+**Açık:** sokak gürültüsü · kulaklık mikrofonu · 2–3 dakikalık kesintisiz konuşma · Tile → mikrofon ≤ 1 sn (F1.9).
+
+**Açık (model):** düşünme kipiyle karta dayalı yanıt · kablosuz pil tüketimi · çok turlu sohbet, araç API'si, görsel/ses · bellek
 (tek okuma: süreç 237 MB PSS, model belleği ayrı sayılıyor olabilir; doğrulanmadı) · şemaya zorlamanın
 yolu (kütüphanede `ResponseFormat` var, denenmedi) · gömme modeli ve RAG · 50 örnekli Türkçe set.

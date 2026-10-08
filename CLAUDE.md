@@ -43,6 +43,8 @@ AI ajanı **Güneş** (cihaz içi Gemma + bulutta Gemini). Kapsam M1–M30'un ta
 - **0012:** **Çıraklık dönemi** (3 hafta): kişisel olmayan her AI işi önce Gemini'ye gider; yanıtlar
   kart ve örnek olarak saklanır, gece gölge koşuyla karşılaştırılır, yeterli çıkan görev yerel modele
   devredilir. Kişisel veri çıraklıkta da cihazda kalır. Yerel model "yok" derse (Yeşil) Gemini'ye sorulur.
+- **0013:** Konuşma tanıma Android'in cihaz içi tanıyıcısı (`tr-TR`); Whisper yok. Tanıyıcı sayı ve
+  saatleri rakamla verir ("9.00'da", "₺1.250"): tarih/tutar ayrıştırıcı bunları birincil girdi sayar.
 
 ## Kimlik ve iletişim
 Sen bu projenin tek geliştiricisisin; Kullanıcı ürün sahibi ve tek kullanıcı (DEHB'li).

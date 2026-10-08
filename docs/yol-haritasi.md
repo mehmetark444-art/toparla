@@ -44,7 +44,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
 **Şu an:** F1 (alarm yolu ve Gemini kademeleri kararlaştırıldı) ve F2-A (saf mantık) paralel.
-**Sıradaki tek adım:** F1.14 Türkçe konuşma tanıma ölçümü (Kullanıcı'nın sesi gerekir); F1.15'in kalanı (düşünme kipi, kablosuz pil) araya alınabilir. Eski: F1.15: Gemma 4 E2B ↔ E4B ↔ Qwen3 4B için 50 örnekli Türkçe set; ardından gömme modeli ve RAG denemesi, 10 dk ısı/pil (kararlar 0009, 0008).
+**Sıradaki tek adım:** F1.25 çıraklık ön ölçümü (Gemini örnekleriyle yerel model); ardından F1.8 bildirim erişimi ve F1.9 Tile. Eski: F1.15: Gemma 4 E2B ↔ E4B ↔ Qwen3 4B için 50 örnekli Türkçe set; ardından gömme modeli ve RAG denemesi, 10 dk ısı/pil (kararlar 0009, 0008).
 
 **Açık engeller**
 - Yok. (Gemini bakiyesi 8 Ekim'de geldi; çağrıyla doğrulandı.)
@@ -106,7 +106,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 - ☐ F1.13 Health Connect: Mi Band → Mi Fitness → uyku/adım akışı
 
 ### F1-C Ses ve yapay zekâ
-- ☐ F1.14 Türkçe cihaz içi konuşma tanıma: 30 cümlelik set, WER; yetersizse yerel Whisper
+- ◐ F1.14 (sessiz ortam ☑: gerçek hata ~%6, karar 0013 — `platform-bulgulari.md` § Spike 9; gürültü, kulaklık, uzun konuşma ☐) Türkçe cihaz içi konuşma tanıma: 30 cümlelik set, WER; yetersizse yerel Whisper
 - ◐ F1.15 (çalışma zamanı ve model edinme yolu ☑; beş adayın eleme turu ☑: Gemma 4 E2B, E4B ve Qwen3 4B kaldı; Phi-4 mini ve Ministral elendi — `platform-bulgulari.md` § Spike 10; 50 soruluk Türkçe set ☑ (E2B 46,5 · E4B 45,5 · Qwen3 32; karar adayı 0010); gömme modeli ve gerçek RAG ☑ (karar 0011); düşünme kipiyle karta dayalı yanıt, kablosuz pil, çok turlu sohbet, görsel/ses ☐) Cihaz içi model: LiteRT-LM + Gemma güncel adları, GPU/NPU, token/sn, ilk token, 10 dk sıcaklık, 50 örnek Türkçe kalite; model dosyasını edinme yolu
 - ◐ F1.16 Gemini API — `platform-bulgulari.md` § Spike 11: Gemini API ölçümleri
   - ☑ Uç nokta: Developer API; model listesi alındı
@@ -126,7 +126,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 ### F1-D Kararlar
 - ☑ F1.21 Karar kaydı: sınıf → alarm yolu (ısrarlı takip dahil) — karar 0006
 - ☑ F1.22 Karar kaydı: Gemini model kademeleri ve aylık bütçe dağılımı — karar 0007
-- ◐ F1.23 Karar kaydı: STT yolu ☐; cihaz içi model seçimi ☑ (karar 0010: Gemma 4 E4B, tek model)
+- ☑ F1.23 Karar kaydı: STT yolu (karar 0013) ve cihaz içi model seçimi (karar 0010: Gemma 4 E4B, tek model)
 
 **Çift kontrol**
 - ☐ K1: `platform-bulgulari.md`'deki 19 spike satırının hiçbiri "Bekliyor" değil; her birinde ölçüm sayısı ve yöntem yazılı; `[DOĞRULA]` araması açık madde bırakmıyor.
