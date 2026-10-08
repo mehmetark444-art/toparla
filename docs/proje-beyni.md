@@ -184,6 +184,10 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   telefondaki onay penceresi ~10 sn içinde onaylanmalı; yoksa `INSTALL_FAILED_USER_RESTRICTED`.
 - **USB bağlıyken Doze zorlanamıyor** (`force-idle` → "stopped at INACTIVE"; cihaz şarjda sayılıyor).
   `am set-standby-bucket … rare` kalıcı olmuyor.
+- **Erişilebilirlik servisi kaydırmayla ölüyor (8 Ekim):** uygulama son uygulamalardan kaldırılınca
+  HyperOS süreci öldürüyor (`SwipeUpClean`); servis "Crashed" durumuna düşüyor, ayarda açık görünüyor
+  ama olay almıyor ve uygulama yeniden başlasa da geri bağlanmıyor. Müdahale ekranının (M25-I)
+  en büyük riski bu; önlemler sınanmadan o özellik tasarlanmaz.
 - **Alarmdan servis ve tam ekran (8 Ekim, tek denemeler):** `setAlarmClock` alıcısından `specialUse`
   foreground service başlatılabiliyor (29 ms). Kilitliyken tam ekran bildirim, HyperOS'e özgü hiçbir
   izin elle verilmeden kilit ekranının üstünde açılıyor ve ekranı uyandırıyor (270 ms). Blueprint'in

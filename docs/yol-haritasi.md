@@ -97,7 +97,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 - ☐ F1.6 `kur.sh`: her komutun HyperOS'teki davranışı; `USER_RESTRICTED` ve yol çevirme hatası ele alınmış
 
 ### F1-B Algılama ve sistem yüzeyleri
-- ☐ F1.7 Erişilebilirlik: açılış algılama gecikmesi (hedef ≤ 400 ms), servis ömrü, servisten Activity başlatma; olmazsa overlay yedeği
+- ◐ F1.7 (ilk tur: kaydırıp kapatınca servis ölüyor ve geri gelmiyor — `platform-bulgulari.md` § Spike 5; gecikme ölçümü ve önlemler ☐) Erişilebilirlik: açılış algılama gecikmesi (hedef ≤ 400 ms), servis ömrü, servisten Activity başlatma; olmazsa overlay yedeği
 - ☐ F1.8 Bildirim erişimi: kısıtlı ayarlar, `allow_listener`, kopma sonrası `requestRebind`
 - ☐ F1.9 Tile: kilitliyken yakalama, Tile → mikrofon ≤ 1 sn
 - ☐ F1.10 Canlı güncelleme: `ProgressStyle`, "promoted ongoing", HyperOS odak bildirimi

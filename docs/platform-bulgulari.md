@@ -209,3 +209,27 @@ başlatma · uzun süre arka planda kaldıktan sonra tekrar · release yapısın
 Kullanıcı'nın gördüğünün teyidi.
 
 Kullanici teyidi (8 Ekim): tam ekran karti kilit ekraninda kendi gozuyle gordu ve Tamam dugmesine basti (kayit: FSI_TAPPED).
+
+### 8 Ekim 2026 — Spike 5: erişilebilirlik servisi (ilk tur: servis öldü, geri gelmedi)
+
+**Kurulum:** `:spike` içinde `AppOpenAccessibilityService` (yalnız `typeWindowStateChanged`,
+`canRetrieveWindowContent=false`, izlenen paketler YouTube ve Hesap Makinesi). Kullanıcı servisi
+Ayarlar → Erişilebilirlik'ten elle açtı; "kısıtlı ayar" engeli çıkmadı (yan yüklenen debug APK).
+
+**Olanlar (sistem günlüğünden):**
+- 17:19:12 servis bağlandı (`A11Y_CONNECTED`), 17:19:25'te çözülüp 17:19:28'de yeniden bağlandı.
+- 17:19:38 uygulamanın görevi son uygulamalardan kaldırıldı; HyperOS süreci öldürdü:
+  `ProcessSceneCleaner: SwipeUpClean: kill procName=com.toparla.spike` → `Killing … SwipeUpClean`.
+- Bundan sonra `dumpsys accessibility`: servis **Enabled** listesinde ama **Bound services: {}** ve
+  **Crashed services** içinde. Kullanıcı YouTube ve Hesap Makinesi'ni açtı: hiç olay gelmedi, kart çıkmadı.
+- Uygulama yeniden başlatıldı (`am start`): servis **yine bağlanmadı**; Hesap Makinesi açıldı, olay yok.
+
+**Sonuç:** HyperOS 3'te uygulama son uygulamalardan kaydırılınca erişilebilirlik servisi ölüyor ve
+kendiliğinden geri gelmiyor; ayar ekranında "açık" görünmeye devam ediyor. (Aynı kaydırma alarmları
+silmiyordu.) Blueprint G3 bunu "öldürülebilir" diye öngörmüştü; ölçüm, bunun olağan kullanımda her
+kaydırmada olabileceğini gösteriyor. Algılama gecikmesi henüz ölçülemedi.
+
+**Sınanacak önlemler:** son uygulamalarda kilit · otomatik başlatma izni · pil "kısıtlama yok" ·
+ana Activity'yi son uygulamalardan gizleme · servisi ayrı süreçte çalıştırma · yeniden başlatma
+sonrası servis geri geliyor mu · sağlık denetimi (Enabled ama bağlı değil → uyarı). Yedek: kullanım
+istatistikleriyle gecikmeli algılama.
