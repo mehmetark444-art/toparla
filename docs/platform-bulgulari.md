@@ -622,7 +622,38 @@ Sonuç: aramadan önce 8 okuma `0` (normal) → arama boyunca 13 okuma `2` (`MOD
 Giden hücresel arama izinsiz algılanabiliyor. **Ölçülmeyen:** gelen aramada çalma anı (`1`), internet
 üzerinden arama (WhatsApp vb., beklenen `3`), arka plandan okuma (ölçümde uygulama öndeydi).
 
-A grubundan kalan: `kur.sh` koşusu.
+### 8 Ekim 2026 — Spike 19: `kur.sh` komutlarının HyperOS'teki davranışı
+
+Yöntem: `scripts/kur.sh com.toparla.spike -` (kurulum adımı atlanarak), Kullanıcı kendi PowerShell
+penceresinden Git Bash ile koşturdu; her adım komuttan sonra geri okunarak doğrulandı. Tek koşu.
+
+| Adım | Komut | Sonuç |
+|---|---|---|
+| Bildirim izni, Mikrofon | `pm grant` | Tuttu (`granted=true`); ikisi de önceden verilmişti |
+| Diğer 8 çalışma zamanı izni | `pm grant` | Atlandı: `:spike` manifestte istemiyor (ölçülmedi) |
+| Tam ekran bildirim | `cmd appops set … USE_FULL_SCREEN_INTENT allow` | `allow` (önceden de `allow` idi) |
+| Kullanım istatistikleri | `cmd appops set … GET_USAGE_STATS allow` | **Tutmadı:** komut hata vermedi, değer `default` kaldı |
+| Üstte gösterme | `cmd appops set … SYSTEM_ALERT_WINDOW allow` | **Tutmadı:** değer `default` kaldı |
+| Pil muafiyeti | `dumpsys deviceidle whitelist +PKG` | Listede (önceden de listedeydi) |
+| Bekleme kovası | `am set-standby-bucket PKG active` | Kova `5` (muaf) kaldı; `10` olmadı. Pil muafiyeti varken beklenen durum |
+| Bildirim erişimi | `cmd notification allow_listener` | Listede (Kullanıcı önceden elle açmıştı: komutun kendi etkisi ölçülmedi) |
+| Rahatsız Etme erişimi | `cmd notification allow_dnd PKG` | Komut hata vermedi; adb ile geri okunamıyor (`enabled_notification_policy_access_packages` = `null`). Uygulama `isNotificationPolicyAccessGranted=true` görüyor |
+| Erişilebilirlik | `settings put secure enabled_accessibility_services` | Zaten açıktı; yazma yolu ölçülmedi |
+
+**Yorum (doğrulanmadı):** tutmayan iki `appops` adımının ortak yanı, `:spike` manifestinin karşılık gelen izni
+(`PACKAGE_USAGE_STATS`, `SYSTEM_ALERT_WINDOW`) istememesi. İzin istendiğinde tutup tutmadığı asıl uygulamada
+ölçülecek. Betik artık manifestte istenmeyen özel erişimi atlıyor, kovada `5` ya da `10` kabul ediyor,
+Rahatsız Etme erişimini geri okumaya çalışmıyor.
+
+**Ek bulgu:** Rahatsız Etme açıkken kritik deneme bildirimlerinin geçme nedeni sistem kaydında
+`not_intercepted … priorityApp`. Bildirim erişimi olan uygulama Rahatsız Etme erişimini de alıyor.
+
+**Sınırlar:** çoğu adım zaten verilmiş durumdaydı, yani "komut sıfırdan veriyor mu" sorusu yalnız iki `appops`
+adımında gerçekten sınandı (ikisi de olumsuz). APK kurulum adımı, `USER_RESTRICTED` dalı ve temiz kurulumda
+tam koşu ölçülmedi: asıl uygulamanın ilk kurulumunda (F2.17) yapılacak.
+
+**Ortam notu:** PowerShell'de `bash` komutu Windows'un kendi bash'ini (WSL) açıyor; telefon aracı bulunamıyor.
+Kullanıcı'ya verilecek komut Git Bash'i tam yoluyla çağırmalı: `& "C:\Program Files\Git\bin\bash.exe" scripts/…`.
 
 **Açık (model):** düşünme kipiyle karta dayalı yanıt · kablosuz pil tüketimi · çok turlu sohbet, araç API'si, görsel/ses · bellek
 (tek okuma: süreç 237 MB PSS, model belleği ayrı sayılıyor olabilir; doğrulanmadı) · şemaya zorlamanın

@@ -3,5 +3,12 @@
 # Windows yoluna çeviriyor (proje-beyni H2). Bu betik ikisini de çözer.
 # Kullanım: ./scripts/adb devices   |   ./scripts/adb shell dumpsys alarm
 export MSYS_NO_PATHCONV=1
-SDK="${ANDROID_HOME:-$LOCALAPPDATA/Android/Sdk}"
-exec "$SDK/platform-tools/adb.exe" "$@"
+# SDK yeri ortama göre değişir: Claude Code oturumu ANDROID_HOME verir; PowerShell'den açılan bash'te
+# ANDROID_HOME ve LOCALAPPDATA boş gelebilir (proje-beyni H25). Sırayla denenir.
+for SDK in "${ANDROID_HOME:-}" "${LOCALAPPDATA:-}/Android/Sdk" "${USERPROFILE:-}/AppData/Local/Android/Sdk" \
+  "$HOME/AppData/Local/Android/Sdk" "/c/Users/${USERNAME:-$USER}/AppData/Local/Android/Sdk" \
+  /mnt/c/Users/*/AppData/Local/Android/Sdk /c/Users/*/AppData/Local/Android/Sdk; do
+  [ -f "$SDK/platform-tools/adb.exe" ] && exec "$SDK/platform-tools/adb.exe" "$@"
+done
+echo "adb bulunamadı: Android SDK yeri belirlenemedi (ANDROID_HOME tanımla)." >&2
+exit 127

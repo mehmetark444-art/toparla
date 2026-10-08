@@ -61,9 +61,14 @@ grant() {
   if adb shell dumpsys package "$PKG" | grep -q "$perm: granted=true"; then ok "$label"; else no "$label" "${r:-verilmedi}"; fi
 }
 
-# Özel erişim (appops): komuttan sonra değer geri okunur.
+# Özel erişim (appops): komuttan sonra değer geri okunur. Manifestte karşılığı istenmeyen işlemde
+# komut bu telefonda sessizce tutmuyor (ölçüldü); o durumda atlanır.
 appop() {
-  local label="$1" op="$2" r
+  local label="$1" op="$2" perm="android.permission.$3" r
+  if ! printf "%s" "$REQUESTED" | grep -q "$perm"; then
+    skip "$label" "uygulama istemiyor"
+    return
+  fi
   r=$(adb shell cmd appops set "$PKG" "$op" allow)
   if adb shell cmd appops get "$PKG" "$op" | grep -q "allow"; then ok "$label"; else no "$label" "${r:-allow görünmüyor}"; fi
 }
@@ -85,13 +90,16 @@ grant "Konum (arka plan)" ACCESS_BACKGROUND_LOCATION
 grant "Görseller" READ_MEDIA_IMAGES
 grant "Bluetooth" BLUETOOTH_CONNECT
 grant "Aktivite" ACTIVITY_RECOGNITION
-appop "Kullanım istatistikleri" GET_USAGE_STATS
-appop "Tam ekran bildirim" USE_FULL_SCREEN_INTENT
-appop "Üstte gösterme" SYSTEM_ALERT_WINDOW
+appop "Kullanım istatistikleri" GET_USAGE_STATS PACKAGE_USAGE_STATS
+appop "Tam ekran bildirim" USE_FULL_SCREEN_INTENT USE_FULL_SCREEN_INTENT
+appop "Üstte gösterme" SYSTEM_ALERT_WINDOW SYSTEM_ALERT_WINDOW
 check "Pil muafiyeti" "dumpsys deviceidle whitelist +$PKG" "dumpsys deviceidle whitelist" "$PKG"
-check "Bekleme kovası active" "am set-standby-bucket $PKG active" "am get-standby-bucket $PKG" "^10$"
+check "Bekleme kovası active" "am set-standby-bucket $PKG active" "am get-standby-bucket $PKG" "^\(5\|10\)$" # 5 = muaf (pil muafiyeti varken), 10 = active
 check "Bildirim erişimi" "cmd notification allow_listener $NLS" "settings get secure enabled_notification_listeners" "$NLS"
-check "Rahatsız Etme erişimi" "cmd notification allow_dnd $PKG" "settings get secure enabled_notification_policy_access_packages" "$PKG"
+# Rahatsız Etme erişimi adb ile geri okunamıyor (ayar anahtarı boş dönüyor); uygulama kendi içinden
+# isNotificationPolicyAccessGranted ile doğrular. Bildirim erişimi olan uygulama bu erişimi zaten alır.
+R=$(adb shell cmd notification allow_dnd "$PKG")
+if [ -z "$R" ]; then ok "Rahatsız Etme erişimi" "komut kabul edildi; uygulama içinden doğrulanır"; else no "Rahatsız Etme erişimi" "$R"; fi
 
 # Erişilebilirlik: mevcut listeye eklenir, üzerine yazılmaz.
 CUR=$(adb shell settings get secure enabled_accessibility_services)
