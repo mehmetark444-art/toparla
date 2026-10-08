@@ -9,6 +9,9 @@ import com.google.ai.edge.litertlm.Contents
 import com.google.ai.edge.litertlm.ConversationConfig
 import com.google.ai.edge.litertlm.Engine
 import com.google.ai.edge.litertlm.EngineConfig
+import com.google.ai.edge.litertlm.InputData
+import com.google.ai.edge.litertlm.ResponseCallback
+import com.google.ai.edge.litertlm.SessionConfig
 import com.google.ai.edge.litertlm.Message
 import com.google.ai.edge.litertlm.MessageCallback
 import java.io.File
@@ -100,6 +103,10 @@ object LlmSpike {
                 val inlineSystem = backendName.endsWith("-inline")
                 val config = if (inlineSystem) ConversationConfig() else ConversationConfig(Contents.of(SYSTEM))
                 val fullPrompt = if (inlineSystem) "$SYSTEM\n\n$prompt" else prompt
+                if (backendName.endsWith("-raw")) {
+                    runRaw(context, engine, tag, name, prompt, out, power)
+                    continue
+                }
                 engine.createConversation(config).use { conversation ->
                     val text = StringBuilder()
                     val done = CountDownLatch(1)
@@ -135,5 +142,53 @@ object LlmSpike {
             }
         }
         AlarmSpike.log(context, "LLM_DONE", tag, 0)
+    }
+
+    /**
+     * "raw" kipi: kütüphanenin sohbet şablonu atlanır; istem ChatML biçiminde elle kurulup Session
+     * arayüzüne verilir. Paketlenmiş şablonu LiteRT-LM'de çalışmayan Qwen3 için.
+     */
+    private fun runRaw(
+        context: Context,
+        engine: Engine,
+        tag: String,
+        name: String,
+        prompt: String,
+        out: File,
+        power: PowerManager,
+    ) {
+        val raw = "<|im_start|>system\n$SYSTEM<|im_end|>\n<|im_start|>user\n$prompt<|im_end|>\n<|im_start|>assistant\n"
+        engine.createSession(SessionConfig()).use { session ->
+            val text = StringBuilder()
+            val done = CountDownLatch(1)
+            var firstMs = -1L
+            val start = System.currentTimeMillis()
+            session.generateContentStream(
+                listOf(InputData.Text(raw)),
+                object : ResponseCallback {
+                    override fun onNext(response: String) {
+                        if (firstMs < 0) firstMs = System.currentTimeMillis() - start
+                        text.append(response)
+                    }
+
+                    override fun onDone() = done.countDown()
+
+                    override fun onError(throwable: Throwable) {
+                        text.append("[HATA ${throwable.javaClass.simpleName}: ${throwable.message}]")
+                        done.countDown()
+                    }
+                },
+            )
+            val finished = done.await(TIMEOUT_SEC, TimeUnit.SECONDS)
+            if (!finished) session.cancelProcess()
+            val totalMs = System.currentTimeMillis() - start
+            val genMs = (totalMs - firstMs).coerceAtLeast(1)
+            AlarmSpike.log(
+                context, "LLM_GEN", "$tag/$name", 0,
+                "firstMs=$firstMs totalMs=$totalMs finished=$finished chars=${text.length} " +
+                    "charsPerSec=${text.length * 1000L / genMs} thermal=${power.currentThermalStatus}",
+            )
+            out.appendText("--- $name (${totalMs} ms)\n$text\n")
+        }
     }
 }

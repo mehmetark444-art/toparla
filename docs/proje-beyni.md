@@ -200,7 +200,10 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   ama istenen JSON şemasına kendiliğinden uymuyor: doğrulayıcı ve onarım şart. Model seçimi açık
   (karar 0009: Gemma şart değil). **Eleme turu (11 istem, tek koşu):** Gemma 4 E4B en isabetli,
   E2B yaklaşık iki kat hızlı; Phi-4 mini bellekten öldürüldü, Ministral'in Türkçesi bozuk ve tıbbi
-  sınırı aştı, Qwen3 bu paketle çalışmıyor. GPU önbelleği model başına 0,8–3,8 GB ek yer tutuyor.
+  sınırı aştı, ~~Qwen3 bu paketle çalışmıyor~~ → Qwen3 sohbet şablonuyla çalışmıyor ama elle kurulan
+  ChatML istemiyle (`Session` arayüzü) çalışıyor ve temiz JSON üretiyor: aday. Phi-4 mini CPU'da
+  tamamlıyor ama Türkçesi bozuk ve çok yavaş: elendi. Ayrıntılı sete girenler: Gemma 4 E4B, E2B, Qwen3 4B.
+  GPU önbelleği model başına 0,8–3,8 GB ek yer tutuyor.
 - **Erişilebilirlik servisi kaydırmayla ölüyor (8 Ekim):** uygulama son uygulamalardan kaldırılınca
   HyperOS süreci öldürüyor (`SwipeUpClean`); servis "Crashed" durumuna düşüyor, ayarda açık görünüyor
   ama olay almıyor ve uygulama yeniden başlasa da geri bağlanmıyor. Müdahale ekranının (M25-I)
@@ -253,6 +256,7 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 | H20 | Gizli yapılan depoya push "Repository not found" verdi | Bilgisayarda kayıtlı GitHub girişi başka hesaptı (Emire221); gizli depoyu göremiyordu. Depo açıkken `ls-remote` çalıştığı için fark edilmemişti | Push öncesi kayıtlı hesabı kontrol et (`git credential-manager github list`). Çözüm: uzak adrese kullanıcı adı eklendi; Kullanıcı doğru hesapla giriş yaptı. |
 | H21 | Cihaz betiğinin ilk komutları "no devices" verdi; kayıt başlangıç satırı 0 okundu ve bütün günlük ekrana döküldü | adb arka plan süreci yeniden başlarken ilk birkaç komut cihazı görmüyor; betik bağlantıyı beklemeden ölçüm başlangıcını aldı | Cihaz betiğinin ilk satırı `./scripts/adb wait-for-device`; başlangıç değeri okunamazsa (boş ya da 0) betik dursun. Ölçüm bu kez etkilenmedi. |
 | H22 | Model ölçüm betiği 15 dakika boşuna bekledi; Kullanıcı "neden bitmedi" diye sordu | Telefonda süreç bellek yetersizliğinden öldürülmüştü; betik yalnız "bitti" satırını bekliyor, sürecin yaşadığına bakmıyordu | Cihazda uzun iş bekleyen her betik sürecin yaşadığını da denetler (`pidof`); öldüyse nedeni günlükten okuyup durur. `spike-llm-olc.sh` düzeltildi. |
+| H23 | İki model (Qwen3, Phi-4 mini) yetersiz kanıtla "elendi" yazıldı ve dosyaları silindi; Kullanıcı itiraz edince yeniden indirilip başka yolla koşuldu. Qwen3 aslında çalışıyor ve aday kaldı | "Çalışmadı" ile "bu yapılandırmada çalışmadı" ayrılmadı; Phi'nin çıktıları okunmadan hüküm verildi; silme Kullanıcı'ya sorulmadı | Bir seçeneği elemeden önce: en az bir alternatif yol dene, çıktıyı gerçekten oku, eleme gerekçesini kanıtıyla yaz. İndirilen/üretilen şeyi Kullanıcı kararı gelmeden silme. |
 | H15 | Yol haritası birkaç kez `sed`/`awk` ile değiştirildi | Alışkanlık; o sırada kanca yoktu | Kabuk komutuyla yapılan değişiklik düzenleme kancalarından (faz kapısı, gizli değer) geçmez. Yol haritası ve proje beyni **yalnız düzenleme aracıyla** değiştirilir. |
 
 ## 9. Tuzaklar ve "bunu bilmeden başlama" notları

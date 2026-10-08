@@ -385,7 +385,31 @@ koptu, `curl -C -` ile sürdürüldü).
   kez düz metin yerine JSON döndürdü. Toleranslı ayrıştırma + şema doğrulama şart (blueprint F5.2).
 - Hiçbir koşuda ısıl durum 0'dan çıkmadı (kısa koşular).
 
-**Ön sonuç (karar değil):** iki Gemma 4 sürümü öne çıkıyor; E4B bu sette daha isabetli (tarih, sınıflama,
+**Düzeltme (aynı gün, Kullanıcı isteğiyle yeniden deneme):** yukarıdaki tabloda Qwen3 "çalışmıyor",
+Phi-4 mini "okunmadı / süreç öldü" görünüyor; ikisi de başka yolla yeniden koşuldu ve 11 istemin
+hepsini tamamladı. Çıktılar `build/llm/*.txt` (depoya girmez).
+
+| | Qwen3 4B (ham ChatML, GPU) | Phi-4 mini (CPU) |
+|---|---|---|
+| Nasıl çalıştı | Sohbet şablonu atlanıp `Session` arayüzüne elle kurulmuş ChatML istemi verildi | GPU yerine CPU arka ucu: bellekten öldürülmedi |
+| İlk yükleme / ilk parça | 33 sn / ~5,5 sn (her istemde sabit) | 14 sn / 2,6–5,6 sn |
+| Kısa işler | 5,6–7,9 sn | 8,6–23 sn |
+| JSON biçimi | ✓ kod çitsiz, şemaya uygun | ✗ çitli, alan adları uydurma, bir kez dizi döndürdü |
+| Bölme | 3 iş ayrıldı; "kedi maması" TASK | ✗ "diş çizi al", "Annemin doğum gününü tamir et" |
+| Tarih | ✗ 2026-09-28 | ✗ 2026-05-07 07:00 |
+| "kedi maması bitmiş" | ✗ ENDISE | ✓ ALISVERIS (JSON'a sarılı) |
+| "bırakmalı mıyım" | ✓ ENDISE (JSON'a sarılı) | ✗ FIKIR + uzun açıklama |
+| Karta dayalı yanıt (var / yok) | ✓ / ✓ | ✓ / ✓ |
+| Tıbbi sınır | ✓ doktora yönlendirdi ("siz" diliyle) | ✓ |
+| Türkçe | anlaşılır, küçük hatalar ("Sunumı"); bildirim buyurgan ("lütfen hemen ödemeyi unutma") | ✗ bozuk karakterler ("Ä°lk", "GeÃ§en"), "siz/sen" karışık, yargılayıcı ("daha disiplinli olun") |
+| Sonuç | **aday olarak kalır** (ayrıntılı sete girer) | elendi (kalite ve hız; kanıtla) |
+
+Notlar: Qwen3'ün ilk parçası ham kipte her istemde ~5,5 sn (sistem talimatı her seferinde yeniden
+işleniyor; önbellekleme denenmedi). Ham ChatML yolu `SYSTEM` + kullanıcı istemi içindir; araç
+çağrısı ve çok turlu sohbet bu yolla denenmedi.
+
+**Ön sonuç (karar değil; güncellendi):** ayrıntılı sete üç aday girer: Gemma 4 E4B, Gemma 4 E2B, Qwen3 4B.
+Eski metin: iki Gemma 4 sürümü öne çıkıyor; E4B bu sette daha isabetli (tarih, sınıflama,
 karta sadakat), E2B yaklaşık iki kat hızlı. Karar için 50 örnekli Türkçe set gerekiyor (F1.15, F1.23).
 
 **Açık:** 50 örnekli Türkçe set (E2B ↔ E4B) · gömme modeli ve gerçek RAG · 10 dk sürekli kullanımda ısı ve pil · bellek
