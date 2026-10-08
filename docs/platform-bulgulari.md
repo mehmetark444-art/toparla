@@ -276,5 +276,15 @@ Kullanıcı Toparla Spike kartını son uygulamalarda kilitledi, sonra "tümün�
 
 **Sonuç:** kilit, "tümünü temizle"ye karşı koruyor (tek deneme). Kurulum sihirbazı bu adımı zorunlu
 göstermeli; sağlık denetimi "servis açık ama bağlı değil" durumunu yakalamalı.
-**Açık:** kilit yeniden başlatmadan ve uygulama güncellemesinden sonra kalıyor mu · yeniden başlatma
-sonrası servis kendiliğinden bağlanıyor mu · Güvenlik uygulamasının derin temizliği · saatler sonra.
+**Açık:** kilit yeniden başlatmadan ve uygulama güncellemesinden sonra kalıyor mu · Güvenlik
+uygulamasının derin temizliği · saatler sonra.
+
+### 8 Ekim 2026 — Spike 5: yeniden başlatma sonrası servis
+
+17:47:02 `adb reboot`; Kullanıcı PIN girdi, 17:47:53'te `RUNNING_UNLOCKED`. Tek deneme.
+
+- Servis kendiliğinden bağlandı: `LOCKED_BOOT_COMPLETED`'den 19 sn sonra `A11Y_CONNECTED`
+  (kilit açılmadan önce bağlanmıyor; servis `directBootAware` değil). `Bound services` içinde, `Crashed` boş.
+- Ardından iki açılış algılandı (olay → kart 2 785 ve 2 939 ms; gecikme aynı).
+- Son uygulamalardaki kilidin yeniden başlatmadan sonra durup durmadığı komutla okunamadı;
+  Kullanıcı'nın gözle bakması gerekiyor.

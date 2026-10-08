@@ -193,7 +193,8 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   ama olay almıyor ve uygulama yeniden başlasa da geri bağlanmıyor. Müdahale ekranının (M25-I)
   en büyük riski bu; önlemler sınanmadan o özellik tasarlanmaz. **Önlem (tek deneme):** uygulama son
   uygulamalarda kilitliyken "tümünü temizle" (`OneKeyClean`) süreci öldürmedi, servis bağlı kaldı.
-  Kilidin yeniden başlatma ve güncelleme sonrası kalıp kalmadığı henüz bilinmiyor.
+  Yeniden başlatmadan sonra servis kilit açılınca kendiliğinden bağlandı (tek deneme). Kilidin
+  yeniden başlatma ve güncelleme sonrası kalıp kalmadığı henüz bilinmiyor.
 - **Uygulama açılışı ~2,9 sn geç algılanıyor (8 Ekim, 21 ölçüm):** olay servise ulaştıktan sonra kart
   ~70 ms'de çiziliyor, ama açılışta olayın kendisi ~2,9 sn geç geliyor (açılış olmayan geçişlerde
   ~100 ms). Sürekli servis, pencere bayrağı ve ek olay türleri değiştirmedi; neden bilinmiyor.
