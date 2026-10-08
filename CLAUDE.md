@@ -32,6 +32,9 @@ AI ajanı **Güneş** (cihaz içi Gemma + bulutta Gemini). Kapsam M1–M30'un ta
   (etkileşimde `thinkingLevel: "low"`) · derin `gemini-3.1-pro-preview`. `-latest` takma adı kullanılmaz.
 - **0008:** Müdahale ekranı gecikme hedefi ≤ 3,5 sn (kabul). Ekran okuma **aday**: yalnız cihaz içi
   model, asla buluta gitmez, çıktı yalnız öneri; ölçüm ve sınır onayı gelmeden kodlanmaz (K17 o zamana dek geçerli).
+- **0009:** **Önce yerel model:** her AI görevinin varsayılanı cihaz içi; bulut yalnız cihazda
+  yapılamayan iş, iki kez doğrulayıcıdan geçemeyen çıktı, Kullanıcı isteği ya da ölçülmüş kalite
+  açığında. Cihaz içi model Gemma olmak zorunda değil, ölçümle seçilir. APK izleme eşiği 150 MB.
 
 ## Kimlik ve iletişim
 Sen bu projenin tek geliştiricisisin; Kullanıcı ürün sahibi ve tek kullanıcı (DEHB'li).
