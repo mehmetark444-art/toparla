@@ -45,6 +45,8 @@ AI ajanı **Güneş** (cihaz içi Gemma + bulutta Gemini). Kapsam M1–M30'un ta
   devredilir. Kişisel veri çıraklıkta da cihazda kalır. Yerel model "yok" derse (Yeşil) Gemini'ye sorulur.
 - **0013:** Konuşma tanıma Android'in cihaz içi tanıyıcısı (`tr-TR`); Whisper yok. Tanıyıcı sayı ve
   saatleri rakamla verir ("9.00'da", "₺1.250"): tarih/tutar ayrıştırıcı bunları birincil girdi sayar.
+- **0014:** F1'de ölçülemeyen maddeler (konum, Mi Band, kısıtlı kova, küçük açık koşullar) adıyla ilgili
+  fazlara **devredildi**; devredilen ölçüm yapılmadan o faz kapanmaz. Liste karar kaydında.
 
 ## Kimlik ve iletişim
 Sen bu projenin tek geliştiricisisin; Kullanıcı ürün sahibi ve tek kullanıcı (DEHB'li).

@@ -102,8 +102,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 - ☑ F1.9 Tile: kilitliyken yakalama, Tile → mikrofon ≤ 1 sn — `platform-bulgulari.md` § Spike 8 (kilit açık 287 ms, kilitli 245 ms; kilitliyken ekran açılmıyor, yakalama servisten ekransız yapılıyor; koşul başına 1–2 ölçüm)
 - ☑ F1.10 Canlı güncelleme: `ProgressStyle`, "promoted ongoing", HyperOS odak bildirimi — `platform-bulgulari.md` § Spike 16 (tek deneme; hap, panel ve kilit ekranında Kullanıcı gördü)
 - ◐ F1.11 Arama durumu: `AudioManager.getMode` ile izinsiz algılama (giden hücresel arama ☑ — `platform-bulgulari.md` § Spike 17; internet araması (`3`) ve arka plandan okuma ☑ — § F1 kapanış ölçümleri; gelen aramanın çalma anı ☐)
-- ☐ F1.12 Geofence: Play Hizmetleri varlığı, arka plan olay gecikmesi
-- ☐ F1.13 Health Connect: Mi Band → Mi Fitness → uyku/adım akışı
+- F1.12 (Geofence) ve F1.13 (Health Connect / Mi Band): **ölçülmedi; karar 0014 ile F7.0'a devredildi.**
 
 ### F1-C Ses ve yapay zekâ
 - ◐ F1.14 (sessiz ortam ☑: gerçek hata ~%6, karar 0013 — `platform-bulgulari.md` § Spike 9; gürültü, kulaklık, uzun konuşma ☐) Türkçe cihaz içi konuşma tanıma: 30 cümlelik set, WER; yetersizse yerel Whisper
@@ -132,6 +131,10 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 - ☐ K1: `platform-bulgulari.md`'deki 19 spike satırının hiçbiri "Bekliyor" değil; her birinde ölçüm sayısı ve yöntem yazılı; `[DOĞRULA]` araması açık madde bırakmıyor.
 - ☐ K2: Gece testi sabah kaydı Kullanıcı'nın gördüğü bildirimlerle tutarlı; Kullanıcı tam ekran kartı kilit ekranında, müdahale ekranını gerçek bir uygulama açılışında kendi gözüyle gördü.
 - ☐ K3: `proje-beyni.md` bu faz için güncellendi: kararlar, bulgular, yapılan hatalar, zaman çizelgesi, Bölüm 13 kapanış kaydı.
+
+**Devir (karar 0014, 8 Ekim 2026):** F1'de ölçülemeyen koşullar adıyla sonraki fazlara devredildi (tablo karar
+kaydında). F1 kapanışında yarım (◐) maddeler "ölçülen kısım ☑, kalan → karar 0014" biçiminde kapatılır.
+F1'de kapanıştan önce kalan iki ölçüm: kablosuz gece testinin okunması (F1.1) ve gürültüde ses tanıma (F1.14).
 
 **Faz kapısı:** F1-A tamamen ☑ olmadan F2-D (Android hatırlatma) yazılmaz.
 
@@ -196,6 +199,12 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 - ☐ F2.39 Tanım, kritik hatırlatma, Aldım / 15 dk sonra / Atlıyorum, çift doz koruması
 - ☐ F2.40 Kaçan doz kaydı, stok, gizli bildirim metni, biyometrik kilit, CSV/PDF
 - ☐ F2.41 Flag kapalıyken hiçbir ilaç yüzeyi görünmüyor, izin istenmiyor (test)
+
+### F2-G F1'den devredilen ölçümler (karar 0014)
+- ☐ F2.42 Cihaz matrisine eklenenler: kilitsiz uygulamada Güvenlik temizliği sonrası teslim; saat dilimi değişimi; Rahatsız Etme erişimi yokken ve "tam sessizlik" kipinde kritik ses; gelen aramanın çalma anı
+- ☐ F2.43 `kur.sh` temiz kurulumda tam koşu: APK kurulum adımı, `allow_listener`'ın sıfırdan etkisi, kullanım istatistikleri ve üstte gösterme `appops` adımları (izin manifestte istenirken)
+- ☐ F2.44 7 günlük kullanımda teslim günlüğünden: kısıtlı bekleme kovası altında teslim; `setExactAndAllowWhileIdle` gecikmesinin tekrar edip etmediği
+- ☐ F2.45 Kurulum sihirbazında her ayar sayfasının doğru uygulamayı gösterdiği Kullanıcı gözüyle doğrulandı; **otomatik başlatma zorunlu adım** (F1 bulgusu); erişilebilirlik ve bildirim dinleyicisi kopunca Sağlık uyarısı ve kapat-aç kurtarması
 
 **Çift kontrol**
 - ☐ K1: `:domain` ve `:reminders` testleri yeşil; 18 zorunlu senaryo ve invaryantlar geçti; cihaz matrisi (açık / arka plan / kapalı / Doze / yeniden başlatma / kilitli yeniden başlatma) her hücrede kritik teslim ±1 dk; lint temiz; migration testi var.
@@ -331,6 +340,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 
 **Amaç:** Güneş bağlamı algılar ve yalnız işe yarayacağı an konuşur.
 
+- ☐ F7.0 Ön koşul ölçümleri (F1'den devredildi, karar 0014): geofence (Play Hizmetleri varlığı, arka plan olay gecikmesi) ve Health Connect (Mi Band → Mi Fitness → uyku/adım akışı). F7.1'in konum ve sağlık duyargaları bu ölçüm yapılmadan yazılmaz.
 - ☐ F7.1 M19 duyargaları: takvim (tam), bildirim okuma, kullanım istatistikleri, konum/geofence, Health Connect, ekran görüntüsü, kamera, NFC, cihaz durumu, zaman bağlamı (tatil verisi 2026–2030)
 - ☐ F7.2 `ContextHub` → `ContextSnapshot`; Ayarlar → Duyargalar
 - ☐ F7.3 M20 Orkestratör: sert elemeler, aday üretimi, bandit (tohumlu), mesaj üretimi, ödül güncelleme
