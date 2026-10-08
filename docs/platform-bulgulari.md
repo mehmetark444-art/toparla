@@ -345,6 +345,49 @@ ilk kullanımda bir kez ısındırma gerekir. GPU ile CPU arasında bu kısa iş
 - Bildirim: "Faturanızın ödemesini hatırlatmak isterim. Lütfen ödeme planınızı kontrol edin." —
   suçlamıyor ama iki cümle ve "siz" diliyle; Güneş "sen" der.
 
-**Açık:** diğer adaylarla karşılaştırma (iniyor) · 10 dk sürekli kullanımda ısı ve pil · bellek
+### 8 Ekim 2026 — Spike 10: beş adayın karşılaştırması
+
+**Yöntem:** `scripts/spike-llm-olc.sh <model> gpu`; aynı sistem talimatı, 11 Türkçe istem (2 bölme,
+mikro-adım, 2 sınıflama, tarih, bildirim, ayna, karta dayalı yanıt [kartta var / yok], tıbbi sınır).
+Her model **bir kez** koştu; GPU; USB bağlı. Bu bir eleme turudur, kalite ölçümü değildir.
+Dosyalar indirildikten sonra boyutları kaynakla eşleştirilerek doğrulandı (ağ değişiminde bir indirme
+koptu, `curl -C -` ile sürdürüldü).
+
+| | Gemma 4 E2B | Gemma 4 E4B | Ministral 3 3B | Phi-4 mini | Qwen3 4B |
+|---|---|---|---|---|---|
+| Dosya | 2,59 GB | 3,66 GB | 2,34 GB | 3,91 GB | 2,66 GB |
+| İlk yükleme | 33 sn | 38 sn | 27 sn | 79 sn | 20–41 sn |
+| İlk parça | 0,3–1,4 sn | 0,7–2,2 sn | 1,6–3,8 sn | 3,0–6,9 sn | — |
+| Kısa işler (toplam süre) | 0,5–3,4 sn | 1,1–5,9 sn | 2,0–10,6 sn | 5,9–26 sn | — |
+| Uzun bölme (JSON) | 14,4 sn | 25,2 sn | 15,0 sn | 25,3 sn | — |
+| Tarih ("haftaya salı akşam 7") | ✗ 14 Ekim, JSON'a sardı | ✓ 2026-10-13 19:00 | ✗ 5 Ekim | (okunmadı) | — |
+| "kedi maması bitmiş" | ✗ GOREV | ✓ ALISVERIS | ✓ | (okunmadı) | — |
+| "bırakmalı mıyım" | ✓ ENDISE | ✗ FİKİR | ✗ FİKİR | 469 karakterlik açıklama | — |
+| Mikro-adım | "Yazmak için taslağı aç." | "E-postayı açıp taslağı oluştur." | anlamsız | — | — |
+| Karta dayalı yanıt (var) | ✓ kısa | ✓ tam | ✗ önce "yok" dedi, sonra uydurdu | dağınık, yanlış ilişki kurdu | — |
+| Karta dayalı yanıt (yok) | ✓ | ✓ | ✓ | süreç öldü | — |
+| Tıbbi sınır (doz sorusu) | ✓ doktora yönlendirdi | ✓ | ✗ kendi önerilerini sıraladı | süreç öldü | — |
+| Türkçe | düzgün | düzgün | bozuk | — | — |
+| Sonuç | **aday (hızlı)** | **aday (isabetli)** | elendi | elendi | elendi |
+
+**Elenenler:**
+- **Phi-4 mini:** `lowmemorykiller` süreci öldürdü ("memavailable critical lower", 2 GB RSS + 0,5 GB
+  takas) — 11 GB RAM'li bu telefonda 3,9 GB'lık q8 dosya GPU'da sığmıyor; ayrıca en yavaş aday.
+- **Ministral 3 3B:** Türkçe hataları ("ödemi", "istiyorsun mu"), uydurma ve tıbbi sınır ihlali.
+- **Qwen3 4B Instruct:** bu paket LiteRT-LM 0.18.0 ile kullanılamıyor. Sistem talimatıyla
+  `Failed to apply template: … + operator on unsupported types string and sequence`; talimat isteme
+  gömülünce her isteme aynı "mesajınız eksik" yanıtı (istem şablondan geçmiyor).
+
+**Ortak gözlemler:**
+- GPU arka ucu ilk yüklemede model başına 0,8–3,8 GB önbellek dosyası yazıyor (`…mldrift_weight_cache.bin`);
+  sonraki yüklemeler bu sayede ~2 sn. Depolama hesabında model boyutunun yaklaşık iki katı ayrılmalı.
+- Gemma modelleri "kod çiti ekleme" talimatına rağmen JSON'u çoğu kez ```` ```json ```` ile sardı; E2B bir
+  kez düz metin yerine JSON döndürdü. Toleranslı ayrıştırma + şema doğrulama şart (blueprint F5.2).
+- Hiçbir koşuda ısıl durum 0'dan çıkmadı (kısa koşular).
+
+**Ön sonuç (karar değil):** iki Gemma 4 sürümü öne çıkıyor; E4B bu sette daha isabetli (tarih, sınıflama,
+karta sadakat), E2B yaklaşık iki kat hızlı. Karar için 50 örnekli Türkçe set gerekiyor (F1.15, F1.23).
+
+**Açık:** 50 örnekli Türkçe set (E2B ↔ E4B) · gömme modeli ve gerçek RAG · 10 dk sürekli kullanımda ısı ve pil · bellek
 (tek okuma: süreç 237 MB PSS, model belleği ayrı sayılıyor olabilir; doğrulanmadı) · şemaya zorlamanın
 yolu (kütüphanede `ResponseFormat` var, denenmedi) · gömme modeli ve RAG · 50 örnekli Türkçe set.

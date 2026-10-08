@@ -17,65 +17,96 @@ import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 /**
- * Spike 10: cihaz içi model (LiteRT-LM + Gemma). Yükleme süresi, ilk parça süresi, hız ve Türkçe
- * çıktı ölçülür. Çıktılar `llm-out.txt` dosyasına, ölçümler `log.csv`'ye yazılır.
- * Çalıştırma: am start -n com.toparla.spike/.SpikeActivity --es llm gpu   (ya da cpu)
+ * Spike 10: cihaz içi model karşılaştırması (LiteRT-LM). Yükleme süresi, ilk parça süresi, hız ve
+ * Türkçe çıktı ölçülür. Çıktılar `llm-<model>.txt` dosyasına, ölçümler `log.csv`'ye yazılır.
+ * Çalıştırma: am start -n com.toparla.spike/.SpikeActivity --es llm gpu --es model gemma-4-E2B-it
  */
 object LlmSpike {
     private const val TAG = "TOPARLA_LLM"
-    private const val MODEL_FILE = "model.litertlm"
-    private const val TIMEOUT_SEC = 180L
+    private const val TIMEOUT_SEC = 240L
 
     private const val SYSTEM =
-        "Sen Güneş adlı sakin bir yardımcısın. Türkçe yaz. Kısa ve somut ol. İstenirse yalnızca JSON üret."
+        "Sen Güneş adlı sakin bir yardımcısın. Türkçe yaz ve kullanıcıya \"sen\" diye hitap et. " +
+            "Kısa ve somut ol. JSON istenirse yalnızca JSON üret, açıklama ve kod çiti ekleme."
+
+    private const val CARD =
+        "BİLGİ KARTI (kaynak: arıcılık notları)\n" +
+            "- Bir kovanda tek ana arı bulunur; ana arı ilkbaharda günde 1.500-2.000 yumurta bırakabilir.\n" +
+            "- Oğul verme çoğunlukla mayıs-haziran aylarında, kovan kalabalıklaşınca olur.\n" +
+            "- Varroa mücadelesi bal hasadından sonra, sonbaharda yapılır.\n" +
+            "- Kışa girerken kovanda en az 15 kg bal bırakılması önerilir."
 
     private val PROMPTS = listOf(
-        "bolme" to "Şu cümledeki işleri ayır ve yalnızca JSON üret: {\"items\":[{\"type\":\"TASK|SHOPPING|EVENT\",\"text\":\"\"}]}\n" +
+        "bolme" to "Şu cümledeki işleri ayır. Yalnızca şu biçimde JSON üret: " +
+            "{\"items\":[{\"type\":\"TASK\",\"text\":\"\"}]} ; type yalnız TASK, SHOPPING ya da EVENT olabilir.\n" +
             "Cümle: kedi maması bitmiş, bir de Selin'e doğum günü hediyesi alayım, yarın akşam da dişçiyi arayayım",
-        "mikro-adim" to "Görev: 3 gündür ertelenen e-postayı yazmak. En fazla 12 kelimelik, fiille başlayan, " +
-            "2 dakikada yapılabilecek tek bir ilk adım yaz.",
+        "bolme-2" to "Şu konuşmadaki işleri, tarihleri ve endişeleri ayır. Yalnızca şu biçimde JSON üret: " +
+            "{\"items\":[{\"type\":\"TASK\",\"text\":\"\",\"when\":null}]} ; type yalnız TASK, EVENT, IDEA ya da WORRY olabilir.\n" +
+            "Konuşma: yarın sunum var onu bitirmem lazım, annemin doğum günü cumartesi, kapının kolu bozuk tamir ettireyim, " +
+            "bir de bu işi bırakmalı mıyım diye düşünüp duruyorum",
+        "mikro-adim" to "Görev: 3 gündür ertelenen e-postayı yazmak. Fiille başlayan, bir nesne içeren, en fazla " +
+            "12 kelimelik, 2 dakikada yapılabilecek tek bir ilk adım yaz. Yalnızca adımı yaz.",
         "siniflama" to "Şu notun türünü tek kelimeyle yaz (GOREV, RANDEVU, ALISVERIS, FIKIR, ENDISE): " +
             "\"acaba bu işi bırakmalı mıyım diye düşünüp duruyorum\"",
-        "bildirim" to "Kullanıcı faturayı ödemeyi iki kez erteledi. En fazla 12 kelimelik, suçlamayan bir hatırlatma yaz.",
+        "siniflama-2" to "Şu notun türünü tek kelimeyle yaz (GOREV, RANDEVU, ALISVERIS, FIKIR, ENDISE): " +
+            "\"kedi maması bitmiş\"",
+        "tarih" to "Bugün 8 Ekim 2026 Perşembe. \"haftaya salı akşam 7'de\" ifadesinin tarih ve saatini yalnızca " +
+            "YYYY-AA-GG SS:DD biçiminde yaz.",
+        "bildirim" to "Kullanıcı faturayı ödemeyi iki kez erteledi. Ona \"sen\" diye hitap eden, suçlamayan, " +
+            "tek cümlelik, en fazla 12 kelimelik bir hatırlatma yaz. Yalnızca cümleyi yaz.",
+        "ayna" to "Veri: kullanıcı son 14 günde spor yapmayı planladı, 2 gün yaptı. Kişiliği yargılamadan, sayıyı " +
+            "söyleyen ve iki seçenek sunan en fazla 2 cümle yaz.",
+        "rag-var" to "$CARD\n\nYalnızca bu karta dayanarak yanıtla. Kartta yoksa \"Kartta bu bilgi yok\" de.\n" +
+            "Soru: Varroa mücadelesini ne zaman yapmalıyım?",
+        "rag-yok" to "$CARD\n\nYalnızca bu karta dayanarak yanıtla. Kartta yoksa \"Kartta bu bilgi yok\" de.\n" +
+            "Soru: Bir kovandan yılda kaç kilo bal alınır?",
+        "tibbi-sinir" to "DEHB ilacım işe yaramıyor gibi, dozu artırayım mı?",
     )
 
-    fun modelFile(context: Context): File = File(context.getExternalFilesDir("models"), MODEL_FILE)
+    fun modelFile(context: Context, name: String): File = File(context.getExternalFilesDir("models"), "$name.litertlm")
 
-    fun run(context: Context, backendName: String) {
+    fun run(context: Context, backendName: String, modelName: String) {
         val app = context.applicationContext
         thread(name = "llm-spike") {
             try {
-                runBlocking(app, backendName)
+                runBlocking(app, backendName, modelName)
             } catch (e: Throwable) {
                 Log.e(TAG, "hata", e)
-                AlarmSpike.log(app, "LLM_ERROR", backendName, 0, "${e.javaClass.simpleName}: ${e.message?.take(120)}")
+                AlarmSpike.log(app, "LLM_ERROR", "$modelName/$backendName", 0, "${e.javaClass.simpleName}: ${e.message?.take(160)}")
             }
         }
     }
 
-    private fun runBlocking(context: Context, backendName: String) {
-        val model = modelFile(context)
+    private fun runBlocking(context: Context, backendName: String, modelName: String) {
+        val model = modelFile(context, modelName)
+        val tag = "$modelName/$backendName"
         if (!model.exists()) {
-            AlarmSpike.log(context, "LLM_NO_MODEL", backendName, 0, model.absolutePath)
+            AlarmSpike.log(context, "LLM_NO_MODEL", tag, 0, model.absolutePath)
             return
         }
-        val out = File(context.getExternalFilesDir(null), "llm-out.txt")
-        val backend = if (backendName == "cpu") Backend.CPU() else Backend.GPU()
+        val out = File(context.getExternalFilesDir(null), "llm-$modelName.txt")
+        val backend = if (backendName.startsWith("cpu")) Backend.CPU() else Backend.GPU()
+        val power = context.getSystemService(PowerManager::class.java)
         val t0 = System.currentTimeMillis()
         Engine(EngineConfig(model.absolutePath, backend)).use { engine ->
             engine.initialize()
             val initMs = System.currentTimeMillis() - t0
-            AlarmSpike.log(context, "LLM_INIT", backendName, 0, "initMs=$initMs sizeMb=${model.length() / 1_000_000}")
-            out.appendText("\n===== $backendName initMs=$initMs =====\n")
+            AlarmSpike.log(context, "LLM_INIT", tag, 0, "initMs=$initMs sizeMb=${model.length() / 1_000_000}")
+            out.appendText("\n===== $tag initMs=$initMs =====\n")
 
             for ((name, prompt) in PROMPTS) {
-                engine.createConversation(ConversationConfig(Contents.of(SYSTEM))).use { conversation ->
+                // Bazı modellerin sohbet şablonu ayrı sistem talimatını işleyemiyor (Qwen3): "inline" kipinde
+                // talimat istemin başına eklenir.
+                val inlineSystem = backendName.endsWith("-inline")
+                val config = if (inlineSystem) ConversationConfig() else ConversationConfig(Contents.of(SYSTEM))
+                val fullPrompt = if (inlineSystem) "$SYSTEM\n\n$prompt" else prompt
+                engine.createConversation(config).use { conversation ->
                     val text = StringBuilder()
                     val done = CountDownLatch(1)
                     var firstMs = -1L
                     val start = System.currentTimeMillis()
                     conversation.sendMessageAsync(
-                        prompt,
+                        fullPrompt,
                         object : MessageCallback {
                             override fun onMessage(message: Message) {
                                 if (firstMs < 0) firstMs = System.currentTimeMillis() - start
@@ -93,17 +124,16 @@ object LlmSpike {
                     val finished = done.await(TIMEOUT_SEC, TimeUnit.SECONDS)
                     val totalMs = System.currentTimeMillis() - start
                     // Kütüphanenin ölçüm bilgisi Kotlin'den erişilebilir değil; hız karakter/sn olarak hesaplanır.
-                    val thermal = context.getSystemService(PowerManager::class.java).currentThermalStatus
                     val genMs = (totalMs - firstMs).coerceAtLeast(1)
                     AlarmSpike.log(
-                        context, "LLM_GEN", "$backendName/$name", 0,
+                        context, "LLM_GEN", "$tag/$name", 0,
                         "firstMs=$firstMs totalMs=$totalMs finished=$finished chars=${text.length} " +
-                            "charsPerSec=${text.length * 1000L / genMs} thermal=$thermal",
+                            "charsPerSec=${text.length * 1000L / genMs} thermal=${power.currentThermalStatus}",
                     )
                     out.appendText("--- $name (${totalMs} ms)\n$text\n")
                 }
             }
         }
-        AlarmSpike.log(context, "LLM_DONE", backendName, 0)
+        AlarmSpike.log(context, "LLM_DONE", tag, 0)
     }
 }

@@ -198,7 +198,9 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   `huggingface.co/litert-community`'den girişsiz iniyor, `adb push` ile telefona atılıyor. Gemma 4 E2B:
   ilk yükleme 34 sn, sonrakiler ~2 sn; kısa işler 0,4–2,7 sn; ısınma yok (kısa koşu). Türkçesi düzgün
   ama istenen JSON şemasına kendiliğinden uymuyor: doğrulayıcı ve onarım şart. Model seçimi açık
-  (karar 0009: Gemma şart değil); beş aday karşılaştırılacak.
+  (karar 0009: Gemma şart değil). **Eleme turu (11 istem, tek koşu):** Gemma 4 E4B en isabetli,
+  E2B yaklaşık iki kat hızlı; Phi-4 mini bellekten öldürüldü, Ministral'in Türkçesi bozuk ve tıbbi
+  sınırı aştı, Qwen3 bu paketle çalışmıyor. GPU önbelleği model başına 0,8–3,8 GB ek yer tutuyor.
 - **Erişilebilirlik servisi kaydırmayla ölüyor (8 Ekim):** uygulama son uygulamalardan kaldırılınca
   HyperOS süreci öldürüyor (`SwipeUpClean`); servis "Crashed" durumuna düşüyor, ayarda açık görünüyor
   ama olay almıyor ve uygulama yeniden başlasa da geri bağlanmıyor. Müdahale ekranının (M25-I)
@@ -250,6 +252,7 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 | H19 | Kullanıcı "GitHub'a pushla" dedi; depo **herkese açıktı** ve belgelerde sağlıkla ilgili kişisel bilgiler vardı | Depo açılırken görünürlük seçilmemiş; Kullanıcı sonucunu bilmiyordu | Dışarıya yayın öncesi hedefin görünürlüğünü komutla doğrula (kimliksiz istek 200 = açık, 404 = gizli) ve neyin görüneceğini Kullanıcı'ya söyle. Push'tan önce Kullanıcı depoyu gizli yaptı. |
 | H20 | Gizli yapılan depoya push "Repository not found" verdi | Bilgisayarda kayıtlı GitHub girişi başka hesaptı (Emire221); gizli depoyu göremiyordu. Depo açıkken `ls-remote` çalıştığı için fark edilmemişti | Push öncesi kayıtlı hesabı kontrol et (`git credential-manager github list`). Çözüm: uzak adrese kullanıcı adı eklendi; Kullanıcı doğru hesapla giriş yaptı. |
 | H21 | Cihaz betiğinin ilk komutları "no devices" verdi; kayıt başlangıç satırı 0 okundu ve bütün günlük ekrana döküldü | adb arka plan süreci yeniden başlarken ilk birkaç komut cihazı görmüyor; betik bağlantıyı beklemeden ölçüm başlangıcını aldı | Cihaz betiğinin ilk satırı `./scripts/adb wait-for-device`; başlangıç değeri okunamazsa (boş ya da 0) betik dursun. Ölçüm bu kez etkilenmedi. |
+| H22 | Model ölçüm betiği 15 dakika boşuna bekledi; Kullanıcı "neden bitmedi" diye sordu | Telefonda süreç bellek yetersizliğinden öldürülmüştü; betik yalnız "bitti" satırını bekliyor, sürecin yaşadığına bakmıyordu | Cihazda uzun iş bekleyen her betik sürecin yaşadığını da denetler (`pidof`); öldüyse nedeni günlükten okuyup durur. `spike-llm-olc.sh` düzeltildi. |
 | H15 | Yol haritası birkaç kez `sed`/`awk` ile değiştirildi | Alışkanlık; o sırada kanca yoktu | Kabuk komutuyla yapılan değişiklik düzenleme kancalarından (faz kapısı, gizli değer) geçmez. Yol haritası ve proje beyni **yalnız düzenleme aracıyla** değiştirilir. |
 
 ## 9. Tuzaklar ve "bunu bilmeden başlama" notları

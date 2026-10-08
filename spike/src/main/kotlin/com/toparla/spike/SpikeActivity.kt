@@ -60,7 +60,7 @@ class SpikeActivity : Activity() {
 
     private fun handle(intent: Intent) {
         intent.getStringExtra("llm")?.let {
-            LlmSpike.run(this, it)
+            LlmSpike.run(this, it, intent.getStringExtra("model") ?: "gemma-4-E2B-it")
             intent.removeExtra("llm")
         }
         when (intent.getStringExtra("fgsHold")) {
