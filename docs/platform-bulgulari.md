@@ -684,6 +684,20 @@ ham SQL kullanıldı (Room 3'te FTS5 varlığı desteği bakılmadı); şema dı
 denenmedi (F2.12); Hilt bu sürümlerle denenmedi (F2.10). Room 2 → 3 seçimi blueprint'in "Room" ifadesinin
 güncel karşılığıdır; kesin kilit F2.11'de.
 
+### 8 Ekim 2026 — Spike 18: ALO 171 hattının güncelliği
+
+Yöntem: web araması ve Sağlık Bakanlığı'nın `alo171.saglik.gov.tr` sayfası (telefonla aranmadı).
+
+- Hattın resmi adı "ALO 171 Sigara Bırakma Danışma Hattı"; Sağlık Bakanlığı'na bağlı; resmi sayfası yayında
+  ve alt bilgisinde 2026 yazıyor (sayfada çalışma saati ve ücret bilgisi yok).
+- Haber ve ansiklopedi kaynaklarına göre: 7 gün 24 saat canlı operatör; sabit hattan ücretsiz, cep telefonundan
+  operatör tarifesiyle ücretli; bağımlılık düzeyi ölçülüyor, plan yapılıyor ya da polikliniğe yönlendiriliyor;
+  onay verenler bir yıl boyunca geri aranıyor. 2024 için 308 bin arama bildirilmiş.
+
+**Sonuç:** blueprint M25'teki tek yönlendirme cümlesi ("doktorun ya da ALO 171 gibi hatlar") geçerli; metinde
+"ücretsiz" denmez (cep telefonundan ücretli). **Sınır:** hat aranarak doğrulanmadı; çalışma saati ikincil kaynaktan.
+Kaynaklar: alo171.saglik.gov.tr · trthaber.com (308 bin arama haberi) · kureansiklopedi.com (ALO 171 maddesi).
+
 **Ortam notu:** PowerShell'de `bash` komutu Windows'un kendi bash'ini (WSL) açıyor; telefon aracı bulunamıyor.
 Kullanıcı'ya verilecek komut Git Bash'i tam yoluyla çağırmalı: `& "C:\Program Files\Git\bin\bash.exe" scripts/…`.
 

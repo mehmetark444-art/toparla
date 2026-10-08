@@ -44,7 +44,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
 **Şu an:** F1 (alarm yolu ve Gemini kademeleri kararlaştırıldı) ve F2-A (saf mantık) paralel.
-**Sıradaki tek adım:** F1 "B grubu": F1.12 konum (geofence) → F1.13 Mi Band / Health Connect → F1.14 gürültüde ses tanıma. Ardından C grubu (F1.19 ALO 171, F1.16 kalanlar, F1.24, F1.25; F1.18 Room/KSP ☑). "A grubu" (F1.4–F1.6, F1.8–F1.11) 8 Ekim gecesi ölçüldü; her maddenin açık kalan koşulu kendi satırında.
+**Sıradaki tek adım:** F1 "B grubu": F1.12 konum (geofence) → F1.13 Mi Band / Health Connect → F1.14 gürültüde ses tanıma. Kullanıcı durumu (8 Ekim): evden çıkamıyor (F1.12 bekler), Mi Band siparişte (F1.13 bekler), gürültü ölçümü 9 Ekim'de iş yerinde. Bu yüzden sıradaki fiilî iş C grubu: F1.16 Gemini kalanları → F1.17 konu taraması maliyeti → F1.25 çıraklık ön ölçümü → F1.24 ekran okuma ön ölçümü (F1.18, F1.19 ☑). "A grubu" (F1.4–F1.6, F1.8–F1.11) 8 Ekim gecesi ölçüldü; her maddenin açık kalan koşulu kendi satırında.
 
 **Açık engeller**
 - Yok. (Gemini bakiyesi 8 Ekim'de geldi; çağrıyla doğrulandı.)
@@ -116,7 +116,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
   - ◐ Google Arama temellendirmesi: atıf alanları ve fiyat ☑; yönlendirme adresinden gerçek URL ve tarih çözme, arama + şemalı çıktı birlikte ☐
 - ◐ F1.17 Konu bütçesi ölçümü: 1 konu × günde 2 tarama gerçek maliyeti → varsayılan sıklık (fiyattan hesap: ücretsiz arama payına sığıyor, karar 0007; gerçek tarama ölçümü ☐)
 - ☑ F1.18 Room + BundledSQLiteDriver ile FTS5; KSP'nin Kotlin 2.4 / AGP 9.4 ile uyumu — `platform-bulgulari.md` § Spike 13 (Room 3.0.3 + KSP 2.3.12 derlendi ve cihazda çalıştı; FTS5 var; noktasız ı için kendi Türkçe katlamamız gerekiyor; tek koşu)
-- ☐ F1.19 ALO 171 hattının güncelliği
+- ☑ F1.19 ALO 171 hattının güncelliği — `platform-bulgulari.md` § Spike 18 (resmi sayfa yayında; hat aranarak doğrulanmadı; metinde "ücretsiz" denmez)
 - ☑ F1.20 16 KB sayfa: cihaz 4096 kullanıyor; engel değil — `platform-bulgulari.md`
 
 - ☐ F1.24 Ekran okuma ön ölçümü (karar 0008, aday): içerik yetkisiyle gecikme; ekran metnini toplama hızı, pil ve ısı; parola alanı ve hassas uygulama ayrımı. F1.15'e (cihaz içi model) bağlı.
