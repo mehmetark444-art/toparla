@@ -112,8 +112,8 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
   - ☑ Uç nokta: Developer API; model listesi alındı
   - ☑ Kademe modelleri (hızlı / günlük / derin) ve fiyatlar resmi sayfadan kilitlendi — karar 0007 (`pricing.json` F6.4'te yazılır)
   - ☑ Akış (SSE), şemalı çıktı, işlev çağrısı, düşünme ayarı (tek çağrı ölçümleri)
-  - ☐ Görsel girdi, bağlam önbellekleme, 429 / hız sınırı davranışı
-  - ◐ Google Arama temellendirmesi: atıf alanları ve fiyat ☑; yönlendirme adresinden gerçek URL ve tarih çözme, arama + şemalı çıktı birlikte ☐
+  - ◐ Görsel girdi ☑ (uydurma tek örnek), bağlam önbellekleme ☑ (örtük ve açık) — § Spike 11 (kalanlar); 429 / hız sınırı ☐ (40 eşzamanlı çağrıyla tetiklenmedi, gövdesi görülmedi)
+  - ☑ Google Arama temellendirmesi: atıf alanları ve fiyat; yönlendirme adresinden gerçek URL (4/4) ve tarih (2/4); arama + şemalı çıktı tek çağrıda kaynak vermiyor → iki çağrı — § Spike 11 (kalanlar)
 - ◐ F1.17 Konu bütçesi ölçümü: 1 konu × günde 2 tarama gerçek maliyeti → varsayılan sıklık (fiyattan hesap: ücretsiz arama payına sığıyor, karar 0007; gerçek tarama ölçümü ☐)
 - ☑ F1.18 Room + BundledSQLiteDriver ile FTS5; KSP'nin Kotlin 2.4 / AGP 9.4 ile uyumu — `platform-bulgulari.md` § Spike 13 (Room 3.0.3 + KSP 2.3.12 derlendi ve cihazda çalıştı; FTS5 var; noktasız ı için kendi Türkçe katlamamız gerekiyor; tek koşu)
 - ☑ F1.19 ALO 171 hattının güncelliği — `platform-bulgulari.md` § Spike 18 (resmi sayfa yayında; hat aranarak doğrulanmadı; metinde "ücretsiz" denmez)

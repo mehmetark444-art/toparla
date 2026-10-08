@@ -262,6 +262,11 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   Şemalı çıktı, işlev çağrısı, akış ve Google Arama temellendirmesi çalışıyor. Arama atıflarındaki
   `uri` yönlendirme adresidir (gerçek URL değil); alan adı `title`'da. Arama ayda 5 000 ücretsiz:
   Konu Motoru'nun arama maliyeti kaygısı (Bölüm 10, madde 5) büyük ölçüde kalktı.
+- **Gemini kalanları (8 Ekim gece, tek koşular; `scripts/gemini-olc.mjs`):** basılı belge görselinden tarih
+  ve tutar çıkarma hızlı kademede doğru (~3 sn, görsel ~1 100 token). Örtük önbellek kendiliğinden çalışıyor.
+  **Arama ile şemalı çıktı aynı çağrıda kullanılınca kaynak listesi boş geliyor:** Konu Motoru iki çağrı yapar.
+  Yönlendirme adresi tek `HEAD` ile gerçek adrese çözülüyor; yayın tarihi kaynakların yarısında okunabildi.
+  40 eşzamanlı çağrıda 429 görülmedi.
 - **Gemini:** uç nokta `generativelanguage.googleapis.com/v1beta`, başlık `x-goog-api-key`.
   Vertex AI projede kapalı (gerek yok). Bakiye **faturalandırma hesabına** bağlı; bakiye bitince
   her çağrı HTTP 402 döner, ücretsiz model yok. Ürün 402'yi `AiUnavailable` saymalı.

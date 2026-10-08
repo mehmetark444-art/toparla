@@ -698,6 +698,38 @@ Yöntem: web araması ve Sağlık Bakanlığı'nın `alo171.saglik.gov.tr` sayfa
 "ücretsiz" denmez (cep telefonundan ücretli). **Sınır:** hat aranarak doğrulanmadı; çalışma saati ikincil kaynaktan.
 Kaynaklar: alo171.saglik.gov.tr · trthaber.com (308 bin arama haberi) · kureansiklopedi.com (ALO 171 maddesi).
 
+### 8 Ekim 2026 — Spike 11 (kalanlar): görsel, önbellek, arama + şema, yönlendirme, hız sınırı
+
+Betik: `scripts/gemini-olc.mjs` (anahtar `secrets.properties`'ten okunur, yazdırılmaz). Her satır tek koşu.
+Görsel, bu ölçüm için üretilmiş **uydurma** bir fatura resmi (900×520, altı satır Türkçe metin); gerçek ekran
+ya da belge gönderilmedi.
+
+| Deneme | Sonuç |
+|---|---|
+| Görsel + şemalı çıktı, `gemini-3.5-flash-lite` | 3,0 sn; kurum, son ödeme (`2026-10-23`), tutar (`1284.75`), abone no dördü de doğru; görsel 1 100 girdi tokeni |
+| Görsel + şemalı çıktı, `gemini-3.8-flash` (`low`) | 2,8 sn; dördü de doğru; 111 düşünme tokeni |
+| Örtük önbellek (aynı 11 754 tokenlik sistem talimatı 3 kez) | İki modelde de 2. ve 3. çağrıda `cachedContentTokenCount=8166`; ilk çağrıda 0. Ek ayar gerekmedi |
+| Açık önbellek (`cachedContents`, `ttl=300s`), flash-lite | Oluşturma 1,2 sn; çağrıda 11 743 token önbellekten; silme 200. Önbellekli çağrı bu koşuda daha yavaştı (4,4 sn) |
+| Arama + şemalı çıktı aynı çağrıda | HTTP 200 ve geçerli JSON, ama **`groundingChunks` boş**: kaynak listesi gelmiyor |
+| Yalnız arama | 5,5 sn; 5 kaynak; 686 çıktı tokeni |
+| Yönlendirme adresini çözme (`HEAD`, yönlendirmeyi izlemeden) | 4/4 kaynakta `302` + `Location` = gerçek adres (0,4–1,3 sn). Sayfadan yayın tarihi 2/4'te okunabildi (`article:published_time` / `datePublished`) |
+| 40 eşzamanlı kısa çağrı, flash-lite | 40/40 HTTP 200; en uzun 1,9 sn. **429 tetiklenmedi** |
+
+**Ürün için sonuçlar:**
+1. Belge fotoğrafından tarih ve tutar çıkarma hızlı kademede çalışıyor (tek, temiz, basılı örnek). Karar 0009
+   gereği önce yerel model denenir; yerel modelin görsel yeteneği henüz ölçülmedi.
+2. Uzun ve değişmeyen sistem talimatı başa konursa örtük önbellek kendiliğinden devreye giriyor; açık önbellek
+   yönetimine şimdilik gerek yok.
+3. Konu Motoru aramayı ve şemalı çıktıyı **iki ayrı çağrıda** yapmalı: önce arama (kaynaklar), sonra kaynaklı
+   metni şemaya döken çağrı. Tek çağrıda kaynaklar kayboluyor.
+4. Gerçek adres tek `HEAD` isteğiyle alınabiliyor; yayın tarihi her sitede yok: tarih bulunamayan kaynak
+   "tarihi bilinmiyor" diye işaretlenmeli, uydurulmamalı.
+5. Hız sınırı bu hesapta 40 eşzamanlı çağrıyla aşılmadı; 429 gövdesi ve bekleme süresi alanı gözlenemedi.
+   İstemci 429'u yine de belgelendiği gibi ele alacak (F6.2), gerçek gövdeyle sınanmadan.
+
+**Denenmedi:** el yazısı, eğik ya da düşük ışıklı gerçek belge fotoğrafı · önbelleğin fiyat etkisinin faturadan
+doğrulanması · 429 gövdesi · gerçek bir konu taramasının uçtan uca maliyeti (F1.17) · Türkçe kalite (altın set).
+
 **Ortam notu:** PowerShell'de `bash` komutu Windows'un kendi bash'ini (WSL) açıyor; telefon aracı bulunamıyor.
 Kullanıcı'ya verilecek komut Git Bash'i tam yoluyla çağırmalı: `& "C:\Program Files\Git\bin\bash.exe" scripts/…`.
 
