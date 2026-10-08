@@ -123,4 +123,35 @@ Ekran kilidi PIN olarak kuruldu (`CredentialType: PIN`). 5,5 dk'lık çift kurul
 
 ### 7 Ekim 2026 (23:10) — Spike 11: bakiye yüklendi denildi, çağrılar hâlâ 402
 
-Kullanıcı bakiye sorununu çözdüğünü bildirdi. 23:09–23:14 arasında 6 üretim çağrısı (üç model) yine HTTP 402 "prepayment credits are depleted" döndü. Resmi belgeye göre (ai.google.dev/gemini-api/docs/billing): bakiye **faturalandırma hesabına** bağlıdır, kart ödemesi çoğunlukla anında, güncelleme gecikebilir; anahtar yenilemek gerekmez. Olası nedenler: ödeme henüz yansımadı · bakiye bu anahtarın projesinin (662439627265) bağlı olmadığı başka bir faturalandırma hesabına yüklendi · ödeme tamamlanmadı. Kullanıcı'dan AI Studio'daki durum istenecek.
+Kullanıcı bakiye sorununu çözdüğünü bildirdi. 23:09–23:14 arasında 6 üretim çağrısı (üç model) yine HTTP 402 "prepayment credits are depleted" döndü. Resmi belgeye göre (ai.google.dev/gemini-api/docs/billing): bakiye **faturalandırma hesabına** bağlıdır, kart ödemesi çoğunlukla anında, güncelleme gecikebilir; anahtar yenilemek gerekmez. Olası nedenler: ödeme henüz yansımadı · bakiye bu anahtarın projesinin (662439627265) bağlı olmadığı başka bir faturalandırma hesabına yüklendi · ödeme tamamlanmadı. Kullanıcı'dan AI Studio'daki durum istenecek. Sonuç: bakiye başka hesaba yüklenmiş; doğru hesaba yüklenmesi bekleniyor.
+
+### 8 Ekim 2026 — Spike 1: gece testi sonucu
+
+**Koşul:** 7 Ekim 22:35'te kurulan 8 üçlü (23:35 … 06:35), 24 alarm. Kablo çekili, HyperOS ayarları
+varsayılan (otomatik başlatma, pil muafiyeti, kilit rozeti yok). Kayıt 8 Ekim sabahı USB ile okundu.
+24 alarmın 24'ü çaldı; `MISSED_DETECTED` ve `RESCHEDULE` satırı yok (süreç/alarm temizliği izi yok).
+
+| Saat | Ekran / hafif Doze | `setAlarmClock` | `setExactAndAllowWhileIdle` | `setAndAllowWhileIdle` |
+|---|---|---|---|---|
+| 23:35 | açık / hayır | 162 ms | 118 ms | **4 sa 0 dk geç** (03:35'te) |
+| 00:35 | açık / hayır | 166 ms | 216 ms | **3 sa 0 dk geç** (03:35'te) |
+| 01:35 | açık / hayır | 152 ms | 120 ms | **2 sa 0 dk geç** (03:35'te) |
+| 02:35 | kapalı / evet | 157 ms | 124 ms | **1 sa 0 dk geç** (03:35'te) |
+| 03:35 | kapalı / evet | 18 ms | 561 ms | **4 sa 54 dk geç** (08:30'da) |
+| 04:35 | kapalı / hayır | 1 427 ms | 19 410 ms | **3 sa 54 dk geç** (08:30'da) |
+| 05:35 | kapalı / hayır | 1 282 ms | 1 751 ms | **2 sa 54 dk geç** (08:30'da) |
+| 06:35 | kapalı / evet | 1 124 ms | 28 111 ms | **1 sa 54 dk geç** (08:30'da) |
+
+**Sonuçlar:**
+1. `setAlarmClock`: 8/8, en çok 1,4 sn. Kritik sınıf için doğrulandı.
+2. `setExactAndAllowWhileIdle`: 8/8, en çok 28 sn; ±1 dk içinde. 7 Ekim'deki 211 sn'lik gecikme
+   8 ölçümde tekrarlanmadı; kök nedeni hâlâ bilinmiyor.
+3. `setAndAllowWhileIdle`: zamanlı hiçbir iş için kullanılamaz. İlk üçü **ekran açıkken** bile
+   çalmadı; dördü 03:35'te, kalan dördü 08:30'da ekran açılınca toplu çaldı. Neden bilinmiyor.
+4. Uzun bekleme (ekran kapalı, 04:35'ten sonra) kesin alarmlarda sapmayı ~0,15 sn'den 1–28 sn'ye çıkardı.
+
+**Sınırlar:** tek gece. Alarm anında `isDeviceIdleMode` hiç `true` görülmedi (yalnız hafif Doze
+3 kez); **derin Doze altında teslim doğrulanmadı.** İlk üç saatte ekran açıktı (telefon kullanılıyordu).
+Pil 66 → 45; arada şarj görüldüğü (66 → 69) ve telefon kullanıldığı için pil ölçümü sayılmaz.
+
+**Karar:** `docs/decisions/0006-sinif-alarm-yolu.md`.

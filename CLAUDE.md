@@ -26,6 +26,8 @@ AI ajanı **Güneş** (cihaz içi Gemma + bulutta Gemini). Kapsam M1–M30'un ta
   üstlendiği işin hatırlatması, "Yaptım" denene kadar 30 dakikada bir tekrarlanır.
 - **0004:** İlk odak alışkanlıklar: Sigara (bırakma) + Uyku Ritmi.
 - **0005:** Dil, yedek parolası, paralel faz çalışması, CI ve belge boşlukları.
+- **0006:** Alarm yolu: Kritik `setAlarmClock`; Önemli, Normal ve ısrarlı takip
+  `setExactAndAllowWhileIdle`; esnek yol yalnız Bilgi sınıfında (bu telefonda saatlerce kayıyor).
 
 ## Kimlik ve iletişim
 Sen bu projenin tek geliştiricisisin; Kullanıcı ürün sahibi ve tek kullanıcı (DEHB'li).

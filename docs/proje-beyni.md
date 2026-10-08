@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 8 Ekim 2026, 02:00 · **Kapsadığı son commit:** `2ac3000` · **Kapanan son faz:** F0
+**Son güncelleme:** 8 Ekim 2026, sabah · **Kapsadığı son commit:** `22b421a` · **Kapanan son faz:** F0
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -108,10 +108,11 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 | 0002 | **Yasak kelime listesi yok** | Kullanıcı: "yasak kelime olmasın". Liste zaten blueprint'in kendi onaylı metinleriyle çakışıyordu ("Bugün hâlâ senin günün") | LLM'in ürettiği kırıcı ifade artık otomatik yakalanmıyor; koruma prompt yönergesi + "Bu beni kırdı" + valf. Seri sayacı yok / "Taşınan" kuralları **duruyor**. |
 | 0003 | Bildirim bütçesi **10** (aralık 10–20); **ısrarlı takip**: Kullanıcı'nın üstlendiği iş "Yaptım" denene dek 30 dk'da bir sorulur | Kullanıcı: "en az 10 olsun… peşimi bırakmasın" | Blueprint'in bildirim yorgunluğu kaygısının tersine. Sınırlar Kullanıcı onaylı: uyku/sessiz saat, kriz/Bunaldım sonrası 3 sa, odak oturumu ve "Bugün sessiz"de susar, sabah sürer. Bütçeden muaf. |
 | 0004 | İlk odak alışkanlıklar: **Sigara (tam bırakma) + Uyku Ritmi** | Kullanıcı seçimi bana bıraktı; sigara en net hedef, uyku diğer her şeyin temeli | Diğer dört alışkanlık "izleniyor"; dürtme almaz. |
+| 0006 | Alarm yolu: Kritik `setAlarmClock`; Önemli, **Normal** ve ısrarlı takip `setExactAndAllowWhileIdle`; esnek yol yalnız Bilgi | Gece testi: esnek yol 2–5 saat geç çaldı, ekran açıkken bile; kesin yollar ≤ 28 sn | Blueprint'ten sapma (Normal esnekti). Kesin alarm sayısı artar; pil F10'da ölçülür. Derin Doze henüz sınanmadı. |
 | 0005 | Dil Türkçe (tanımlayıcılar İngilizce) · yedek parolayla şifreli · bekleme günlerinde sonraki faz flag arkasında · CI şimdilik yerel · v3'te eksik şemaları ben tasarlarım · JBR 21 ile derleme | Netleştirme turu 2 | — |
 
 **Bekleyen karar adayları**
-- **Sınıf → alarm yolu.** Bulgu: `setAlarmClock` her koşulda ±0,2 sn; `setExactAndAllowWhileIdle`
+- ~~**Sınıf → alarm yolu.**~~ → kapandı: karar 0006 (8 Ekim 2026). Eski not: Bulgu: `setAlarmClock` her koşulda ±0,2 sn; `setExactAndAllowWhileIdle`
   bir kez 3,5 dk gecikti. Aday: ±1 dk sözü verilen her şey (kritik + ısrarlı takip)
   `setAlarmClock`. Karar 0003 şu an ısrarlı takip için `setExactAndAllowWhileIdle` diyor;
   gece testi sonucuna göre güncellenecek. `ReminderPlanner.apiFor` tek değişim noktası.
@@ -151,6 +152,9 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 12. **GitHub'a ilk push.** Depo herkese açık çıktı; Kullanıcı gizli yaptı. Bilgisayardaki varsayılan
     GitHub girişi başka hesap olduğu için uzak adres kullanıcı adıyla tanımlandı; 18 commit gönderildi,
     yerel ve uzak eşit (`6bc3304`), kimliksiz erişim 404.
+13. **Gece testi okundu, karar 0006.** 24/24 alarm çaldı; esnek yol saatlerce geç kaldığı için Normal
+    sınıf kesin yola alındı (`ReminderPlanner.apiFor`). Yeni oturumda başlangıç kancasının bağlama
+    girdiği, 8 yeteneğin ve 3 alt ajanın listelendiği de görüldü (gece kontrolünün iki açık maddesi kapandı).
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -158,7 +162,11 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   `arm64-v8a`, sayfa boyutu 4096 (16 KB değil).
 - **`setAlarmClock` güvenilir:** ekran açık/kapalı, kaydırıp kapatma, yeniden başlatma ve
   kilitli yeniden başlatmada 12–153 ms sapma.
-- **`setExactAndAllowWhileIdle` bir kez 211 sn gecikti** (ekran kapalı, kova zorlanırken). Tek ölçüm.
+- **`setExactAndAllowWhileIdle` bir kez 211 sn gecikti** (ekran kapalı, kova zorlanırken). Tek ölçüm;
+  gece testindeki 8 ölçümde tekrarlanmadı (en çok 28 sn). Kök neden bilinmiyor.
+- **Gece testi (8 saat, 24 alarm, özel izin yok):** hepsi çaldı. `setAlarmClock` ≤ 1,4 sn,
+  `setExactAndAllowWhileIdle` ≤ 28 sn. **`setAndAllowWhileIdle` 2–5 saat geç**, ekran açıkken bile;
+  zamanlı hiçbir işte kullanılmaz (karar 0006). Derin Doze alarm anında hiç gözlenmedi: o koşul açık.
 - **Kaydırıp kapatma zorla durdurma değildir:** HyperOS 3'te alarmlar korunur (`stopped=false`).
   Bu, otomatik başlatma / pil muafiyeti **verilmeden** gözlendi (tek deneme, 2 dk ufuk).
 - **Zorla durdurma** alarmları siler; uygulama yeniden açılınca sistem `BOOT_COMPLETED`

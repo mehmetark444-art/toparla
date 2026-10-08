@@ -179,7 +179,7 @@ class ReminderPlannerTest {
     fun `sinif alarm yoluna eslenir`() {
         assertEquals(AlarmApi.ALARM_CLOCK, ReminderPlanner.apiFor(ReminderClass.CRITICAL))
         assertEquals(AlarmApi.EXACT_IDLE, ReminderPlanner.apiFor(ReminderClass.IMPORTANT))
-        assertEquals(AlarmApi.INEXACT, ReminderPlanner.apiFor(ReminderClass.NORMAL))
+        assertEquals(AlarmApi.EXACT_IDLE, ReminderPlanner.apiFor(ReminderClass.NORMAL))
         assertEquals(AlarmApi.INEXACT, ReminderPlanner.apiFor(ReminderClass.INFO))
     }
 

@@ -3,7 +3,7 @@
 Projenin sıfırdan bitişe tek durum kaynağı. Her oturumda buradan okunur, burada işaretlenir.
 Kapsam `docs/BLUEPRINT.md` (M1–M30) + `docs/decisions/` kararlarıdır; bu dosya kapsam eklemez.
 
-**Son güncelleme:** 8 Ekim 2026, 02:00
+**Son güncelleme:** 8 Ekim 2026, sabah (gece testi sonucu, karar 0006)
 
 ## Nasıl okunur
 
@@ -43,13 +43,11 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F9 | S8 | Konu Motoru | ☐ |
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
-**Şu an:** F1 (gece alarm testi koşuyor; Gemini bakiye bekliyor) ve F2-A (saf mantık) paralel.
-**Sıradaki tek adım:** gece alarm kaydını oku → F1.1'i kapat → ısrarlı takibin alarm yolu kararı.
+**Şu an:** F1 (alarm yolu kararı verildi; Gemini bakiye bekliyor) ve F2-A (saf mantık) paralel.
+**Sıradaki tek adım:** F1.3 tam ekran bildirim + F1.2 alarmdan foreground service (telefon bağlı).
 
 **Açık engeller**
 - ⛔ Gemini üretim çağrıları HTTP 402: bakiye doğru hesaba yüklenecek (Kullanıcı, 8 Ekim).
-- ⛔ Gece alarm testi sonucu: telefon 8 Ekim 06:35'ten sonra USB'ye takılacak (Kullanıcı).
-
 ---
 
 ## F0 — Hazırlık ve temel ☑
@@ -86,8 +84,9 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
   - ☑ Son uygulamalardan kaydırıp kapatma (tek deneme, 2 dk)
   - ☑ Yeniden başlatma
   - ☑ Kilitli yeniden başlatma (Direct Boot)
-  - ◐ Gece: 1–8 saat, gerçek Doze, 3 yöntem, 24 alarm — kuruldu, sonuç bekleniyor
-  - ☐ `setExactAndAllowWhileIdle` 3,5 dk gecikmesinin tekrar testi ve kök nedeni
+  - ☑ Gece: 1–8 saat, 3 yöntem, 24 alarm; 24/24 çaldı — `platform-bulgulari.md` § gece testi sonucu
+  - ☐ Derin Doze (`idle=true`) altında teslim: gece testinde alarm anında hiç gözlenmedi
+  - ◐ `setExactAndAllowWhileIdle` 3,5 dk gecikmesi: 8 gece ölçümünde tekrarlanmadı (en çok 28 sn); kök neden bilinmiyor
   - ☐ Kısıtlı bekleme kovası (uygulama günlerce açılmadan)
   - ☐ Güvenlik uygulaması "Bellek temizleme" sonrası teslim
   - ☐ Saat elle değişti / saat dilimi değişti → yeniden planlama
@@ -120,7 +119,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 - ☑ F1.20 16 KB sayfa: cihaz 4096 kullanıyor; engel değil — `platform-bulgulari.md`
 
 ### F1-D Kararlar
-- ☐ F1.21 Karar kaydı: sınıf → alarm yolu (ısrarlı takip dahil)
+- ☑ F1.21 Karar kaydı: sınıf → alarm yolu (ısrarlı takip dahil) — karar 0006
 - ☐ F1.22 Karar kaydı: Gemini model kademeleri ve aylık bütçe dağılımı
 - ☐ F1.23 Karar kaydı: STT yolu; cihaz içi model (E2B / E4B) seçimi
 

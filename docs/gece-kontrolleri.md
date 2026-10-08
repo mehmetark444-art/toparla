@@ -42,3 +42,6 @@ kancası gerçek bir düzenlemeyle denendi.
 2. Yeni yetenek ve alt ajanların oturumda listelendiği henüz görülmedi (aynı).
 3. Karar 0002'deki yorum (yasak kelime listesinin tümden kaldırılması) Kullanıcı'ya iki kez
    bildirildi, itiraz gelmedi; açık "evet" henüz yok.
+
+**8 Ekim sabahı güncelleme:** 1 ve 2 kapandı. Devam eden oturumda başlangıç kancası durumu bağlama
+ekledi; 8 yetenek ve 3 alt ajan listelendi.

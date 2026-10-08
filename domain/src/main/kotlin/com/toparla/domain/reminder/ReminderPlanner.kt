@@ -48,8 +48,9 @@ object ReminderPlanner {
     /** Sınıf → alarm yolu. Kritik her zaman `setAlarmClock` (S0 spike 1 bulgusu). */
     fun apiFor(klass: ReminderClass): AlarmApi = when (klass) {
         ReminderClass.CRITICAL -> AlarmApi.ALARM_CLOCK
-        ReminderClass.IMPORTANT -> AlarmApi.EXACT_IDLE
-        ReminderClass.NORMAL, ReminderClass.INFO -> AlarmApi.INEXACT
+        // Esnek yol bu telefonda saatlerce kayıyor (karar 0006); yalnız zamanı önemsiz Bilgi sınıfında.
+        ReminderClass.IMPORTANT, ReminderClass.NORMAL -> AlarmApi.EXACT_IDLE
+        ReminderClass.INFO -> AlarmApi.INEXACT
     }
 
     /** (now, windowEnd] aralığındaki teslimler. Geçmiş an kurulmaz. */
