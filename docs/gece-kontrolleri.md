@@ -89,3 +89,29 @@ Bu, günün kapanış kontrolü değil, Kullanıcı'nın istediği ara denetimdi
 5. GitHub Actions iş akışı hiç koşmadı (push yapılmadı): Linux'ta ilk koşuda sorun çıkabilir.
 6. Karar 0002 (yasak kelime listesi yok) için açık "evet" ve karar 0008 (ekran okuma) için sınır onayı bekliyor.
 7. 25 commit yalnız bu bilgisayarda.
+
+## 9 Ekim 2026 — gece kontrolü (8 Ekim sabahından bu yana: `2ac3000..3fc8c7f`, 48 commit, 93 dosya)
+
+8 Ekim gecesi kontrol yapılmamıştı (Kullanıcı günün bitmediğini söyledi); bu kontrol iki günü birlikte kapatır.
+Aynı gece yapılan "ara denetim" (yukarıdaki kayıt) göz kontrolünün `:domain`, `:data`, `:app` ve yol haritası
+kısmını kapsadı; burada kalanlar okundu: betikler, `:spike`, yapılandırma, yetenek dosyaları.
+
+**Göz kontrolünde bulunan ve düzeltilen**
+1. `:spike` `CaptureTile` açıklaması eski davranışı anlatıyordu (kilitliyken Activity açılır) → güncellendi.
+2. `cihaz-testi` yeteneği bu iki günün derslerini taşımıyordu (H24, H25, H27, kısa bekleme, süreç ölümü sınaması) → eklendi.
+3. (Ara denetimde) H28 mantık hatası, yedek dışlama kuralları, arka plan günlüğü, kasa kilidi, kullanılmayan kod,
+   bayat belge satırları.
+
+**Makine kontrolü**
+- 114 JVM testi + 15 cihaz testi yeşil; ktlint, detekt, Android Lint, debug + imzalı release + `:spike` derlemesi geçti.
+- Kanca sınaması: hepsi geçti. Tutarlılık denetimi: tutarlı. İzlenen dosyalarda gizli değer yok.
+- Kasıtlı bozma (bugün değişen kurallar): 24/24 yakalanıyor (ilk turlarda 3'ü kaçtı; testleri yazıldı).
+- Derleme uyarısı: 1 (Gradle 10'da kalkacak `ReportingExtension.file`; kalite eklentilerinden geliyor, bizim kodumuzdan değil).
+
+**Açık kalan**
+1. F1 kapanışı: kablosuz gece testinin okunması, gürültüde ses tanıma, K1–K3.
+2. Kullanıcı'nın ertelediği: imza anahtarının iki yerde yedeği, API anahtarının yenilenmesi.
+3. GitHub Actions'ın ilk koşusu (bu kontrolün ardından push ile başlayacak; sonucu doğrulanacak).
+4. `release` sürümü cihazda çalıştırılmadı (ekran yok); `MissingApplicationIcon` uyarısı F2.24'te kapanır.
+5. Karar 0002 için açık onay, karar 0008 için sınır onayı bekliyor.
+6. Telefonda `:spike` içinde ekran okuma **ölçüm** servisi kurulu duruyor (kapalı); `:spike` F10.11'de silinir.

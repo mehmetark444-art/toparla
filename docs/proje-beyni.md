@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 9 Ekim 2026, gece (F2-B altyapı) · **Kapsadığı son commit:** `54be010` · **Kapanan son faz:** F0
+**Son güncelleme:** 9 Ekim 2026, gece (F2-B altyapı, ara denetim, gece kontrolü) · **Kapsadığı son commit:** `3fc8c7f` · **Kapanan son faz:** F0
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden

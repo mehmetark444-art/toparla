@@ -169,7 +169,10 @@ class SpikeNotificationListener : NotificationListenerService() {
     }
 }
 
-/** Spike 8: "Yakala" kutucuğu. Dokunma anı kilit ekranı yakalama Activity'sine taşınır. */
+/**
+ * Spike 8: "Yakala" kutucuğu. Kilit açıkken yakalama Activity'sini açar; kilitliyken (Activity açılamadığı
+ * için) tanımayı doğrudan serviste başlatır ve geri bildirimi kutucuğun durumuyla verir.
+ */
 class CaptureTile : TileService() {
     override fun onClick() {
         AlarmSpike.log(this, "TILE_CLICK", "tile", 0, "locked=$isLocked secure=$isSecure")

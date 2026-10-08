@@ -45,6 +45,15 @@ Geliştirici seçenekleri → "USB ile yükle" kapalı.
 - USB bağlıyken Doze zorlanamaz ve `set-standby-bucket rare` kalıcı olmaz: bunları kablo çekili
   gerçek beklemeyle ölç.
 
+- **Komut gönderildi ≠ iş başladı (H24, H27):** spike'ı `am start --activity-clear-top …` ile tetikle; üstte başka
+  sayfa (ör. açık kalmış ayar ekranı) varsa ya da **telefon kilitliyse** intent teslim edilmez. Kullanıcı'ya
+  "şimdi olacak" demeden ve uzun işi beklemeye başlamadan önce kayıtta başlangıç satırını gör.
+- Kullanıcı'nın başında beklediği denemede gecikme 15–20 sn; önce ondan "hazır" al, sonra başlat.
+- Kullanıcı'ya çalıştıracağı komut verilecekse Git Bash'i tam yoluyla çağır (H25):
+  `& "C:\Program Files\Git\bin\bash.exe" scripts/…` (PowerShell'de `bash` başka bir kabuğu açar).
+- Süreç ölümü sınaması: `am crash PAKET`. Otomatik başlatma izni yoksa HyperOS süreci geri başlatmaz;
+  erişilebilirlik servisi her durumda yalnız güncelleme, yeniden başlatma ya da elle kapat-aç ile döner.
+
 ## 5. Kaydı oku (beyanı değil)
 ```bash
 ./scripts/adb shell run-as com.toparla.spike cat /data/user_de/0/com.toparla.spike/files/log.csv
