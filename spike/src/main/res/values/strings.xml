@@ -17,5 +17,12 @@
     <string name="a11y_description">Toparla yalnızca hangi uygulamanın açıldığını görür; ekrandaki hiçbir içeriği okumaz.</string>
     <string name="intercept_question">Bu uygulamayı açtın. Şu an neye ihtiyacın var?</string>
     <string name="intercept_skip">Geç</string>
+    <string name="stt_listen">Dinle</string>
+    <string name="stt_skip">Bu cümleyi geç</string>
+    <string name="stt_listening">Dinliyorum…</string>
+    <string name="stt_done">Bitti. Teşekkürler.</string>
+    <string name="stt_progress">%1$d / %2$d\n\n%3$s</string>
+    <string name="stt_error">Anlayamadım (kod %1$d). Dinle\'ye yeniden bas.</string>
+    <string name="stt_unavailable">Bu telefonda cihaz içi tanıma hazır değil.</string>
     <string name="log_empty">Henüz kayıt yok.</string>
 </resources>

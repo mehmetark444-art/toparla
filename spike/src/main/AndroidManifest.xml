@@ -5,6 +5,13 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
@@ -34,6 +41,11 @@
             android:exported="false"
             android:showWhenLocked="true"
             android:turnScreenOn="true" />
+
+        <activity
+            android:name=".SttActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".InterceptActivity"
