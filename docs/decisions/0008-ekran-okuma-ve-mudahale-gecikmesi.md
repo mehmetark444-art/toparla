@@ -1,6 +1,6 @@
 # 0008 — Müdahale gecikmesi kabulü ve ekran okuma (yalnız cihaz içi)
 
-Tarih: 8 Ekim 2026  Durum: Bölüm 1 Kabul · Bölüm 2 Aday (ölçüm ve sınır onayı bekliyor)
+Tarih: 8 Ekim 2026  Durum: Bölüm 1 Kabul · Bölüm 2 Aday (kapsam Kullanıcı tarafından belirlendi; uygulanabilirlik ölçümü bekliyor)
 
 **Bağlam:** Spike 5 (`platform-bulgulari.md`): uygulama açılışı erişilebilirlikle ~2,9 sn geç
 algılanıyor (hedef ≤ 400 ms). Blueprint K17: erişilebilirlik servisi yalnız paket adını görür,
@@ -28,9 +28,13 @@ araştırılmaya devam eder; bulunursa hedef yeniden sıkılaştırılır.
 - Özellik ayrı bir anahtarla açılır ve Ayarlar'da tek dokunuşla kapanır; açıkken sürekli görünür
   bir gösterge vardır.
 
-**Kullanıcı'ya önerilen sınırlar (onay bekliyor):** parola alanları, bankacılık/ödeme uygulamaları
-ve gizli sekmeler varsayılan olarak okunmaz; Kullanıcı tek tek açabilir. Gerekçe: telefon ya da yedek
-ele geçerse zararın sınırlı kalması; yanlışlıkla bir parolanın "öneri" olarak görünmemesi.
+**Sınırlar — Kullanıcı kararı (8 Ekim 2026): "hepsini okusun".** Parola alanları, bankacılık/ödeme
+uygulamaları ve gizli sekmeler için varsayılan dışlama önerildi (gerekçe: telefon ya da yedek ele
+geçerse zararın sınırlı kalması); Kullanıcı riski duyup reddetti. Dolayısıyla okuma kapsamında
+uygulama ya da alan dışlaması **yoktur**; Kullanıcı Ayarlar'dan kendi dışlama listesini ekleyebilir.
+Değişmeyenler: ham ekran metni saklanmaz; saklanan öneride Kırmızı kalıplar (kart no, IBAN, T.C.
+kimlik no, parola, OTP) maskelenir; hiçbir ekran içeriği buluta gitmez. Bu, K6'nın "Kırmızı hiçbir
+modele gitmez" kuralını yalnız **cihaz içi model ve yalnız ekran okuma** için gevşetir.
 
 **Karar öncesi ölçülecekler (yol haritası F1.24):**
 1. İçerik yetkisi açıkken algılama gecikmesi değişiyor mu?
