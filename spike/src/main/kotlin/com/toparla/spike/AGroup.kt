@@ -19,6 +19,7 @@ import android.os.SystemClock
 import android.provider.Settings
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
@@ -172,11 +173,65 @@ class SpikeNotificationListener : NotificationListenerService() {
 class CaptureTile : TileService() {
     override fun onClick() {
         AlarmSpike.log(this, "TILE_CLICK", "tile", 0, "locked=$isLocked secure=$isSecure")
+        if (isLocked) {
+            // Kilitliyken startActivityAndCollapse bu telefonda PIN istiyor (ölçüldü): tanıma doğrudan servisten.
+            listenFromService(SystemClock.uptimeMillis())
+            return
+        }
         val intent = Intent(this, LockCaptureActivity::class.java)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             .putExtra(LockCaptureActivity.EXTRA_CLICK_UPTIME, SystemClock.uptimeMillis())
         startActivityAndCollapse(
             PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE),
+        )
+    }
+
+    private fun tileFeedback(state: Int, subtitle: String?) {
+        val tile = qsTile ?: return
+        tile.state = state
+        tile.subtitle = subtitle
+        tile.updateTile()
+    }
+
+    private fun listenFromService(clickUptime: Long) {
+        // Kutucuk diyaloğu kilit ekranında görünmedi (ölçüldü); geri bildirim kutucuğun kendisinden verilir.
+        tileFeedback(Tile.STATE_ACTIVE, getString(R.string.stt_listening))
+        if (!SpeechRecognizer.isOnDeviceRecognitionAvailable(this)) return
+        val recognizer = SpeechRecognizer.createOnDeviceSpeechRecognizer(this)
+        fun since() = "sinceClickMs=${SystemClock.uptimeMillis() - clickUptime}"
+        recognizer.setRecognitionListener(object : RecognitionListener {
+            override fun onReadyForSpeech(params: Bundle?) = AlarmSpike.log(this@CaptureTile, "CAPTURE_MIC_READY", "tile-locked", 0, since())
+
+            override fun onResults(results: Bundle?) {
+                val text = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull().orEmpty()
+                AlarmSpike.log(this@CaptureTile, "CAPTURE_RESULT", "tile-locked", 0, "chars=${text.length}")
+                tileFeedback(Tile.STATE_INACTIVE, getString(R.string.capture_saved))
+                recognizer.destroy()
+            }
+
+            override fun onError(error: Int) {
+                AlarmSpike.log(this@CaptureTile, "CAPTURE_ERROR", "tile-locked", 0, "error=$error")
+                tileFeedback(Tile.STATE_INACTIVE, null)
+                recognizer.destroy()
+            }
+
+            override fun onBeginningOfSpeech() = Unit
+
+            override fun onRmsChanged(rmsdB: Float) = Unit
+
+            override fun onBufferReceived(buffer: ByteArray?) = Unit
+
+            override fun onEndOfSpeech() = Unit
+
+            override fun onPartialResults(partialResults: Bundle?) = Unit
+
+            override fun onEvent(eventType: Int, params: Bundle?) = Unit
+        })
+        recognizer.startListening(
+            Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+                .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                .putExtra(RecognizerIntent.EXTRA_LANGUAGE, "tr-TR")
+                .putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true),
         )
     }
 }

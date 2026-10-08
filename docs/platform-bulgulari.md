@@ -543,10 +543,34 @@ Uygulama içinden `startActivity` ile, kilit açıkken, tek deneme (`AGroup.open
 | Kullanım erişimi | `ACTION_USAGE_ACCESS_SETTINGS` | açıldı |
 | Uygulama bildirim ayarları | `ACTION_APP_NOTIFICATION_SETTINGS` | kilitli koşuda açıldı; kilit açık koşuda kayıt düşmedi (yeniden denenecek) |
 
-A grubunun kalanı (**yapılmadı**, kod `:spike/AGroup.kt` içinde hazır ve telefonda kurulu): Yakala kutucuğu
-(ekleme penceresi açıldı, Kullanıcı yanıtı ve ölçüm bekliyor) · bildirim erişimi · alarm sesi ve Rahatsız
-Etme · canlı bildirim (`ProgressStyle`; API 36 SDK'sında "promoted" isteği için genel yöntem yok, anahtar
-adı doğrulanmadı) · arama algılama · `kur.sh`.
+Ek: gri tonlama için `com.android.settings.ACCESSIBILITY_COLOR_SPACE_SETTINGS` hedefi var (yalnız
+`resolve-activity`); `android.settings.BEDTIME_SETTINGS` yok. Derlenmiş tablo: `hyperos-baglantilar.md`.
+
+### 8 Ekim 2026 — Spike 8: "Yakala" kutucuğu (Tile)
+
+Yöntem: `StatusBarManager.requestAddTileService` ile ekleme penceresi (Kullanıcı "Ekle" dedi, `result=2`);
+Kullanıcı kutucuğa dokunup aynı cümleyi söyledi. Süre: `onClick` → tanıyıcının `onReadyForSpeech` anı.
+USB bağlı, sessiz ortam, PIN kilidi.
+
+| Koşul | Yol | Dokunuş → mikrofon | Sonuç |
+|---|---|---|---|
+| Kilit açık | `startActivityAndCollapse(PendingIntent)` → `LockCaptureActivity` | 287 ms (1 ölçüm) | Ekran açıldı, cümle tanındı |
+| Kilitli | aynı yol (`showWhenLocked` Activity) | 7,6 sn (PIN girişi dahil) | **Sistem PIN istedi**; kilit üstünde açılmadı |
+| Kilitli | `TileService.showDialog` (`FLAG_SHOW_WHEN_LOCKED`) + serviste tanıyıcı | 258 ms (1 ölçüm) | Cümle tanındı; **diyalog görünmedi** (çağrı hata vermedi) |
+| Kilitli | yalnız serviste tanıyıcı; `qsTile.state/subtitle` ile geri bildirim | 245 ms (1 ölçüm) | Cümle tanındı; kutucuk dinleme boyunca yanık kaldı, bitince söndü; **alt yazı ("Dinliyorum…", "Tamam ✓") görünmedi**; üstte "Toparla Yakala açık" yazısı çıktı |
+
+**Sonuç:** hedef (≤ 1 sn) iki koşulda da tutuyor. Kilitliyken yakalama, kilit açılmadan ve ekran açılmadan
+doğrudan `TileService` içinden yapılabiliyor; geri bildirim kanalı kutucuğun yanık/sönük durumu (ve
+denenmemiş olarak titreşim). Blueprint'teki `LockCaptureActivity` bu telefonda kilit ekranında açılmıyor:
+F3.8 buna göre tasarlanır (kilitliyken ekransız yakalama). Kullanıcı yazıları görmeyi şart koşmadı.
+
+**Sınırlar:** koşul başına 1–2 ölçüm; hata durumunda (ses yok, tanıma hatası 7/8 iki kez görüldü)
+Kullanıcı'ya nasıl haber verileceği denenmedi; servis dinleme sırasında sistemce öldürülürse ne olduğu
+bilinmiyor; kutucuk yeniden başlatmadan sonra yerinde mi bakılmadı.
+
+A grubunun kalanı (**yapılmadı**, kod `:spike/AGroup.kt` içinde hazır ve telefonda kurulu): bildirim erişimi ·
+alarm sesi ve Rahatsız Etme · canlı bildirim (`ProgressStyle`; API 36 SDK'sında "promoted" isteği için genel
+yöntem yok, anahtar adı doğrulanmadı) · arama algılama · `kur.sh` koşusu.
 
 **Açık (model):** düşünme kipiyle karta dayalı yanıt · kablosuz pil tüketimi · çok turlu sohbet, araç API'si, görsel/ses · bellek
 (tek okuma: süreç 237 MB PSS, model belleği ayrı sayılıyor olabilir; doğrulanmadı) · şemaya zorlamanın
