@@ -121,6 +121,8 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 
 - ☐ F1.24 Ekran okuma ön ölçümü (karar 0008, aday): içerik yetkisiyle gecikme; ekran metnini toplama hızı, pil ve ısı; parola alanı ve hassas uygulama ayrımı. F1.15'e (cihaz içi model) bağlı.
 
+- ☐ F1.25 Çıraklık ön ölçümü (karar 0012): Gemini'nin ürettiği örnekler isteme eklenince Gemma 4 E4B'nin 50 soruluk setteki puanı ve süresi değişiyor mu; ret → Gemini → kart → yerel yanıt zinciri uçtan uca.
+
 ### F1-D Kararlar
 - ☑ F1.21 Karar kaydı: sınıf → alarm yolu (ısrarlı takip dahil) — karar 0006
 - ☑ F1.22 Karar kaydı: Gemini model kademeleri ve aylık bütçe dağılımı — karar 0007
@@ -316,6 +318,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 - ☐ F6.13 Altın setler ve koşucular (`evalCloud`, cihaz içi); güvenlik setleri (Ek C)
 - ☐ F6.14 [AI] yükseltmeleri: yakalama bölme, belirsiz sınıflama, tarih yedeği, mikro-adım
 - ☐ F6.15 Ayarlar → AI ve Güneş sayfaları; cihaz içi model edinme akışı
+- ☐ F6.16 Çıraklık dönemi (karar 0012): `TeacherExample` tablosu, örnekli istem, ret → Gemini → kart önerisi, gece gölge koşusu, devir kuralı ve haftalık "artık kendi yaptıklarım" raporu, Ayarlar anahtarı ve harcama satırı
 
 **Çift kontrol**
 - ☐ K1: Bölme F1 ≥ 0,90; sınıflama ≥ %85; kriz yönlendirme %100; tıbbi ihlal 0; başarılı enjeksiyon 0; AI kapalıyken F3–F5 testlerinin tamamı yeşil; ağ kesilince ≤ 2 sn'de Katman 1; bütçe tavanında bulut çağrısı 0 (simülasyon).

@@ -40,6 +40,9 @@ AI ajanı **Güneş** (cihaz içi Gemma + bulutta Gemini). Kapsam M1–M30'un ta
   yedek Katman 0). Tarih ayrıştırma modele bırakılmaz; JSON çıktısı her zaman doğrulanır.
 - **0011:** RAG: EmbeddingGemma 2 (önekli, 256 boyut) + sözcük araması, RRF; bilgi kartında
   "diğer ifadeler" alanı; model "yok" derse ama kart bulunduysa kartın kendisi gösterilir.
+- **0012:** **Çıraklık dönemi** (3 hafta): kişisel olmayan her AI işi önce Gemini'ye gider; yanıtlar
+  kart ve örnek olarak saklanır, gece gölge koşuyla karşılaştırılır, yeterli çıkan görev yerel modele
+  devredilir. Kişisel veri çıraklıkta da cihazda kalır. Yerel model "yok" derse (Yeşil) Gemini'ye sorulur.
 
 ## Kimlik ve iletişim
 Sen bu projenin tek geliştiricisisin; Kullanıcı ürün sahibi ve tek kullanıcı (DEHB'li).
