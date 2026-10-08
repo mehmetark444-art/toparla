@@ -809,6 +809,50 @@ telefonu yeniden başlatma (8 Ekim öğle ölçümü) ya da Kullanıcı'nın aya
 **Sınırlar:** her koşul tek deneme; "çökme" yapay (`am crash`), gerçek bellek baskısı ya da HyperOS temizliği
 farklı davranabilir; otomatik başlatma açıkken kaydırıp kapatma sonrası davranış ölçülmedi.
 
+**Güvenlik uygulaması temizliği ve "tümünü temizle" (spike 1):** iki alarm (`setAlarmClock`, `setExact…`) 100 sn
+sonraya kuruldu; Kullanıcı Güvenlik uygulamasının temizliğini ve son uygulamalarda "tümünü temizle"yi çalıştırdı.
+İkisi de çaldı (8 ms, 26 ms), süreç kimliği değişmedi (uygulama son uygulamalarda **kilitliydi**, otomatik
+başlatma açıktı). Sınır: temizliğin alarmdan önce mi sonra mı yapıldığı kayıttan ayırt edilemiyor; kilitsiz
+uygulama ölçülmedi.
+
+**Saat değişimi (spike 1):** 30 dk sonraya iki alarm bekliyorken Kullanıcı otomatik saati kapatıp saati
+değiştirdi ve geri açtı. `TIME_SET` yayını 4 kez geldi; her seferinde alıcı bekleyen iki alarmı yeniden kurdu
+(`REARMED`). Saat dilimi değişimi (`TIMEZONE_CHANGED`) denenmedi; geçmişe düşen alarm durumu (`MISSED_DETECTED`)
+bu denemede oluşmadı.
+
+**Arama durumunu arka plandan okuma (spike 17):** uygulama ekranda değilken, `specialUse` foreground service
+içinden saniyede bir `AudioManager.getMode()`: hücresel aramada `0 → 2 → 0` (iki arama), WhatsApp sesli
+aramasında `0 → 3 → 0`. İzin gerekmedi. Gelen aramanın çalma anı (`1`) ölçülmedi.
+
+### 8 Ekim 2026 (gece) — F1.24: ekran okuma ön ölçümü (karar 0008, aday)
+
+Yöntem: ayrı bir erişilebilirlik servisi (`ScreenReadSpikeService`: pencere durumu + içerik değişimi olayları,
+`canRetrieveWindowContent=true`, en çok saniyede bir okuma, 5 000 düğüm sınırı). Her okumada etkin pencerenin
+düğüm ağacı gezildi; **yalnız** paket adı, düğüm sayısı, metin uzunluğu, parola alanı sayısı ve süre kayda
+yazıldı; metnin kendisi hiçbir yere yazılmadı. Kullanıcı servisi kendisi açtı, ~6 dk normal kullanım
+(Ayarlar, Chrome, WhatsApp, YouTube, ana ekran, bir giriş sayfası), sonra kapattı. 147 okuma analiz edildi
+(servis kapanana dek toplam 179). USB bağlı.
+
+| Ölçüm | Değer |
+|---|---|
+| Ağacı gezme süresi | ortanca 49 ms · %90 276 ms · en çok 2 215 ms (Chrome, 2 005 düğüm, 42 571 karakter) |
+| Düğüm sayısı | ortanca 43 · en çok 2 005 |
+| Metin uzunluğu | ortanca 353 karakter · en çok 42 571 |
+| Uygulamaya göre ortanca süre | WhatsApp 99 ms · ana ekran 56 · Chrome 55 · Ayarlar 51 · YouTube 32 · Güvenlik 2 |
+| Parola alanı işareti (`isPassword`) | Chrome ve Ayarlar'da 1 düğüm işaretli geldi; diğerlerinde 0 |
+| İşlemci (`dumpsys cpuinfo`, tek okuma) | süreç ~%2 |
+| Pil / ısı | %75 → %76 (şarjda), pil sıcaklığı 30,2 °C: ölçüm için yetersiz |
+
+**Sonuç:** metni toplamak hızlı ve hafif; darboğaz toplama değil, toplanan metni cihaz içi modele işletmek
+olacak (ekran başına ortanca ~350 karakter modele rahat sığar; uzun web sayfaları kırpılmalı). Parola alanları
+sistem tarafından işaretleniyor: karar 0008'deki "saklanan öneride Kırmızı kalıplar maskelenir" kuralı
+uygulanabilir. İkinci bir erişilebilirlik servisi açıkken ilk servis (uygulama algılama) çalışmaya devam etti;
+ölçüm servisi kapatılırken ilk servis bir kez kopup 29 sn sonra yeniden bağlandı.
+
+**Ölçülmeyen:** kablosuz pil ve ısı · okunan metinden modelin öneri çıkarma süresi ve isabeti · web
+görünümlerinde ve oyunlarda boş ağaç oranı · gizli sekme ayrımı · HyperOS'in bu servisi uzun sürede öldürüp
+öldürmediği. Karar 0008 gereği özellik hâlâ **aday**; sınır onayı Kullanıcı'dan ayrıca alınacak.
+
 **Ortam notu:** PowerShell'de `bash` komutu Windows'un kendi bash'ini (WSL) açıyor; telefon aracı bulunamıyor.
 Kullanıcı'ya verilecek komut Git Bash'i tam yoluyla çağırmalı: `& "C:\Program Files\Git\bin\bash.exe" scripts/…`.
 
