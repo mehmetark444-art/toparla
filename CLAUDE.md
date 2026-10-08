@@ -28,6 +28,8 @@ AI ajanı **Güneş** (cihaz içi Gemma + bulutta Gemini). Kapsam M1–M30'un ta
 - **0005:** Dil, yedek parolası, paralel faz çalışması, CI ve belge boşlukları.
 - **0006:** Alarm yolu: Kritik `setAlarmClock`; Önemli, Normal ve ısrarlı takip
   `setExactAndAllowWhileIdle`; esnek yol yalnız Bilgi sınıfında (bu telefonda saatlerce kayıyor).
+- **0007:** Gemini kademeleri: hızlı `gemini-3.5-flash-lite` · günlük `gemini-3.8-flash`
+  (etkileşimde `thinkingLevel: "low"`) · derin `gemini-3.1-pro-preview`. `-latest` takma adı kullanılmaz.
 
 ## Kimlik ve iletişim
 Sen bu projenin tek geliştiricisisin; Kullanıcı ürün sahibi ve tek kullanıcı (DEHB'li).

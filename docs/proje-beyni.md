@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 8 Ekim 2026, sabah · **Kapsadığı son commit:** `22b421a` · **Kapanan son faz:** F0
+**Son güncelleme:** 8 Ekim 2026, öğle · **Kapsadığı son commit:** `f43db56` · **Kapanan son faz:** F0
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -108,6 +108,7 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 | 0002 | **Yasak kelime listesi yok** | Kullanıcı: "yasak kelime olmasın". Liste zaten blueprint'in kendi onaylı metinleriyle çakışıyordu ("Bugün hâlâ senin günün") | LLM'in ürettiği kırıcı ifade artık otomatik yakalanmıyor; koruma prompt yönergesi + "Bu beni kırdı" + valf. Seri sayacı yok / "Taşınan" kuralları **duruyor**. |
 | 0003 | Bildirim bütçesi **10** (aralık 10–20); **ısrarlı takip**: Kullanıcı'nın üstlendiği iş "Yaptım" denene dek 30 dk'da bir sorulur | Kullanıcı: "en az 10 olsun… peşimi bırakmasın" | Blueprint'in bildirim yorgunluğu kaygısının tersine. Sınırlar Kullanıcı onaylı: uyku/sessiz saat, kriz/Bunaldım sonrası 3 sa, odak oturumu ve "Bugün sessiz"de susar, sabah sürer. Bütçeden muaf. |
 | 0004 | İlk odak alışkanlıklar: **Sigara (tam bırakma) + Uyku Ritmi** | Kullanıcı seçimi bana bıraktı; sigara en net hedef, uyku diğer her şeyin temeli | Diğer dört alışkanlık "izleniyor"; dürtme almaz. |
+| 0007 | Gemini kademeleri: hızlı `gemini-3.5-flash-lite`, günlük `gemini-3.8-flash` (etkileşimde düşünme `low`), derin `gemini-3.1-pro-preview`; takma ad yok | Ölçüm + resmi fiyat sayfası | Derin kademe önizleme modeli; günlük kademe fiyatı 1 Ocak 2027'de iki katı; Türkçe kalite henüz ölçülmedi. |
 | 0006 | Alarm yolu: Kritik `setAlarmClock`; Önemli, **Normal** ve ısrarlı takip `setExactAndAllowWhileIdle`; esnek yol yalnız Bilgi | Gece testi: esnek yol 2–5 saat geç çaldı, ekran açıkken bile; kesin yollar ≤ 28 sn | Blueprint'ten sapma (Normal esnekti). Kesin alarm sayısı artar; pil F10'da ölçülür. Derin Doze henüz sınanmadı. |
 | 0005 | Dil Türkçe (tanımlayıcılar İngilizce) · yedek parolayla şifreli · bekleme günlerinde sonraki faz flag arkasında · CI şimdilik yerel · v3'te eksik şemaları ben tasarlarım · JBR 21 ile derleme | Netleştirme turu 2 | — |
 
@@ -116,7 +117,7 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   bir kez 3,5 dk gecikti. Aday: ±1 dk sözü verilen her şey (kritik + ısrarlı takip)
   `setAlarmClock`. Karar 0003 şu an ısrarlı takip için `setExactAndAllowWhileIdle` diyor;
   gece testi sonucuna göre güncellenecek. `ReminderPlanner.apiFor` tek değişim noktası.
-- **Gemini kademe modelleri ve fiyat tablosu** (bakiye gelince).
+- ~~**Gemini kademe modelleri ve fiyat tablosu**~~ → kapandı: karar 0007 (8 Ekim 2026).
 - **Konu Motoru varsayılan sıklığı** (maliyet ölçümünden sonra; aylık 25 $'ın %40'ı yetmeyebilir).
 
 ## 6. Zaman çizelgesi (ne yapıldı, hangi sırayla)
@@ -154,7 +155,10 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     yerel ve uzak eşit (`6bc3304`), kimliksiz erişim 404.
 13. **Gece testi okundu, karar 0006.** 24/24 alarm çaldı; esnek yol saatlerce geç kaldığı için Normal
     sınıf kesin yola alındı (`ReminderPlanner.apiFor`). Yeni oturumda başlangıç kancasının bağlama
-    girdiği, 8 yeteneğin ve 3 alt ajanın listelendiği de görüldü (gece kontrolünün iki açık maddesi kapandı).
+    girdiği, 8 yeteneğin ve 3 alt ajanın listelendiği de görüldü (gece kontrolünün iki açık maddesi kapandı). (`f43db56`)
+14. **Gemini ölçümleri, karar 0007.** Bakiye geldi (çağrıyla doğrulandı). Üç kademe, düşünme ayarı,
+    şemalı çıktı, işlev çağrısı, arama temellendirmesi ve akış tek çağrılarla ölçüldü; kademeler ve
+    fiyatlar kilitlendi. Görsel girdi, önbellekleme ve gerçek konu taraması henüz denenmedi.
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -178,6 +182,11 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   telefondaki onay penceresi ~10 sn içinde onaylanmalı; yoksa `INSTALL_FAILED_USER_RESTRICTED`.
 - **USB bağlıyken Doze zorlanamıyor** (`force-idle` → "stopped at INACTIVE"; cihaz şarjda sayılıyor).
   `am set-standby-bucket … rare` kalıcı olmuyor.
+- **Gemini ölçümleri (8 Ekim, tek çağrılar):** flash-lite ~1 sn; 3.8-flash varsayılan düşünmeyle
+  ~8 sn, `thinkingLevel:"low"` ile ~2 sn; pro ~11 sn. Düşünme tokenleri çıktı fiyatından ücretlenir.
+  Şemalı çıktı, işlev çağrısı, akış ve Google Arama temellendirmesi çalışıyor. Arama atıflarındaki
+  `uri` yönlendirme adresidir (gerçek URL değil); alan adı `title`'da. Arama ayda 5 000 ücretsiz:
+  Konu Motoru'nun arama maliyeti kaygısı (Bölüm 10, madde 5) büyük ölçüde kalktı.
 - **Gemini:** uç nokta `generativelanguage.googleapis.com/v1beta`, başlık `x-goog-api-key`.
   Vertex AI projede kapalı (gerek yok). Bakiye **faturalandırma hesabına** bağlı; bakiye bitince
   her çağrı HTTP 402 döner, ücretsiz model yok. Ürün 402'yi `AiUnavailable` saymalı.

@@ -155,3 +155,33 @@ varsayılan (otomatik başlatma, pil muafiyeti, kilit rozeti yok). Kayıt 8 Ekim
 Pil 66 → 45; arada şarj görüldüğü (66 → 69) ve telefon kullanıldığı için pil ölçümü sayılmaz.
 
 **Karar:** `docs/decisions/0006-sinif-alarm-yolu.md`.
+
+### 8 Ekim 2026 — Spike 11: Gemini API ölçümleri
+
+Bakiye doğru hesaba yüklendi; üretim çağrıları HTTP 200. Uç nokta
+`generativelanguage.googleapis.com/v1beta`, başlık `x-goog-api-key`. Her satır **tek çağrıdır**.
+
+| Deneme | Model | Sonuç |
+|---|---|---|
+| Düz metin (Türkçe, sistem talimatlı) | `gemini-3.5-flash-lite` | 1,1 sn; 47 girdi + 34 çıktı token; düşünme yok |
+| Düz metin | `gemini-3.8-flash` | 7,9 sn; 33 çıktı + **632 düşünme** token |
+| Düz metin | `gemini-pro-latest` (= `gemini-3.1-pro-preview`) | 11,2 sn; 30 çıktı + **1 013 düşünme** token |
+| Düşünme ayarı | `gemini-3.8-flash` | `thinkingLevel:"low"` ve `thinkingBudget:0` çalışıyor: 2,3 sn, düşünme tokeni yok. `"minimal"` bu modelde 400 |
+| Şemalı çıktı (`responseMimeType` + `responseSchema`) | `gemini-3.5-flash-lite` | 1,0 sn; geçerli JSON, 3 öğe. Sınıflama hatası: "kedi maması bitmiş" → WORRY |
+| İşlev çağrısı (`functionDeclarations`) | `gemini-3.8-flash` | Tek yanıtta iki çağrı (`create_reminder`, `create_task`), argümanlar şemaya uygun. `low` ayarına rağmen 465 düşünme tokeni, 7,1 sn |
+| Google Arama temellendirmesi (`tools:[{google_search:{}}]`) | `gemini-3.5-flash-lite` | 2,9 sn; `groundingChunks` (uri + title), `groundingSupports`, `webSearchQueries`, `searchEntryPoint` |
+| Akış (`streamGenerateContent?alt=sse`) | `gemini-3.5-flash-lite` | İlk bayt 1,0 sn; 4 `data:` olayı |
+
+**Ürün için sonuçlar:**
+1. Düşünme tokenleri çıktı fiyatından ücretlenir ve gecikmeyi 3–5 kat artırır; etkileşimli işte `low`.
+   Araç tanımı varken `low` yine de düşünebiliyor: sesli yanıt hedefi (≤ 5 sn) günlük kademede riskli.
+2. Arama atıflarında `uri` gerçek adres değil, `vertexaisearch.cloud.google.com/grounding-api-redirect/…`
+   yönlendirmesidir; alan adı `title` alanındadır. Konu Motoru'nun "URL yalnız arama sonuçlarından"
+   kuralı `groundingChunks` üzerinden uygulanır; gerçek adres ve yayın tarihi için yönlendirme izlenmelidir.
+3. Fiyat (resmi sayfa, 7 Ekim 2026): flash-lite 0,30/2,50 · 3.8-flash 0,75/3,75 · 3.1-pro 2,00/12,00 $
+   (1M token). Arama: ayda 5 000 ücretsiz, sonra 1 000'i 14 $.
+
+**Denenmedi:** görsel girdi · bağlam önbellekleme · arama + şemalı çıktı birlikte · 429 / hız sınırı
+davranışı · gerçek bir konu taramasının uçtan uca maliyeti · Türkçe kalite (altın set).
+
+**Karar:** `docs/decisions/0007-gemini-model-kademeleri.md`.

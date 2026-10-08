@@ -43,11 +43,11 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F9 | S8 | Konu Motoru | ☐ |
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
-**Şu an:** F1 (alarm yolu kararı verildi; Gemini bakiye bekliyor) ve F2-A (saf mantık) paralel.
+**Şu an:** F1 (alarm yolu ve Gemini kademeleri kararlaştırıldı) ve F2-A (saf mantık) paralel.
 **Sıradaki tek adım:** F1.3 tam ekran bildirim + F1.2 alarmdan foreground service (telefon bağlı).
 
 **Açık engeller**
-- ⛔ Gemini üretim çağrıları HTTP 402: bakiye doğru hesaba yüklenecek (Kullanıcı, 8 Ekim).
+- Yok. (Gemini bakiyesi 8 Ekim'de geldi; çağrıyla doğrulandı.)
 ---
 
 ## F0 — Hazırlık ve temel ☑
@@ -108,19 +108,20 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 ### F1-C Ses ve yapay zekâ
 - ☐ F1.14 Türkçe cihaz içi konuşma tanıma: 30 cümlelik set, WER; yetersizse yerel Whisper
 - ☐ F1.15 Cihaz içi model: LiteRT-LM + Gemma güncel adları, GPU/NPU, token/sn, ilk token, 10 dk sıcaklık, 50 örnek Türkçe kalite; model dosyasını edinme yolu
-- ⛔ F1.16 Gemini API (bakiye bekliyor)
+- ◐ F1.16 Gemini API — `platform-bulgulari.md` § Spike 11: Gemini API ölçümleri
   - ☑ Uç nokta: Developer API; model listesi alındı
-  - ☐ Kademe modelleri (hızlı / günlük / derin) ve fiyatlar resmi sayfadan kilitlendi → `pricing.json`
-  - ☐ Akış (SSE), şemalı çıktı, işlev çağrısı, görsel girdi, bağlam önbellekleme
-  - ☐ Google Arama temellendirmesi: atıf alanları, URL eşleme, maliyet
-- ☐ F1.17 Konu bütçesi ölçümü: 1 konu × günde 2 tarama gerçek maliyeti → varsayılan sıklık
+  - ☑ Kademe modelleri (hızlı / günlük / derin) ve fiyatlar resmi sayfadan kilitlendi — karar 0007 (`pricing.json` F6.4'te yazılır)
+  - ☑ Akış (SSE), şemalı çıktı, işlev çağrısı, düşünme ayarı (tek çağrı ölçümleri)
+  - ☐ Görsel girdi, bağlam önbellekleme, 429 / hız sınırı davranışı
+  - ◐ Google Arama temellendirmesi: atıf alanları ve fiyat ☑; yönlendirme adresinden gerçek URL ve tarih çözme, arama + şemalı çıktı birlikte ☐
+- ◐ F1.17 Konu bütçesi ölçümü: 1 konu × günde 2 tarama gerçek maliyeti → varsayılan sıklık (fiyattan hesap: ücretsiz arama payına sığıyor, karar 0007; gerçek tarama ölçümü ☐)
 - ☐ F1.18 Room + BundledSQLiteDriver ile FTS5; KSP'nin Kotlin 2.4 / AGP 9.4 ile uyumu
 - ☐ F1.19 ALO 171 hattının güncelliği
 - ☑ F1.20 16 KB sayfa: cihaz 4096 kullanıyor; engel değil — `platform-bulgulari.md`
 
 ### F1-D Kararlar
 - ☑ F1.21 Karar kaydı: sınıf → alarm yolu (ısrarlı takip dahil) — karar 0006
-- ☐ F1.22 Karar kaydı: Gemini model kademeleri ve aylık bütçe dağılımı
+- ☑ F1.22 Karar kaydı: Gemini model kademeleri ve aylık bütçe dağılımı — karar 0007
 - ☐ F1.23 Karar kaydı: STT yolu; cihaz içi model (E2B / E4B) seçimi
 
 **Çift kontrol**
