@@ -59,6 +59,10 @@ class SpikeActivity : Activity() {
     }
 
     private fun handle(intent: Intent) {
+        if (intent.hasExtra("rag")) {
+            RagSpike.run(this)
+            intent.removeExtra("rag")
+        }
         intent.getStringExtra("llm")?.let {
             LlmSpike.run(this, it, intent.getStringExtra("model") ?: "gemma-4-E2B-it", intent.getIntExtra("run", 1))
             intent.removeExtra("llm")

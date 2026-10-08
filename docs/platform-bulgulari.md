@@ -458,6 +458,50 @@ kesintisiz ~35 dk üretimde 32,1 → 38,8 °C. Pil yüzdesi USB bağlı olduğu 
 
 **Karar adayı:** `docs/decisions/0010-cihaz-ici-model-secimi.md` (Gemma 4 E4B; E2B yedek; Qwen3 elendi).
 
-**Açık:** gömme modeli ve gerçek RAG · kablosuz pil tüketimi · çok turlu sohbet, araç API'si, görsel/ses · bellek
+### 8 Ekim 2026 — Spike 10b: gerçek RAG (kart bulma + karta dayalı yanıt)
+
+**Düzenek:** `spike/src/main/assets/rag-set.json` — 4 konuda 24 Türkçe bilgi kartı; 24 soru: 20'si bir
+kartla yanıtlanır ve **kartın sözcüklerini kullanmadan** sorulmuştur, 4'ünün yanıtı kartlarda yoktur.
+Koşucu `RagSpike`, puanlayıcı `scripts/rag-puanla.mjs`. Gömme: EmbeddingGemma 2 text 270m (CPU);
+üretim: Gemma 4 E4B (GPU), bağlamda ilk 3 kart. Her yapılandırma bir kez.
+
+**Kart bulma (20 yanıtlanabilir soru):**
+
+| Yöntem | İlk 1 | İlk 3 |
+|---|---|---|
+| Sözcük örtüşmesi (kök yaklaşımı) | 8 | 12 |
+| Gömme, öneksiz, 768 boyut | 14 | 16 |
+| Gömme, öneksiz, 256 boyut | 13 | 16 |
+| Gömme, önekli, 768 boyut | 14 | 18 |
+| Gömme, önekli, 256 boyut | 15 | 18 |
+| Gömme (önekli, 256) + sözcük, RRF | **17** | 18 |
+| Kartlar "diğer ifadeler" satırıyla zenginleştirilince (önekli, 256) | **19** | 19 |
+
+Gömme süresi kart ya da soru başına ~55–70 ms; model yükleme 0,4 sn.
+
+**Karta dayalı yanıt (Gemma 4 E4B):**
+
+| Talimat / kartlar | Doğru (20) | Yanlış ret | Kartlarda olmayana "yok" (4) | Uydurma |
+|---|---|---|---|---|
+| Katı talimat, düz kartlar | 12 (+1 anahtar sözcüksüz doğru) | 7 | 4 | 0 |
+| Esnek talimat, düz kartlar | 13 (+1) | 6 | 4 | 0 |
+| Katı talimat, zenginleştirilmiş kartlar | 13 (+1) | 6 | 4 | 0 |
+
+Yanıt süresi ortanca 4,4–5,3 sn; ret ~2,4 sn.
+
+**Sonuçlar:**
+1. Anlamsal arama Türkçede çalışıyor ve sözcük aramasını ikiye katlıyor; hibrit daha da iyi.
+   256 boyut yeterli. Kartlara eş anlamlı satırı eklemek aramayı 19/20'ye çıkarıyor.
+2. Model hiç uydurmadı (12 denemede 0) ve kartta olanı doğru aktardı; ama eş anlamlı eşleştirme ya da
+   bir adımlık çıkarım gereken sorularda "yok" dedi — reddettiği soruların çoğunda doğru kart bağlamdaydı.
+   Kart "Diğer ifadeler: akar…" dediği hâlde "akar ilaçlaması" sorusunu yine reddetti.
+3. Yanıt oranını ne talimat ne kart zenginleştirme belirgin değiştirdi; darboğaz üretici modelin temkinliliği.
+
+**Sınırlar:** 24 soru; tek koşu; "diğer ifadeler" satırlarını soruları bilen kişi yazdı (üst sınır);
+düşünme kipi ve iki adımlı yanıt denenmedi; FTS5/BM25 yerine basit kök örtüşmesi kullanıldı.
+
+**Karar:** `docs/decisions/0011-rag-gomme-ve-kart-bicimi.md`.
+
+**Açık:** düşünme kipiyle karta dayalı yanıt · kablosuz pil tüketimi · çok turlu sohbet, araç API'si, görsel/ses · bellek
 (tek okuma: süreç 237 MB PSS, model belleği ayrı sayılıyor olabilir; doğrulanmadı) · şemaya zorlamanın
 yolu (kütüphanede `ResponseFormat` var, denenmedi) · gömme modeli ve RAG · 50 örnekli Türkçe set.

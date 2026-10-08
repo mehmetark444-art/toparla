@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 8 Ekim 2026, akşam (cihaz içi model) · **Kapsadığı son commit:** `5f0b2e5` · **Kapanan son faz:** F0
+**Son güncelleme:** 8 Ekim 2026, gece (model seçimi ve RAG) · **Kapsadığı son commit:** `01d7249` · **Kapanan son faz:** F0
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -108,6 +108,7 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 | 0002 | **Yasak kelime listesi yok** | Kullanıcı: "yasak kelime olmasın". Liste zaten blueprint'in kendi onaylı metinleriyle çakışıyordu ("Bugün hâlâ senin günün") | LLM'in ürettiği kırıcı ifade artık otomatik yakalanmıyor; koruma prompt yönergesi + "Bu beni kırdı" + valf. Seri sayacı yok / "Taşınan" kuralları **duruyor**. |
 | 0003 | Bildirim bütçesi **10** (aralık 10–20); **ısrarlı takip**: Kullanıcı'nın üstlendiği iş "Yaptım" denene dek 30 dk'da bir sorulur | Kullanıcı: "en az 10 olsun… peşimi bırakmasın" | Blueprint'in bildirim yorgunluğu kaygısının tersine. Sınırlar Kullanıcı onaylı: uyku/sessiz saat, kriz/Bunaldım sonrası 3 sa, odak oturumu ve "Bugün sessiz"de susar, sabah sürer. Bütçeden muaf. |
 | 0004 | İlk odak alışkanlıklar: **Sigara (tam bırakma) + Uyku Ritmi** | Kullanıcı seçimi bana bıraktı; sigara en net hedef, uyku diğer her şeyin temeli | Diğer dört alışkanlık "izleniyor"; dürtme almaz. |
+| 0011 | RAG: EmbeddingGemma 2 (önekli, 256 boyut) + sözcük araması RRF; bilgi kartında "diğer ifadeler" alanı; model reddederse bulunan kart gösterilir | Ölçüm: hibrit 17/20, zengin kart 19/20 isabet; üretimde 0 uydurma | E4B karta sadık ama harfiyen: yanıtlanabilir soruların ~%65–70'ini yanıtlıyor, gerisinde "yok" diyor. Küçük set; düşünme kipi denenmedi. Karar yetkisi Kullanıcı tarafından devredildi. |
 | 0010 | Cihaz içi **tek** model **Gemma 4 E4B** (Kullanıcı onayladı; yedek model yok, kısıtta yedek Katman 0); Qwen3 elendi. İlk öneri: | 50 soruluk Türkçe set: E4B talimata en iyi uyan ve metni en doğal olan; E2B iki kat hızlı; Qwen3 doz verdi ve gömülü talimata uydu | Küçük set; çok turlu sohbet, görsel, gerçek RAG ölçülmedi. Tarih ayrıştırma modele bırakılmaz. |
 | 0009 | **Önce yerel model:** AI görevlerinin varsayılanı cihaz içi; bulut yalnız gerektiğinde (web araştırması, doğrulayıcıdan geçemeyen çıktı, Kullanıcı isteği, ölçülmüş kalite açığı). Model Gemma olmak zorunda değil. APK eşiği 150 MB | Kullanıcı: "Gemini'yi en az kullanalım, yerel modelin yapabildiği her şeyden faydalanalım" | Blueprint F3 tablosunun tersi. Küçük model sohbet/planlama/Ayna'da zayıf kalabilir; pil ve ısı artar. "Yerel yeterli" yalnız altın set ölçümüyle söylenir. |
 | 0008 | Müdahale gecikmesi hedefi ≤ 3,5 sn (**kabul**). Ekran okuma (**aday**): Güneş ekranı okuyup kaydedilmemiş şeyleri önersin; yalnız cihaz içi, asla bulut | Kullanıcı 3 sn'yi kabul etti ve ekran okumayı kendisi istedi ("şifreleri görmesi sorun değil, yalnız yerel model") | Blueprint K17'nin tersi ve kapsam dışı yeni yetenek; projenin en geniş izni. Cihaz içi model henüz denenmedi; uygulanabilirlik bilinmiyor. Parola/banka/gizli sekme dışlaması önerildi; Kullanıcı riski duyup "hepsini okusun" dedi: dışlama yok. Ham metin saklanmaz, saklanan öneride Kırmızı kalıplar maskelenir. |
@@ -172,6 +173,10 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     "önce yerel model" (bulut yalnız gerektiğinde; model Gemma olmak zorunda değil; APK eşiği 150 MB).
 18. **Spike 10 (cihaz içi model).** LiteRT-LM 0.18.0 `:spike`'a eklendi; Gemma 4 E2B telefonda çalıştı
     ve ölçüldü. Dört aday model ve gömme modeli indiriliyor; karşılaştırma sırada.
+19. **Model seçimi ve RAG.** Beş adayın elemesi, üç adayın 50 soruluk Türkçe seti → karar 0010
+    (tek model Gemma 4 E4B; Kullanıcı onayladı; diğer dosyalar Kullanıcı onayıyla silindi).
+    Ardından 24 kart / 24 soruyla gerçek RAG → karar 0011. Ölçüm araçları: `scripts/spike-llm-olc.sh`,
+    `llm-puanla.mjs`, `rag-puanla.mjs`; setler `spike/src/main/assets/`.
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
