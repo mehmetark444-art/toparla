@@ -568,9 +568,61 @@ F3.8 buna göre tasarlanır (kilitliyken ekransız yakalama). Kullanıcı yazıl
 Kullanıcı'ya nasıl haber verileceği denenmedi; servis dinleme sırasında sistemce öldürülürse ne olduğu
 bilinmiyor; kutucuk yeniden başlatmadan sonra yerinde mi bakılmadı.
 
-A grubunun kalanı (**yapılmadı**, kod `:spike/AGroup.kt` içinde hazır ve telefonda kurulu): bildirim erişimi ·
-alarm sesi ve Rahatsız Etme · canlı bildirim (`ProgressStyle`; API 36 SDK'sında "promoted" isteği için genel
-yöntem yok, anahtar adı doğrulanmadı) · arama algılama · `kur.sh` koşusu.
+### 8 Ekim 2026 — Spike 6: bildirim erişimi
+
+Yöntem: uygulama içinden `ACTION_NOTIFICATION_LISTENER_SETTINGS` açıldı; Kullanıcı anahtarı elle açtı
+(adb ile yüklenmiş `:spike`). Ardından `cmd notification post` ile üç deneme bildirimi.
+
+- **Kısıtlı ayar engeli çıkmadı:** satır gri değildi, Kullanıcı "sorunsuz açtım" dedi; ayar listesinde bileşen görünüyor.
+  "Kısıtlı ayarlara izin ver" adımına bu telefonda gerek olmadı (tek deneme, adb kurulumu).
+- `onListenerConnected` hemen geldi (`active=5`). Üç deneme bildirimi ve bir gerçek uygulama bildirimi
+  `onNotificationPosted`'a ulaştı; başlık ve metin uzunlukları okunabildi.
+- Doğrulama kodu süzgeci (4–8 hane + "kod/şifre") kodlu bildirimi işaretledi, diğer ikisini işaretlemedi (3 örnek).
+- `bigtext` biçimli bildirimler ek olarak başlıksız bir grup özeti kaydı üretiyor: ürün boş kayıtları elemeli.
+
+**Açık:** kopma sonrası `requestRebind` denenemedi (`am kill` süreci öldürmedi; servis bağlıyken süreç korunuyor);
+kaydırıp kapatma ve yeniden başlatma sonrası bağlantı; `cmd notification allow_listener` (F1.6 `kur.sh` koşusu).
+
+### 8 Ekim 2026 — Spike 7: alarm ses akışı, art arda bildirim kısma, Rahatsız Etme
+
+Yöntem: `IMPORTANCE_HIGH` kanal, ses = varsayılan alarm sesi + `USAGE_ALARM`, `setBypassDnd(true)`,
+`CATEGORY_ALARM`; 8 sn arayla üçer bildirim. Alarm ses düzeyi 15/15, ekran açık, USB bağlı.
+Kayıt: `policyAccess=true channelBypassDnd=true` (Rahatsız Etme erişimi önceden verilmişti).
+
+| Koşul | Gönderilen | Kullanıcı'nın duyduğu |
+|---|---|---|
+| Rahatsız Etme kapalı (`interruptionFilter=1`) | 3 | 3; alarm sesi; üçü aynı yükseklikte |
+| Rahatsız Etme açık (`zen_mode=1`, `interruptionFilter=2`) | 3 | 3; aynı ses; bildirim de göründü |
+
+**Sonuç:** alarm ses akışlı kritik kanal, art arda gelen bildirimlerde kısılmıyor ("cooldown" etkisi yok) ve
+Rahatsız Etme'yi aşıyor. Blueprint G1'in kritik teslim varsayımı bu telefonda tutuyor.
+
+**Sınırlar:** her koşul tek tur (3 bildirim); Rahatsız Etme erişimi **verilmemişken** davranış ölçülmedi;
+"tam sessizlik" kipi, sessiz/titreşim zil kipi, ekran kapalı ve kulaklık takılı durum ölçülmedi.
+İlk tur hiç çalmadı (ölçüm hatası, proje-beyni H24); o tur sonuç sayılmadı.
+
+### 8 Ekim 2026 — Spike 16: canlı güncelleme (`ProgressStyle`)
+
+Yöntem: `Notification.ProgressStyle` (tek parça, %40) + `setOngoing(true)` + `setShortCriticalText("15 dk")` +
+ek alan `android.requestPromotedOngoing=true`; izin `POST_PROMOTED_NOTIFICATIONS`. Tek deneme.
+
+- Uygulama tarafı: `canPostPromotedNotifications=true`, `hasPromotableCharacteristics=true`.
+- Sistem tarafı (`dumpsys notification`): `flags=ONGOING_EVENT|PROMOTED_ONGOING`. Ek alan anahtarı sistemce tanınıyor.
+- Kullanıcı gözlemi: durum çubuğunda "hap" var, bildirim panelinde ilerleme çubuğu var, kilit ekranında görünüyor;
+  Rahatsız Etme açıkken de görünüyor.
+
+**Açık:** güncelleme sıklığı sınırı, HyperOS "odak bildirimi" (ada) görünümünün ayrıntısı, pil etkisi.
+
+### 8 Ekim 2026 — Spike 17: arama durumunu izinsiz algılama
+
+Yöntem: uygulama 4 sn'de bir `AudioManager.getMode()` okudu (hiçbir telefon izni yok); Kullanıcı bu sırada
+bir numarayı arayıp ~55 sn hatta kaldı. Tek arama, 22 okuma.
+
+Sonuç: aramadan önce 8 okuma `0` (normal) → arama boyunca 13 okuma `2` (`MODE_IN_CALL`) → kapatınca `0`.
+Giden hücresel arama izinsiz algılanabiliyor. **Ölçülmeyen:** gelen aramada çalma anı (`1`), internet
+üzerinden arama (WhatsApp vb., beklenen `3`), arka plandan okuma (ölçümde uygulama öndeydi).
+
+A grubundan kalan: `kur.sh` koşusu.
 
 **Açık (model):** düşünme kipiyle karta dayalı yanıt · kablosuz pil tüketimi · çok turlu sohbet, araç API'si, görsel/ses · bellek
 (tek okuma: süreç 237 MB PSS, model belleği ayrı sayılıyor olabilir; doğrulanmadı) · şemaya zorlamanın

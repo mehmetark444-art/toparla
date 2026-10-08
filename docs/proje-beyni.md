@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 8 Ekim 2026, gece (model seçimi ve RAG) · **Kapsadığı son commit:** `01d7249` · **Kapanan son faz:** F0
+**Son güncelleme:** 8 Ekim 2026, gece (A grubu ölçümleri) · **Kapsadığı son commit:** `51226d3` · **Kapanan son faz:** F0
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -179,6 +179,12 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     (tek model Gemma 4 E4B; Kullanıcı onayladı; diğer dosyalar Kullanıcı onayıyla silindi).
     Ardından 24 kart / 24 soruyla gerçek RAG → karar 0011. Ölçüm araçları: `scripts/spike-llm-olc.sh`,
     `llm-puanla.mjs`, `rag-puanla.mjs`; setler `spike/src/main/assets/`.
+20. **Çıraklık ve ses tanıma.** Karar 0012 (çıraklık dönemi, seçenek A) (`2262553`); 30 cümlelik Türkçe
+    konuşma tanıma ölçümü → karar 0013 (`721dd5e`).
+21. **"A grubu" (kısa telefon ölçümleri).** Ayar bağlantıları, Yakala kutucuğu, bildirim erişimi, kritik ses
+    ve Rahatsız Etme, canlı bildirim, arama algılama ölçüldü; `scripts/kur.sh` yazıldı (koşusu sırada).
+    Kutucukta blueprint'ten farklı bir bulgu: kilit ekranında ekran açılamıyor, yakalama ekransız yapılacak.
+    (`80cb939`, `11297b5`, `51226d3`)
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -228,6 +234,20 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   foreground service başlatılabiliyor (29 ms). Kilitliyken tam ekran bildirim, HyperOS'e özgü hiçbir
   izin elle verilmeden kilit ekranının üstünde açılıyor ve ekranı uyandırıyor (270 ms). Blueprint'in
   kritik teslim hattı (alarm → servis → tam ekran) bu telefonda kurulabilir görünüyor.
+- **"A grubu" yüzey ölçümleri (8 Ekim gece; çoğu tek deneme):**
+  - *Ayar bağlantıları:* 11 adaydan 10'u uygulama içinden açılıyor; eski `HiddenAppsConfigActivity` yok.
+    Tablo `hyperos-baglantilar.md`.
+  - *Yakala kutucuğu:* kilit açıkken dokunuş → mikrofon 0,29 sn. **Kilitliyken `showWhenLocked` Activity
+    açılmıyor, sistem PIN istiyor;** kutucuk diyaloğu da görünmüyor. Çalışan yol: tanıyıcıyı doğrudan
+    `TileService` içinde başlatmak (0,25 sn, ekransız); geri bildirim kutucuğun yanık/sönük durumu.
+    F3.8 (`LockCaptureActivity`) buna göre tasarlanır.
+  - *Bildirim erişimi:* adb ile kurulan uygulamada anahtar engelsiz açıldı ("kısıtlı ayar" çıkmadı);
+    bildirimler ve doğrulama kodu süzgeci çalışıyor. Kopma sonrası yeniden bağlanma ölçülmedi.
+  - *Kritik ses:* alarm ses akışlı kanal art arda bildirimde kısılmıyor ve (erişim verilmişken)
+    Rahatsız Etme'yi aşıyor: 3/3 ve 3/3.
+  - *Canlı bildirim:* `ProgressStyle` + ek alan `android.requestPromotedOngoing` sistemce
+    `PROMOTED_ONGOING` sayılıyor; durum çubuğunda hap, panelde çubuk, kilit ekranında görünüyor.
+  - *Arama:* `AudioManager.getMode()` giden hücresel aramada izinsiz `2` veriyor.
 - **Gemini ölçümleri (8 Ekim, tek çağrılar):** flash-lite ~1 sn; 3.8-flash varsayılan düşünmeyle
   ~8 sn, `thinkingLevel:"low"` ile ~2 sn; pro ~11 sn. Düşünme tokenleri çıktı fiyatından ücretlenir.
   Şemalı çıktı, işlev çağrısı, akış ve Google Arama temellendirmesi çalışıyor. Arama atıflarındaki
@@ -265,6 +285,7 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 | H21 | Cihaz betiğinin ilk komutları "no devices" verdi; kayıt başlangıç satırı 0 okundu ve bütün günlük ekrana döküldü | adb arka plan süreci yeniden başlarken ilk birkaç komut cihazı görmüyor; betik bağlantıyı beklemeden ölçüm başlangıcını aldı | Cihaz betiğinin ilk satırı `./scripts/adb wait-for-device`; başlangıç değeri okunamazsa (boş ya da 0) betik dursun. Ölçüm bu kez etkilenmedi. |
 | H22 | Model ölçüm betiği 15 dakika boşuna bekledi; Kullanıcı "neden bitmedi" diye sordu | Telefonda süreç bellek yetersizliğinden öldürülmüştü; betik yalnız "bitti" satırını bekliyor, sürecin yaşadığına bakmıyordu | Cihazda uzun iş bekleyen her betik sürecin yaşadığını da denetler (`pidof`); öldüyse nedeni günlükten okuyup durur. `spike-llm-olc.sh` düzeltildi. |
 | H23 | İki model (Qwen3, Phi-4 mini) yetersiz kanıtla "elendi" yazıldı ve dosyaları silindi; Kullanıcı itiraz edince yeniden indirilip başka yolla koşuldu. Qwen3 aslında çalışıyor ve aday kaldı | "Çalışmadı" ile "bu yapılandırmada çalışmadı" ayrılmadı; Phi'nin çıktıları okunmadan hüküm verildi; silme Kullanıcı'ya sorulmadı | Bir seçeneği elemeden önce: en az bir alternatif yol dene, çıktıyı gerçekten oku, eleme gerekçesini kanıtıyla yaz. İndirilen/üretilen şeyi Kullanıcı kararı gelmeden silme. |
+| H24 | Kullanıcı'ya "telefon üç kez çalacak" denildi, hiç çalmadı; kayıt okununca fark edildi | Önceki adımda açılan ayar sayfası deneme uygulamasının görevinin üstünde kalmıştı; `am start` "görev öne getirildi" deyip intent'i **teslim etmedi**. Komutun uyarı satırı okunmadan Kullanıcı'ya haber verildi | Cihaza komut gönderip Kullanıcı'dan gözlem istemeden önce kaydın düştüğünü doğrula. Spike'ı tetiklerken `am start --activity-clear-top` kullan; "Warning: Activity not started" satırını hata say. |
 | H15 | Yol haritası birkaç kez `sed`/`awk` ile değiştirildi | Alışkanlık; o sırada kanca yoktu | Kabuk komutuyla yapılan değişiklik düzenleme kancalarından (faz kapısı, gizli değer) geçmez. Yol haritası ve proje beyni **yalnız düzenleme aracıyla** değiştirilir. |
 
 ## 9. Tuzaklar ve "bunu bilmeden başlama" notları

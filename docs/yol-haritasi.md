@@ -92,16 +92,16 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
   - ☐ Saat elle değişti / saat dilimi değişti → yeniden planlama
 - ◐ F1.2 Kesin alarmdan foreground service başlatma; `specialUse` FGS; her başlatma yolu — `setAlarmClock` yolu ☑ (tek deneme, `platform-bulgulari.md` § Spike 2 ve 3); diğer yollar ☐
 - ◐ F1.3 Tam ekran bildirim + HyperOS "Kilit ekranında göster", "Arka planda açılır pencere" — kilitliyken ☑ (tek deneme, özel izin verilmeden); ekran açıkken davranış ☐
-- ☐ F1.4 Bildirim "cooldown" davranışı, alarm ses akışı, DND aşımı
+- ◐ F1.4 Bildirim "cooldown" davranışı, alarm ses akışı, DND aşımı (erişim verilmişken ☑: art arda 3 bildirim kısılmadı, Rahatsız Etme açıkken 3/3 çaldı — `platform-bulgulari.md` § Spike 7; erişim verilmemişken, tam sessizlik ve ekran kapalıyken ☐)
 - ◐ F1.5 HyperOS ayar derin bağlantıları → `hyperos-baglantilar.md` (11 bağlantıdan 10'u açıldı, eski pil kısıtı sayfası yok — `platform-bulgulari.md` § Spike 4; gri tonlama açılışı ve sayfaların doğru uygulamayı gösterdiğinin göz doğrulaması ☐)
 - ◐ F1.6 `kur.sh`: her komutun HyperOS'teki davranışı; `USER_RESTRICTED` ve yol çevirme hatası ele alınmış (betik yazıldı, her adımı geri okuyarak doğruluyor — `scripts/kur.sh`; telefonda koşulmadı ☐)
 
 ### F1-B Algılama ve sistem yüzeyleri
 - ◐ F1.7 (`platform-bulgulari.md` § Spike 5: kaydırınca servis ölüyor ve geri gelmiyor; açılışta olay ~2,9 sn geç geliyor, hedef tutmuyor; servisten Activity başlatma ☑; son uygulamalarda kilit "tümünü temizle"den koruyor ☑ (tek deneme); yeniden başlatma sonrası servis kendiliğinden bağlanıyor ☑ (tek deneme); kilidin yeniden başlatma ve güncelleme sonrası kalması, uzun süre ömrü, gecikmenin nedeni ☐) Erişilebilirlik: açılış algılama gecikmesi (hedef ≤ 400 ms), servis ömrü, servisten Activity başlatma; olmazsa overlay yedeği
-- ☐ F1.8 Bildirim erişimi: kısıtlı ayarlar, `allow_listener`, kopma sonrası `requestRebind`
+- ◐ F1.8 Bildirim erişimi: kısıtlı ayarlar, `allow_listener`, kopma sonrası `requestRebind` (elle açma engelsiz ☑, bildirim okuma ve kod süzgeci ☑ — `platform-bulgulari.md` § Spike 6; `allow_listener` ve kopma sonrası yeniden bağlanma ☐)
 - ☑ F1.9 Tile: kilitliyken yakalama, Tile → mikrofon ≤ 1 sn — `platform-bulgulari.md` § Spike 8 (kilit açık 287 ms, kilitli 245 ms; kilitliyken ekran açılmıyor, yakalama servisten ekransız yapılıyor; koşul başına 1–2 ölçüm)
-- ☐ F1.10 Canlı güncelleme: `ProgressStyle`, "promoted ongoing", HyperOS odak bildirimi
-- ☐ F1.11 Arama durumu: `AudioManager.getMode` ile izinsiz algılama
+- ☑ F1.10 Canlı güncelleme: `ProgressStyle`, "promoted ongoing", HyperOS odak bildirimi — `platform-bulgulari.md` § Spike 16 (tek deneme; hap, panel ve kilit ekranında Kullanıcı gördü)
+- ◐ F1.11 Arama durumu: `AudioManager.getMode` ile izinsiz algılama (giden hücresel arama ☑ — `platform-bulgulari.md` § Spike 17; gelen arama çalma anı, internet araması, arka plandan okuma ☐)
 - ☐ F1.12 Geofence: Play Hizmetleri varlığı, arka plan olay gecikmesi
 - ☐ F1.13 Health Connect: Mi Band → Mi Fitness → uyku/adım akışı
 
