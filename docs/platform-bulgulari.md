@@ -891,6 +891,14 @@ olarak sorulara çok yakın (üründe örnekler bu kadar benzer olmayabilir: etk
 kartlarındaki bilgilerin doğruluğu denetlenmedi (yalnız zincirin işlediği ölçüldü); gölge koşu ve devir kuralı
 (≥ 30 koşu, ≥ %90) denenmedi.
 
+### 8–9 Ekim 2026 — Spike 1: kablosuz gece testi (KURULDU, sonuç bekleniyor)
+
+Amaç: derin Doze (`idle=true`) altında teslim; ilk gece testinde telefon USB'ye bağlı olduğu için hiç gözlenmedi.
+8 Ekim 23:26'da 1–7 saat sonrasına üçer alarm kuruldu (`setAlarmClock`, `setExactAndAllowWhileIdle`,
+`setAndAllowWhileIdle`; 21 alarm, `SCHEDULED` sayısı kayıttan doğrulandı). Koşul: otomatik başlatma açık,
+uygulama son uygulamalarda kilitli, pil muafiyeti listede. Kullanıcı telefonu **kablodan çıkarıp** gece
+dokunmadan bırakacak. Sonuç sabah kayıttan okunacak (her satırda `idle=`, `light=`, `bucket=` var).
+
 **Ortam notu:** PowerShell'de `bash` komutu Windows'un kendi bash'ini (WSL) açıyor; telefon aracı bulunamıyor.
 Kullanıcı'ya verilecek komut Git Bash'i tam yoluyla çağırmalı: `& "C:\Program Files\Git\bin\bash.exe" scripts/…`.
 

@@ -44,7 +44,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
 **Şu an:** F1 (alarm yolu ve Gemini kademeleri kararlaştırıldı) ve F2-A (saf mantık) paralel.
-**Sıradaki tek adım:** F1 "B grubu": F1.12 konum (geofence) → F1.13 Mi Band / Health Connect → F1.14 gürültüde ses tanıma. Kullanıcı durumu (8 Ekim): evden çıkamıyor (F1.12 bekler), Mi Band siparişte (F1.13 bekler), gürültü ölçümü 9 Ekim'de iş yerinde. Bu yüzden sıradaki fiilî iş C grubu: F1.16 Gemini kalanları → F1.17 konu taraması maliyeti → F1.25 çıraklık ön ölçümü → F1.24 ekran okuma ön ölçümü (F1.18, F1.19 ☑). "A grubu" (F1.4–F1.6, F1.8–F1.11) 8 Ekim gecesi ölçüldü; her maddenin açık kalan koşulu kendi satırında.
+**Sıradaki tek adım:** F1 "B grubu": F1.12 konum (geofence) → F1.13 Mi Band / Health Connect → F1.14 gürültüde ses tanıma. Kullanıcı durumu (8 Ekim): evden çıkamıyor (F1.12 bekler), Mi Band siparişte (F1.13 bekler), gürültü ölçümü 9 Ekim'de iş yerinde. C grubu 8 Ekim gecesi ölçüldü (F1.16–F1.19, F1.24, F1.25). **9 Ekim sabahı ilk iş:** kablosuz gece testinin kaydını okumak (F1.1 derin Doze). F1'de bundan sonra kalanlar: Kullanıcı'ya bağlı üç ölçüm (F1.12, F1.13, F1.14 gürültü), günler isteyen kısıtlı kova ölçümü ve her maddenin kendi satırında yazılı küçük açık koşullar; ardından F1 kapanışı (K1 + K2 + K3). "A grubu" (F1.4–F1.6, F1.8–F1.11) 8 Ekim gecesi ölçüldü; her maddenin açık kalan koşulu kendi satırında.
 
 **Açık engeller**
 - Yok. (Gemini bakiyesi 8 Ekim'de geldi; çağrıyla doğrulandı.)
@@ -85,7 +85,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
   - ☑ Yeniden başlatma
   - ☑ Kilitli yeniden başlatma (Direct Boot)
   - ☑ Gece: 1–8 saat, 3 yöntem, 24 alarm; 24/24 çaldı — `platform-bulgulari.md` § gece testi sonucu
-  - ☐ Derin Doze (`idle=true`) altında teslim: gece testinde alarm anında hiç gözlenmedi
+  - ◐ Derin Doze (`idle=true`) altında teslim: ilk gece testinde alarm anında hiç gözlenmedi; kablosuz gece testi 8 Ekim 23:26'da kuruldu (21 alarm), sonuç 9 Ekim sabahı okunacak
   - ◐ `setExactAndAllowWhileIdle` 3,5 dk gecikmesi: 8 gece ölçümünde tekrarlanmadı (en çok 28 sn); kök neden bilinmiyor
   - ☐ Kısıtlı bekleme kovası (uygulama günlerce açılmadan)
   - ◐ Güvenlik uygulaması "Bellek temizleme" sonrası teslim: uygulama kilitliyken ☑ (2/2 çaldı, süreç ölmedi — § F1 kapanış ölçümleri); kilitsiz uygulama ☐
