@@ -16,6 +16,8 @@ kotlin {
 }
 
 dependencies {
+    // Saf Kotlin kitaplığı; Android'e bağımlılık getirmez (DispatcherProvider ve Flow dönen arayüzler için).
+    api(libs.coroutines.core)
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.platform.launcher)

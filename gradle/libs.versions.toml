@@ -1,26 +1,51 @@
 # Sürümler resmi kaynaktan doğrulanıp buraya kilitlenir (blueprint A0-3).
-# Doğrulama: 7 Ekim 2026 — Google Maven, Maven Central, developer.android.com.
+# Doğrulama: 7–8 Ekim 2026 — Google Maven, Maven Central, Gradle Plugin Portal.
 [versions]
 agp = "9.4.1"            # Gradle 9.6.0 ister; JDK 17+; en yüksek API 37
 kotlin = "2.4.20"
-junit = "6.1.3"          # JUnit Jupiter (blueprint'teki "JUnit 5" ailesinin güncel sürümü)
+junit = "6.1.3"          # JUnit Jupiter (blueprint'teki "JUnit 5" ailesinin güncel sürümü); yalnız JVM testleri
+junit4 = "4.13.2"        # Cihaz testleri (AndroidX Test JUnit 4 ister)
 sdk = "36"
-ksp = "2.3.12"            # KSP2; sürümü Kotlin sürümünden bağımsız (Maven Central, 8 Ekim 2026); şimdilik yalnız :spike
-room = "3.0.3"            # androidx.room3 (Google Maven, 8 Ekim 2026); şimdilik yalnız :spike
-sqlite = "2.7.1"          # Room 3.0.3 bu sürümü ister (POM)
-litertlm = "0.18.0"      # Cihaz içi LLM çalışma zamanı (Google Maven, 8 Ekim 2026); şimdilik yalnız :spike
+ksp = "2.3.12"           # KSP2; sürümü Kotlin sürümünden bağımsız
+room = "3.0.3"           # androidx.room3
+sqlite = "2.7.1"         # Room 3.0.3 bu sürümü ister (POM)
+hilt = "2.60.1"
+coroutines = "1.11.0"
+datastore = "1.2.1"
+timber = "5.0.1"
+leakcanary = "2.14"      # 3.0 henüz alfa
+detekt = "1.23.8"        # 2.0 henüz alfa
+ktlintGradle = "14.2.0"
+androidxTestRunner = "1.7.0"
+androidxTestJunit = "1.3.0"
+litertlm = "0.18.0"      # Cihaz içi LLM çalışma zamanı; şimdilik yalnız :spike
 
 [libraries]
 room-runtime = { module = "androidx.room3:room3-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room3:room3-compiler", version.ref = "room" }
+room-testing = { module = "androidx.room3:room3-testing", version.ref = "room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 litertlm = { module = "com.google.ai.edge.litertlm:litertlm-android", version.ref = "litertlm" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+junit4 = { module = "junit:junit", version.ref = "junit4" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" }
+androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "androidxTestJunit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintGradle" }

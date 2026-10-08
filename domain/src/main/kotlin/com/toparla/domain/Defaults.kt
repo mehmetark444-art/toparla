@@ -17,6 +17,10 @@ object Defaults {
     const val PERSISTENT_REMINDER_INTERVAL_MIN = 30
     val PERSISTENT_REMINDER_INTERVAL_OPTIONS_MIN = listOf(15, 30, 60)
 
+    /** Uyku penceresi başlangıç değerleri, günün dakikası (23:30–07:30); Kullanıcı ayarından değişir. */
+    const val SLEEP_START_MINUTE_OF_DAY = 23 * 60 + 30
+    const val SLEEP_END_MINUTE_OF_DAY = 7 * 60 + 30
+
     /** Teslim bu süreden fazla gecikirse "geç teslim" sayılır (kritikte ±1 dk sözü). */
     const val LATE_DELIVERY_TOLERANCE_SEC = 60L
 

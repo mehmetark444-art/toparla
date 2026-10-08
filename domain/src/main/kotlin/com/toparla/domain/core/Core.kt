@@ -1,5 +1,6 @@
 package com.toparla.domain.core
 
+import kotlinx.coroutines.CoroutineDispatcher
 import java.time.Instant
 import java.time.ZoneId
 
@@ -20,6 +21,13 @@ interface RandomSource {
 /** Kayıt anahtarı üretici (UUID metin; blueprint H). */
 fun interface IdGenerator {
     fun newId(): String
+}
+
+/** Eşzamanlılık bağlamları (blueprint B1, B4). Testte tek bir test dağıtıcısıyla değiştirilir. */
+interface DispatcherProvider {
+    val main: CoroutineDispatcher
+    val io: CoroutineDispatcher
+    val default: CoroutineDispatcher
 }
 
 /** Hata modeli (blueprint B4). [AiUnavailable] kullanıcıya gösterilmez; kural tabanlı sonuç gelir. */
