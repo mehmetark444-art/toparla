@@ -652,6 +652,38 @@ Rahatsız Etme erişimini geri okumaya çalışmıyor.
 adımında gerçekten sınandı (ikisi de olumsuz). APK kurulum adımı, `USER_RESTRICTED` dalı ve temiz kurulumda
 tam koşu ölçülmedi: asıl uygulamanın ilk kurulumunda (F2.17) yapılacak.
 
+### 8 Ekim 2026 — Spike 13: Room + KSP + BundledSQLiteDriver, FTS5
+
+**Sürümler (Google Maven ve Maven Central'dan 8 Ekim 2026'da okundu):** Room'un güncel kararlı ailesi artık
+`androidx.room3` (3.0.3; 2.x ailesinin sonu 2.8.5). KSP 2.3.12 (sürümü Kotlin'den bağımsız). Room 3.0.3'ün
+POM'u `androidx.sqlite` 2.7.1 istiyor; `sqlite-bundled` 2.7.1.
+
+**Derleme:** `:spike`'a `com.google.devtools.ksp` eklentisi, `room3-runtime`, `room3-compiler` (ksp) ve
+`sqlite-bundled` eklendi. Kotlin 2.4.20 + AGP 9.4.1 (yerleşik Kotlin) + Gradle 9.6.0 ile **ilk denemede derlendi**;
+KSP `SpikeDb_Impl.kt` üretti. APK'ya `libsqliteJni.so` giriyor (arm64 için ~1,0 MB).
+
+**Cihazda (tek koşu):**
+- Room 3: `Room.databaseBuilder<…>().setDriver(BundledSQLiteDriver())`, `suspend` DAO ile ekle → oku → say:
+  doğru, toplam 24 ms (veritabanı oluşturma dahil).
+- Paketli SQLite sürümü 3.50.1; `CREATE VIRTUAL TABLE … USING fts5` çalışıyor.
+- FTS5, 5 Türkçe cümle, 10 sorgu (eşleşen belge sayısı):
+
+| Ayırıcı | dişçi | disci | DİŞÇİ | ışık | isik | istanbul | İSTANBUL | çöp* | ilac* | fatura* |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `unicode61` | 1 | 1 | 1 | **0** | **0** | 1 | 1 | 1 | 1 | 1 |
+| `unicode61 remove_diacritics 2` | 1 | 1 | 1 | **0** | **0** | 1 | 1 | 1 | 1 | 1 |
+| `trigram` | 1 | 0 | 0 | **0** | 0 | 0 | 1 | 1 | 1 | 1 |
+
+**Sonuç:** F2.11 için yığın çalışıyor. `unicode61` aksanları ve İ/i'yi katlıyor (ş→s, ç→c, İ→i), ama
+**noktasız ı ile büyük I'yı eşleştiremiyor:** "Işık" belgesi ne "ışık" ne "isik" ile bulunuyor. Çözüm ayırıcıda
+değil bizde: dizine yazılan metin ve sorgu aynı Türkçe katlamadan geçirilir (ı→i, I→i, İ→i; `:domain`'de saf
+fonksiyon, testli). `trigram` Türkçe büyük/küçük harfte daha kötü; kullanılmaz.
+
+**Sınırlar:** tek koşu, 5 belge; hız ve büyük veri ölçülmedi; Room'un FTS varlık açıklaması (`@Fts…`) yerine
+ham SQL kullanıldı (Room 3'te FTS5 varlığı desteği bakılmadı); şema dışa aktarımı ve `MigrationTestHelper`
+denenmedi (F2.12); Hilt bu sürümlerle denenmedi (F2.10). Room 2 → 3 seçimi blueprint'in "Room" ifadesinin
+güncel karşılığıdır; kesin kilit F2.11'de.
+
 **Ortam notu:** PowerShell'de `bash` komutu Windows'un kendi bash'ini (WSL) açıyor; telefon aracı bulunamıyor.
 Kullanıcı'ya verilecek komut Git Bash'i tam yoluyla çağırmalı: `& "C:\Program Files\Git\bin\bash.exe" scripts/…`.
 

@@ -184,7 +184,9 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 21. **"A grubu" (kısa telefon ölçümleri).** Ayar bağlantıları, Yakala kutucuğu, bildirim erişimi, kritik ses
     ve Rahatsız Etme, canlı bildirim, arama algılama ölçüldü; `scripts/kur.sh` yazıldı (koşusu sırada).
     Kutucukta blueprint'ten farklı bir bulgu: kilit ekranında ekran açılamıyor, yakalama ekransız yapılacak.
-    (`80cb939`, `11297b5`, `51226d3`)
+    (`80cb939`, `11297b5`, `51226d3`, `ae10fe3`, `649cb02`)
+22. **Spike 13 (veritabanı yığını).** Room 3 + KSP + paketli SQLite `:spike`'ta derlendi ve telefonda koşuldu;
+    FTS5'in Türkçe davranışı ölçüldü.
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -248,6 +250,13 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   - *Canlı bildirim:* `ProgressStyle` + ek alan `android.requestPromotedOngoing` sistemce
     `PROMOTED_ONGOING` sayılıyor; durum çubuğunda hap, panelde çubuk, kilit ekranında görünüyor.
   - *Arama:* `AudioManager.getMode()` giden hücresel aramada izinsiz `2` veriyor.
+  - *`kur.sh`:* `pm grant` ve tam ekran `appops` tutuyor; kullanım istatistikleri ve üstte gösterme
+    `appops` komutları hata vermeden **tutmadı** (olası neden: `:spike` o izinleri istemiyor; doğrulanmadı).
+    Kova, pil muafiyeti varken `5` (muaf) kalıyor. Bildirim erişimi olan uygulama Rahatsız Etme erişimini de alıyor.
+- **Veritabanı yığını (8 Ekim, tek koşu):** Room'un güncel ailesi `androidx.room3` (3.0.3). Room 3 + KSP 2.3.12 +
+  `sqlite-bundled` 2.7.1, Kotlin 2.4.20 / AGP 9.4.1 ile derleniyor ve telefonda çalışıyor; FTS5 var
+  (SQLite 3.50.1). **FTS5 noktasız ı ile I'yı eşleştirmiyor:** dizine ve sorguya kendi Türkçe katlamamız
+  uygulanacak (ı, I, İ → i). Açık soru 7'nin Room/KSP kısmı kapandı; Hilt hâlâ denenmedi.
 - **Gemini ölçümleri (8 Ekim, tek çağrılar):** flash-lite ~1 sn; 3.8-flash varsayılan düşünmeyle
   ~8 sn, `thinkingLevel:"low"` ile ~2 sn; pro ~11 sn. Düşünme tokenleri çıktı fiyatından ücretlenir.
   Şemalı çıktı, işlev çağrısı, akış ve Google Arama temellendirmesi çalışıyor. Arama atıflarındaki

@@ -68,6 +68,7 @@ class SpikeActivity : Activity() {
             "progress" -> AGroup.progressTest(this)
             "audio" -> AGroup.audioMode(this)
             "tile" -> AGroup.requestTile(this)
+            "db" -> DbSpike.run(this)
         }
         intent.removeExtra("a")
         if (intent.hasExtra("rag")) {
