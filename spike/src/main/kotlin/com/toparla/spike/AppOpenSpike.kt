@@ -26,11 +26,14 @@ class AppOpenAccessibilityService : AccessibilityService() {
         val now = SystemClock.uptimeMillis()
         val dispatchMs = now - event.eventTime
         if (now - lastInterceptAt < COOLDOWN_MS) {
-            AlarmSpike.log(this, "APP_WINDOW_IGNORED", pkg, 0, "dispatchMs=$dispatchMs")
+            // İçerik olayları çok sık gelir; bekleme süresindeyken yalnız pencere olayı kayda yazılır.
+            if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+                AlarmSpike.log(this, "APP_WINDOW_IGNORED", pkg, 0, "dispatchMs=$dispatchMs")
+            }
             return
         }
         lastInterceptAt = now
-        AlarmSpike.log(this, "APP_OPEN", pkg, 0, "dispatchMs=$dispatchMs")
+        AlarmSpike.log(this, "APP_OPEN", pkg, 0, "dispatchMs=$dispatchMs type=${AccessibilityEvent.eventTypeToString(event.eventType)}")
         try {
             startActivity(
                 Intent(this, InterceptActivity::class.java)

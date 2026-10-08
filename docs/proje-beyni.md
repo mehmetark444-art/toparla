@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 8 Ekim 2026, öğleden sonra · **Kapsadığı son commit:** `0d2f7ab` · **Kapanan son faz:** F0
+**Son güncelleme:** 8 Ekim 2026, akşam · **Kapsadığı son commit:** `caa9a8a` · **Kapanan son faz:** F0
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -160,7 +160,10 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     şemalı çıktı, işlev çağrısı, arama temellendirmesi ve akış tek çağrılarla ölçüldü; kademeler ve
     fiyatlar kilitlendi. Görsel girdi, önbellekleme ve gerçek konu taraması henüz denenmedi. (`0d2f7ab`)
 15. **Spike 2 ve 3.** Deneme uygulamasına servis ve tam ekran kartı eklendi; alarmdan servis başlatma
-    ve kilitliyken tam ekran bildirim tek denemede çalıştı. Kalan koşullar yol haritasında açık.
+    ve kilitliyken tam ekran bildirim tek denemede çalıştı. Kalan koşullar yol haritasında açık. (`b203ef6`)
+16. **Spike 5 (erişilebilirlik).** İki olumsuz bulgu: kaydırınca servis ölüp geri gelmiyor (`caa9a8a`);
+    uygulama açılışı ~2,9 sn geç algılanıyor. Olumlu: servisten kart açma hızlı ve engelsiz.
+    Üç yapılandırma değişikliği gecikmeyi düzeltmedi; ölçüm betiği `scripts/spike-a11y-olc.sh`.
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -188,6 +191,11 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   HyperOS süreci öldürüyor (`SwipeUpClean`); servis "Crashed" durumuna düşüyor, ayarda açık görünüyor
   ama olay almıyor ve uygulama yeniden başlasa da geri bağlanmıyor. Müdahale ekranının (M25-I)
   en büyük riski bu; önlemler sınanmadan o özellik tasarlanmaz.
+- **Uygulama açılışı ~2,9 sn geç algılanıyor (8 Ekim, 21 ölçüm):** olay servise ulaştıktan sonra kart
+  ~70 ms'de çiziliyor, ama açılışta olayın kendisi ~2,9 sn geç geliyor (açılış olmayan geçişlerde
+  ~100 ms). Sürekli servis, pencere bayrağı ve ek olay türleri değiştirmedi; neden bilinmiyor.
+  Blueprint'in ≤ 400 ms hedefi bu yapılandırmada tutmuyor. Servis paket güncellemesinden sonra
+  kendiliğinden bağlanıyor; paket süzgeci bağlanma anında sızdırıyor (kodda da denetle).
 - **Alarmdan servis ve tam ekran (8 Ekim, tek denemeler):** `setAlarmClock` alıcısından `specialUse`
   foreground service başlatılabiliyor (29 ms). Kilitliyken tam ekran bildirim, HyperOS'e özgü hiçbir
   izin elle verilmeden kilit ekranının üstünde açılıyor ve ekranı uyandırıyor (270 ms). Blueprint'in

@@ -66,13 +66,16 @@ class SpikeService : Service() {
         } catch (e: RuntimeException) {
             AlarmSpike.log(this, "FGS_DENIED", key, AlarmSpike.plannedAt(key), e.javaClass.simpleName)
         }
+        // Spike 5: "hold" kipinde servis açık kalır; HyperOS'in arka plan sürecini boşa alıp almadığı ölçülür.
+        if (intent?.getBooleanExtra(EXTRA_HOLD, false) == true) return START_STICKY
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf(startId)
         return START_NOT_STICKY
     }
 
-    private companion object {
-        const val CHANNEL = "spike_fgs"
-        const val NOTIFICATION_ID = 42
+    companion object {
+        const val EXTRA_HOLD = "hold"
+        private const val CHANNEL = "spike_fgs"
+        private const val NOTIFICATION_ID = 42
     }
 }

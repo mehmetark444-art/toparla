@@ -59,6 +59,10 @@ class SpikeActivity : Activity() {
     }
 
     private fun handle(intent: Intent) {
+        when (intent.getStringExtra("fgsHold")) {
+            "on" -> startForegroundService(Intent(this, SpikeService::class.java).putExtra(SpikeService.EXTRA_HOLD, true))
+            "off" -> stopService(Intent(this, SpikeService::class.java))
+        }
         val delaySec = intent.getIntExtra("delaySec", 0)
         if (delaySec <= 0) return
         val api = intent.getStringExtra("api") ?: "both"

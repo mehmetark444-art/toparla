@@ -233,3 +233,33 @@ kaydırmada olabileceğini gösteriyor. Algılama gecikmesi henüz ölçülemedi
 ana Activity'yi son uygulamalardan gizleme · servisi ayrı süreçte çalıştırma · yeniden başlatma
 sonrası servis geri geliyor mu · sağlık denetimi (Enabled ama bağlı değil → uyarı). Yedek: kullanım
 istatistikleriyle gecikmeli algılama.
+
+### 8 Ekim 2026 — Spike 5: algılama gecikmesi (ikinci tur)
+
+Kullanıcı servisi kapatıp açtı; servis bağlandı. Ölçüm: `scripts/spike-a11y-olc.sh` iki uygulamayı
+17 sn arayla açtırır; `dispatchMs` = olayın oluşması → servise ulaşması, `sinceEventMs` = olay → kartın
+ilk çizimi. Kullanıcı kartı iki kez kendi gözüyle gördü.
+
+| Koşul | Ölçüm | Olay → servis | Olay → kart çizildi |
+|---|---|---|---|
+| Uygulama **açılışı** (soğuk/ılık), yalın servis | 6 | 2 837–2 941 ms (biri 101 ms) | 2 910–3 028 ms |
+| Açılış + sürekli foreground service açık | 5 | 2 906–2 928 ms | 2 974–2 997 ms |
+| Açılış + `flagRetrieveInteractiveWindows` (içerik yetkisi yok; `capabilities=0`, etkisiz) | 4 | 2 911–2 926 ms | 2 972–3 017 ms |
+| Açılış + ek olay türleri (içerik değişti, odak) | 6 | 2 915–2 979 ms | 2 962–3 066 ms |
+| Açılış olmayan geçiş (ayarlardan dönüş, geri/ana ekran) | 2 | 101–106 ms | 141–153 ms |
+
+**Sonuçlar:**
+1. Olay servise ulaştıktan sonra kart ~50–90 ms'de çiziliyor: servisten Activity başlatma çalışıyor
+   ve hızlı; `SYSTEM_ALERT_WINDOW` yedeğine gerek görünmüyor.
+2. **Uygulama açılışında olay servise ~2,9 sn geç ulaşıyor** (21 ölçümün 20'si). Hedef ≤ 400 ms
+   tutmuyor. Gecikme sabit; sürekli servis, pencere bayrağı ve ek olay türleri değiştirmedi.
+   **Neden bilinmiyor** (sistem tarafında bekletme ya da HyperOS'in açılış sırasındaki davranışı olabilir).
+3. İzlenen paket süzgeci bağlanma anında sızdırdı: ilk olay `com.android.settings`'ten geldi. Üründe
+   paket denetimi kodda da yapılmalı.
+4. Paket güncellemesinden (`adb install -r`) sonra servis kendiliğinden yeniden bağlandı (3 kez).
+5. Yan etki: erişilebilirlik servisi açıkken YouTube, oynatıcı için erişilebilirlik denetimlerini
+   açmayı öneren kendi penceresini gösterdi. Başka uygulamalar servisin açık olduğunu görebiliyor.
+
+**Denenmedi:** içerik okuma yetkisi açık sürüm (K17'ye aykırı; Kullanıcı kararı gerekir) · pil
+muafiyeti / otomatik başlatma / son uygulamalarda kilit · kullanım istatistiklerini sık sorgulama ·
+release yapısı · uzun süre sonra servis ömrü.
