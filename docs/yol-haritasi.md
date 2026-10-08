@@ -114,7 +114,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
   - ☑ Akış (SSE), şemalı çıktı, işlev çağrısı, düşünme ayarı (tek çağrı ölçümleri)
   - ◐ Görsel girdi ☑ (uydurma tek örnek), bağlam önbellekleme ☑ (örtük ve açık) — § Spike 11 (kalanlar); 429 / hız sınırı ☐ (40 eşzamanlı çağrıyla tetiklenmedi, gövdesi görülmedi)
   - ☑ Google Arama temellendirmesi: atıf alanları ve fiyat; yönlendirme adresinden gerçek URL (4/4) ve tarih (2/4); arama + şemalı çıktı tek çağrıda kaynak vermiyor → iki çağrı — § Spike 11 (kalanlar)
-- ◐ F1.17 Konu bütçesi ölçümü: 1 konu × günde 2 tarama gerçek maliyeti → varsayılan sıklık (fiyattan hesap: ücretsiz arama payına sığıyor, karar 0007; gerçek tarama ölçümü ☐)
+- ☑ F1.17 Konu bütçesi ölçümü: 1 konu × günde 2 tarama gerçek maliyeti → varsayılan sıklık — `platform-bulgulari.md` § Spike 12 (konu başına ayda 0,07–0,11 $; günde 2 tarama kalır; aramasız "yenilik yok" yanıtı başarısız tarama sayılır; konu başına tek tarama ölçüldü)
 - ☑ F1.18 Room + BundledSQLiteDriver ile FTS5; KSP'nin Kotlin 2.4 / AGP 9.4 ile uyumu — `platform-bulgulari.md` § Spike 13 (Room 3.0.3 + KSP 2.3.12 derlendi ve cihazda çalıştı; FTS5 var; noktasız ı için kendi Türkçe katlamamız gerekiyor; tek koşu)
 - ☑ F1.19 ALO 171 hattının güncelliği — `platform-bulgulari.md` § Spike 18 (resmi sayfa yayında; hat aranarak doğrulanmadı; metinde "ücretsiz" denmez)
 - ☑ F1.20 16 KB sayfa: cihaz 4096 kullanıyor; engel değil — `platform-bulgulari.md`

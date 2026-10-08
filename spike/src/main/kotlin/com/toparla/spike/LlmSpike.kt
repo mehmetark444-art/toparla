@@ -46,12 +46,13 @@ object LlmSpike {
 
     private class Generation(val text: String, val firstMs: Long, val totalMs: Long, val finished: Boolean)
 
-    fun run(context: Context, backendName: String, modelName: String, runNo: Int) {
+    /** [setName] verilirse set, yeniden kurulum gerekmesin diye uygulamanın dış dosya dizinindeki sets/<ad>.json dosyasından okunur. */
+    fun run(context: Context, backendName: String, modelName: String, runNo: Int, setName: String? = null) {
         val app = context.applicationContext
         thread(name = "llm-spike") {
             val tag = "$modelName/$backendName"
             try {
-                runSet(app, backendName, modelName, runNo, tag)
+                runSet(app, backendName, modelName, runNo, tag, setName)
             } catch (e: Throwable) {
                 Log.e(TAG, "hata", e)
                 AlarmSpike.log(app, "LLM_ERROR", tag, 0, "${e.javaClass.simpleName}: ${e.message?.take(160)}")
@@ -59,14 +60,20 @@ object LlmSpike {
         }
     }
 
-    private fun runSet(context: Context, backendName: String, modelName: String, runNo: Int, tag: String) {
+    private fun runSet(context: Context, backendName: String, modelName: String, runNo: Int, tag: String, setName: String?) {
         val model = File(context.getExternalFilesDir("models"), "$modelName.litertlm")
         if (!model.exists()) {
             AlarmSpike.log(context, "LLM_NO_MODEL", tag, 0, model.absolutePath)
             return
         }
-        val items = JSONArray(context.assets.open("llm-set.json").bufferedReader().use { it.readText() })
-        val out = File(context.getExternalFilesDir(null), "llm-set-$modelName-$runNo.jsonl")
+        val items = JSONArray(
+            if (setName == null) {
+                context.assets.open("llm-set.json").bufferedReader().use { it.readText() }
+            } else {
+                File(context.getExternalFilesDir("sets"), "$setName.json").readText()
+            },
+        )
+        val out = File(context.getExternalFilesDir(null), "llm-${setName ?: "set"}-$modelName-$runNo.jsonl")
         out.delete()
         val raw = backendName.endsWith("-raw")
         val backend = if (backendName.startsWith("cpu")) Backend.CPU() else Backend.GPU()

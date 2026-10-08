@@ -730,6 +730,31 @@ ya da belge gönderilmedi.
 **Denenmedi:** el yazısı, eğik ya da düşük ışıklı gerçek belge fotoğrafı · önbelleğin fiyat etkisinin faturadan
 doğrulanması · 429 gövdesi · gerçek bir konu taramasının uçtan uca maliyeti (F1.17) · Türkçe kalite (altın set).
 
+### 8 Ekim 2026 — Spike 12: konu taramasının gerçek maliyeti
+
+Betik: `scripts/konu-tarama-olc.mjs`. Tarama = aramalı çağrı ("son 3 günde en fazla 5 gelişme") + bulguları
+şemalı özete döken ikinci çağrı. Üç uydurma konu, iki kademe, konu başına **tek tarama**. Fiyatlar karar 0007.
+
+| Kademe | Tarama başına (ortalama) | Aralık | Arama sorgusu / tarama | Süre (arama + özet) |
+|---|---|---|---|---|
+| `gemini-3.5-flash-lite` | 0,12 sent | 0,009–0,21 sent | 1,0 | 3,5–5,6 sn |
+| `gemini-3.8-flash` (`low`) | 0,19 sent | 0,015–0,34 sent | 1,3 | 4,8–11,8 sn |
+
+Günde 2 tarama × 30 gün: konu başına ayda **0,07 $** (hızlı) / **0,11 $** (günlük) ve 60–80 arama sorgusu.
+5 konu ≈ 0,35–0,57 $ ve 300–400 sorgu; aylık 5 000 ücretsiz arama payının çok altında.
+
+**Sonuç:** blueprint'in varsayılanı (günde 2 tarama) bütçe açısından sorunsuz; aylık 25 $'ın %40'lık konu payı
+onlarca konuya yeter. Varsayılan sıklığı maliyet değil, bildirim bütçesi ve okunma oranı belirler. Tarama için
+hızlı kademe yeterli görünüyor (özet kalitesi gözle karşılaştırılmadı).
+
+**Önemli bulgu:** bir konuda (HyperOS) model iki kademede de **hiç arama yapmadan** "yeni gelişme yok" dedi
+(`webSearchQueries` boş, kaynak 0). Ürün kuralı: arama sorgusu sayısı 0 olan tarama "yenilik yok" sayılmaz;
+başarısız tarama sayılır ve yeniden denenir. Aksi hâlde konu sessizce ölür.
+
+**Sınırlar:** konu başına tek tarama; girdi token sayısına arama içeriği dahil görünmüyor (faturadan
+doğrulanmadı); yineleme ayıklama, telif örtüşmesi ve gerçek adres çözme bu ölçümde yok; fiyatlar 7 Ekim 2026
+tarihli, günlük kademe 1 Ocak 2027'de iki katına çıkıyor.
+
 **Ortam notu:** PowerShell'de `bash` komutu Windows'un kendi bash'ini (WSL) açıyor; telefon aracı bulunamıyor.
 Kullanıcı'ya verilecek komut Git Bash'i tam yoluyla çağırmalı: `& "C:\Program Files\Git\bin\bash.exe" scripts/…`.
 
