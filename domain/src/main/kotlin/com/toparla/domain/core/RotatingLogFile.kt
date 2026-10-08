@@ -29,9 +29,6 @@ class RotatingLogFile(private val directory: File, private val maxBytes: Long, p
         false
     }
 
-    /** Günlük dosyaları, yeniden eskiye. Tanılama dışa aktarımı bunları okur. */
-    fun files(): List<File> = (listOf(current) + (1 until maxFiles).map { numbered(it) }).filter { it.exists() }
-
     private fun rotate() {
         if (maxFiles == 1) {
             current.delete()

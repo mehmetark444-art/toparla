@@ -28,6 +28,20 @@ class ReminderPlannerEdgeTest {
     }
 
     @Test
+    fun `vakti gecmis kayit planlayici tarafindan iptal edilmez denetciye kalir`() {
+        // Telefon kapalıyken vakti geçen alarmın kaydı silinirse denetçi onu bulamaz ve teslim sessizce kaybolur.
+        val now = at("2026-10-07T12:00")
+        val defs = listOf(ReminderDef("r1", ReminderClass.CRITICAL, LocalDateTime.parse("2026-10-07T11:00"), zone))
+        val overdue = ScheduledAlarm(ReminderPlanner.keyOf("r1", at("2026-10-07T11:00")), at("2026-10-07T11:00"))
+        val staleFuture = ScheduledAlarm("silinmis@1", at("2026-10-07T13:00"))
+
+        val result = ReminderPlanner.plan(now, defs, listOf(overdue, staleFuture))
+
+        assertEquals(listOf("silinmis@1"), result.toCancel)
+        assertEquals(listOf(overdue), DeliveryAuditor.findUnfired(now, listOf(overdue, staleFuture), firedKeys = emptySet()))
+    }
+
+    @Test
     fun `anahtar hatirlatma kimligi ve planlanan andan olusur`() {
         assertEquals("r1@1000", ReminderPlanner.keyOf("r1", Instant.ofEpochMilli(1000)))
     }

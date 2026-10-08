@@ -128,7 +128,7 @@ LeakCanary 2.14 · detekt 1.23.8 · ktlint-gradle 14.2.0 · AndroidX Test runner
   kümelerinde `DevTools` (StrictMode yalnız debug). Henüz ekran yok (F2.24).
 - **Kalite kapısı:** `./gradlew :domain:test ktlintCheck detekt :app:lintDebug :app:assembleDebug`; aynısı
   `.github/workflows/check.yml`'de (push'tan sonra koşacak).
-- Testler: ~~103~~ → 113 JVM + 15 cihaz. İnvaryantlar tohumlu rastgele girdiyle (300 deneme) sınanır; 18 zorunlu senaryonun saf
+- Testler: ~~103~~ → ~~113~~ → 114 JVM + 15 cihaz. İnvaryantlar tohumlu rastgele girdiyle (300 deneme) sınanır; 18 zorunlu senaryonun saf
   mantıkla ifade edilebilen 12'si `:domain`'de, kalan 6'sı Android tarafında (yol haritası F2.46).
 
 ## 5. Kararlar ve gerekçeleri
@@ -219,6 +219,8 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     ve Rahatsız Etme, canlı bildirim, arama algılama ölçüldü; `scripts/kur.sh` yazıldı (koşusu sırada).
     Kutucukta blueprint'ten farklı bir bulgu: kilit ekranında ekran açılamıyor, yakalama ekransız yapılacak.
     (`80cb939`, `11297b5`, `51226d3`, `ae10fe3`, `649cb02`)
+22. **Spike 13 (veritabanı yığını).** Room 3 + KSP + paketli SQLite `:spike`'ta derlendi ve telefonda koşuldu;
+    FTS5'in Türkçe davranışı ölçüldü.
 23. **F1 kapanış ölçümleri ve devir.** Servis yolları, tam ekran, süreç ölümü / otomatik başlatma, temizlik,
     saat değişimi, arka plandan arama, ekran okuma, Gemini kalanları, konu maliyeti, ALO 171, çıraklık ön ölçümü;
     kablosuz gece testi kuruldu. Ölçülemeyenler karar 0014 ile devredildi (`718cc1b`).
@@ -229,8 +231,9 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     günlük, debug/release, R8, imza anahtarı ve imzalı sürüm (`54be010`); ktlint, detekt, Lint, `log-cek.sh`,
     GitHub Actions iş akışı. İki sürüm telefona yan yana kuruldu. Açık: anahtar yedeği, API anahtarı
     yenileme, Actions'ın ilk koşusu (üçü de Kullanıcı'ya ya da push'a bağlı).
-22. **Spike 13 (veritabanı yığını).** Room 3 + KSP + paketli SQLite `:spike`'ta derlendi ve telefonda koşuldu;
-    FTS5'in Türkçe davranışı ölçüldü.
+26. **Ara denetim (9 Ekim, Kullanıcı isteğiyle).** F0'dan F2-B'ye her şey denetlendi; 1 mantık hatası (H28),
+    1 gizlilik eksiği, 2 dayanıklılık eksiği, kullanılmayan kod ve bayat belge satırları düzeltildi.
+    Kayıt: `docs/gece-kontrolleri.md`.
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -367,6 +370,8 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 | H25 | Kullanıcı'ya verilen `bash scripts/kur.sh …` komutu iki kez "Telefon bağlı değil" deyip durdu | Kullanıcı'nın PowerShell'inde `bash`, Git Bash değil Windows'un kendi bash'i (WSL); `ANDROID_HOME` ve `LOCALAPPDATA` orada boş. Betik yalnız benim oturumumun ortamında denenmişti | Kullanıcı'nın çalıştıracağı komutu **onun ortamında** düşün: Git Bash'i tam yoluyla çağır (`& "C:\Program Files\Git\bin\bash.exe" …`) ve vermeden önce `powershell -Command` ile sına. `scripts/adb` artık SDK'yı birkaç yerde arıyor. |
 | H26 | `kur.sh`'ın ilk hâlinde üç doğrulama yanlış beklentiyle yazıldı (kova `10`, Rahatsız Etme için ayar anahtarı, manifestte olmayan `appops`) | Geri okuma komutlarının bu telefonda ne döndürdüğüne bakılmadan beklenti yazıldı | Doğrulama adımı yazmadan önce geri okuma komutunu bir kez elle koş ve gerçek çıktıyı gör. |
 | H27 | Çıraklık ölçümü telefonda "koşuyor" sanıldı, Kullanıcı'ya öyle söylendi; 5 dakika sonra kayıtta başlangıç satırı olmadığı görüldü | Telefon kilitliydi: `am start` ile gönderilen intent, Activity kilit ekranının arkasında durduğu için teslim edilmedi. Betik başlangıcı doğrulamadan bekliyordu | Uzun cihaz işini başlattıktan sonra ilk 30 saniyede başlangıç kaydını (`LLM_INIT` vb.) doğrula; betik kilit ekranı açıksa başlamadan dursun (`spike-llm-olc.sh` düzeltildi). H24 ile aynı aile: "komut gönderildi" ≠ "iş başladı". |
+| H28 | Planlayıcı, vakti geçmiş alarm kayıtlarını "planda yok" diye iptal listesine koyuyordu; kayıt silinince teslim denetçisi çalmamış teslimi bulamayacaktı (sessiz kayıp). Ara denetimde, iki parçanın birlikte nasıl çalışacağı düşünülürken bulundu | Planlayıcı ve denetçi ayrı ayrı test edilmişti; ikisinin aynı tabloyu paylaştığı akış test edilmemişti | Aynı veriyi paylaşan iki kuralın **birlikte** senaryosu da yazılır. Planlayıcı artık vakti geçmiş kayda dokunmaz (`toCancel` yalnız geleceği kapsar); kayıt teslim hattında (F2.27) ateşlenince silinir. |
+| H29 | F2-B'nin ilk yazımında kullanılmayan DAO sorguları, bir özellik anahtarı ve bir yardımcı fonksiyon eklendi; uygulama verisi Android'in bulut yedeği ve cihaz aktarımına karşı yalnız eski `allowBackup` ile korunuyordu; günlük dosyası çağıran iş parçacığında yazılıyordu; gizli değer anahtarı eşzamanlı ilk kullanımda iki kez üretilebilirdi | H18'in tekrarı ("ileride lazım olur"); Lint uyarıları okunmadan geçildi | Kod yazıldıktan sonra Lint raporunun uyarılarını tek tek oku; kullanılmayan her genel üyeyi sil. Dördü de düzeltildi (`data_extraction_rules.xml`, arka plan günlük sırası, `@Synchronized`). |
 | H15 | Yol haritası birkaç kez `sed`/`awk` ile değiştirildi | Alışkanlık; o sırada kanca yoktu | Kabuk komutuyla yapılan değişiklik düzenleme kancalarından (faz kapısı, gizli değer) geçmez. Yol haritası ve proje beyni **yalnız düzenleme aracıyla** değiştirilir. |
 
 ## 9. Tuzaklar ve "bunu bilmeden başlama" notları
@@ -416,21 +421,38 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 
 1. `setExactAndAllowWhileIdle` gecikmesinin kök nedeni (kova mı, pil politikası mı, HyperOS mu)?
 2. Gerçek Doze'da ve uzun ufukta (1–8 sa) üç alarm yolunun davranışı → gece testi.
-3. Erişilebilirlikle uygulama açılışı algılama ≤ 400 ms tutacak mı; HyperOS servisi öldürüyor mu?
-4. Cihaz içi model: LiteRT-LM + Gemma'nın güncel adları, Türkçe kalitesi, model dosyasının
-   nasıl edinileceği (sunucumuz yok; Kullanıcı elle indirecek).
-5. Konu Motoru maliyeti: 5 konu × günde 2 tarama aylık konu payına sığacak mı?
+   (kısmen kapandı, 8 Ekim: 24/24 çaldı, karar 0006; **derin Doze hâlâ açık**: kablosuz gece testi kuruldu,
+   sonucu okunmadı.)
+3. ~~Erişilebilirlikle uygulama açılışı algılama ≤ 400 ms tutacak mı; HyperOS servisi öldürüyor mu?~~
+   kapandı (8 Ekim): ~2,9 sn, hedef tutmuyor, karar 0008 ile ≤ 3,5 sn kabul edildi; servis süreç ölünce
+   kendiliğinden dönmüyor. Gecikmenin nedeni bilinmiyor (karar 0014 ile F5.7'ye devredildi).
+4. ~~Cihaz içi model: LiteRT-LM + Gemma'nın güncel adları, Türkçe kalitesi, model dosyasının
+   nasıl edinileceği (sunucumuz yok; Kullanıcı elle indirecek).~~ kapandı (8 Ekim): kararlar 0010 ve 0011.
+   Kullanıcı'nın modeli telefona nasıl alacağı (3,7 GB) ürün akışı olarak hâlâ tasarlanmadı (F6.15).
+5. ~~Konu Motoru maliyeti: 5 konu × günde 2 tarama aylık konu payına sığacak mı?~~ kapandı (8 Ekim):
+   konu başına ayda ~0,07–0,11 $.
 6. Israrlı takip + bütçe 10, blueprint'in "bildirim yorgunluğu → uygulamayı bırakma" riskini
    büyütüyor. Haftalık gözden geçirmede "Yaptım ile bitme oranı" izlenecek.
-7. KSP / Room / Hilt'in Kotlin 2.4.20 + AGP 9.4.1 ile uyumu henüz denenmedi.
+7. ~~KSP / Room / Hilt'in Kotlin 2.4.20 + AGP 9.4.1 ile uyumu henüz denenmedi.~~ kapandı (9 Ekim): üçü de
+   derleniyor ve cihazda çalışıyor.
 8. Kriz sözlüğü Kullanıcı incelemesi olmadan sürüme giremez.
+9. (9 Ekim) **İmza anahtarının yedeği yok**: tek kopya bu bilgisayarda. Kaybolursa veriyi koruyarak güncelleme
+   imkânı biter. Kullanıcı erteledi; gerçek veriyle kullanım (F2 K2) başlamadan önce yapılmalı.
+10. (9 Ekim) API anahtarı hâlâ sohbete açık yazılmış eski anahtar; depo gizli olduğu için acil değil ama
+    Güneş'in bulut katmanı (F6) açılmadan yenilenmeli.
+11. (9 Ekim) `release` sürümü cihazda hiç çalıştırılmadı (ekran yok): R8'in Hilt/Room üretilmiş kodunu
+    bozmadığı ilk ekranla (F2.24) doğrulanacak.
+12. (9 Ekim) Süreç çökünce erişilebilirlik servisi kendiliğinden dönmüyor: müdahale ekranının (M25-I)
+    güvenilirliği Sağlık uyarısına ve Kullanıcı'nın elle kapat-açmasına bağlı.
 
 ## 11. Yeni oturum için hızlı başlangıç
 
 1. Bu dosyayı oku (10 dk), sonra `docs/yol-haritasi.md`'nin en üstünü ("Şu an", "Sıradaki tek adım").
 2. `git log --oneline -15` ve `docs/progress.md`'nin son girişi.
 3. İlgili blueprint bölümü + `docs/decisions/`.
-4. Doğrula: `./gradlew :domain:test` (58 test yeşil olmalı) ve `node .claude/skills/dogrula/kontrol.mjs`.
+4. Doğrula: `./gradlew :domain:test ktlintCheck detekt :app:lintDebug :app:assembleDebug` (9 Ekim itibarıyla
+   114 JVM testi yeşil) ve `node .claude/skills/dogrula/kontrol.mjs`. Cihaz testleri (15):
+   `./gradlew :data:connectedDebugAndroidTest` (telefonda onay ister).
 5. Telefon gerekiyorsa: `adb devices` → `device` görünmeli; kilit durumu ve "USB ile yükle" açık.
 
 ## 12. Güncelleme kuralı (zorunlu)

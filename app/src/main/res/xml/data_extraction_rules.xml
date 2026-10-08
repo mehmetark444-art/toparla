@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Veri cihazda kalır (blueprint A, K: sunucu ve bulut yedeği yok). Android'in bulut yedeğine ve
+  "yeni telefona aktar" akışına hiçbir uygulama verisi girmez. Yedek yalnız uygulamanın kendi parolalı,
+  şifreli dışa aktarımıyla alınır (F10.4, karar 0005-5).
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </device-transfer>
+</data-extraction-rules>

@@ -25,7 +25,7 @@ class RecurrenceCodecTest {
 
     @Test
     fun `bozuk ya da gecersiz metin null doner cokmeye yol acmaz`() {
-        for (bad in listOf("", "YEARLY", "WEEKLY:", "WEEKLY:FUNDAY", "MONTHLY:0", "MONTHLY:x", "HOURS:0:08:00:20:00", "HOURS:4:20:00:08:00", "HOURS:4")) {
+        for (bad in listOf("", "YEARLY", "ONCE:1", "DAILY:x", "WEEKLY:", "WEEKLY:FUNDAY", "MONTHLY:0", "MONTHLY:x", "HOURS:0:08:00:20:00", "HOURS:4:20:00:08:00", "HOURS:4")) {
             assertNull(RecurrenceCodec.decode(bad), bad)
         }
     }

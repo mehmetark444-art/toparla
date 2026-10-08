@@ -69,6 +69,8 @@ class KeystoreSecretStore(
         return File(directory, "$name.bin")
     }
 
+    /** Eşzamanlı ilk kullanımda iki ayrı anahtar üretilmesin diye kilitli. */
+    @Synchronized
     private fun key(): SecretKey {
         val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
         (keyStore.getKey(keyAlias, null) as? SecretKey)?.let { return it }

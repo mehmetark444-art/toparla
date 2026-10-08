@@ -12,9 +12,6 @@ enum class FeatureFlag(val defaultOn: Boolean) {
 
     /** M15 Güvenilir Kişi: merdivenin son basamağını açar. */
     TRUSTED_CONTACT(false),
-
-    /** F3 Günlük sürücü: F2'nin 7 günlük sınaması sürerken kapalı yazılır (karar 0005-4). */
-    DAILY_DRIVER(false),
 }
 
 /** Kullanıcı ayarlarının geçerlilik kuralları: saklanan ham değer buradan geçmeden kullanılmaz. */

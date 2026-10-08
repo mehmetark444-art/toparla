@@ -6,7 +6,6 @@ import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Upsert
 import com.toparla.domain.reminder.OccurrenceState
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ReminderDao {
@@ -19,9 +18,6 @@ interface ReminderDao {
     /** Planlayıcının girdisi: açık ve silinmemiş tanımlar. */
     @Query("SELECT * FROM Reminder WHERE active = 1 AND deletedAt IS NULL")
     suspend fun activeReminders(): List<ReminderEntity>
-
-    @Query("SELECT * FROM Reminder WHERE deletedAt IS NULL ORDER BY createdAt DESC")
-    fun observeAll(): Flow<List<ReminderEntity>>
 
     /** Yumuşak silme (blueprint H: 30 gün çöp). */
     @Query("UPDATE Reminder SET deletedAt = :now, active = 0, updatedAt = :now WHERE id = :id")
@@ -46,9 +42,6 @@ interface ReminderOccurrenceDao {
     /** Teslim edilmiş, yanıt bekleyenler: merdiven ve ısrarlı takip bunlar için sürer. */
     @Query("SELECT * FROM ReminderOccurrence WHERE state IN (:states)")
     suspend fun inStates(states: List<OccurrenceState>): List<ReminderOccurrenceEntity>
-
-    @Query("SELECT * FROM ReminderOccurrence WHERE reminderId = :reminderId ORDER BY plannedAt DESC")
-    suspend fun forReminder(reminderId: String): List<ReminderOccurrenceEntity>
 }
 
 @Dao
@@ -77,10 +70,4 @@ interface DeliveryLogDao {
 
     @Query("SELECT DISTINCT `key` FROM DeliveryLog WHERE event = :event AND `key` IN (:keys)")
     suspend fun keysWithEvent(keys: List<String>, event: DeliveryEvent): List<String>
-
-    @Query("SELECT MAX(ts) FROM DeliveryLog WHERE event = :event")
-    suspend fun lastTs(event: DeliveryEvent): Long?
-
-    @Query("DELETE FROM DeliveryLog WHERE ts < :before")
-    suspend fun purgeOlderThan(before: Long): Int
 }

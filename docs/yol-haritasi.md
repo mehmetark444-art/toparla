@@ -3,7 +3,7 @@
 Projenin sıfırdan bitişe tek durum kaynağı. Her oturumda buradan okunur, burada işaretlenir.
 Kapsam `docs/BLUEPRINT.md` (M1–M30) + `docs/decisions/` kararlarıdır; bu dosya kapsam eklemez.
 
-**Son güncelleme:** 8 Ekim 2026, gece yarısına doğru (A ve C grupları, F1 kapanış ölçümleri)
+**Son güncelleme:** 9 Ekim 2026, gece (F2-A, F2-B ve F0–F2-B ara denetimi)
 
 ## Nasıl okunur
 
@@ -43,7 +43,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F9 | S8 | Konu Motoru | ☐ |
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
-**Şu an:** F1 kapanışa yakın (kalan: kablosuz gece testinin okunması, gürültüde ses tanıma, K1–K3). F2-A (hatırlatma saf mantığı) ve F2-B (altyapı) yazıldı: 113 JVM testi + cihazda 15 test. F2-B'de Kullanıcı'ya bağlı üç iş açık: imza anahtarının iki yerde yedeği, API anahtarının yenilenmesi, push sonrası Actions'ın ilk koşusu. Sırada F2-C (tasarım sistemi).
+**Şu an:** F1 kapanışa yakın (kalan: kablosuz gece testinin okunması, gürültüde ses tanıma, K1–K3). F2-A (hatırlatma saf mantığı) ve F2-B (altyapı) yazıldı: 114 JVM testi + cihazda 15 test; 9 Ekim ara denetiminden geçti (`docs/gece-kontrolleri.md`). F2-B'de Kullanıcı'ya bağlı üç iş açık: imza anahtarının iki yerde yedeği, API anahtarının yenilenmesi, push sonrası Actions'ın ilk koşusu. Sırada F2-C (tasarım sistemi).
 **Sıradaki tek adım:** F1 "B grubu": F1.12 konum (geofence) → F1.13 Mi Band / Health Connect → F1.14 gürültüde ses tanıma. Kullanıcı durumu (8 Ekim): evden çıkamıyor (F1.12 bekler), Mi Band siparişte (F1.13 bekler), gürültü ölçümü 9 Ekim'de iş yerinde. C grubu 8 Ekim gecesi ölçüldü (F1.16–F1.19, F1.24, F1.25). **9 Ekim sabahı ilk iş:** kablosuz gece testinin kaydını okumak (F1.1 derin Doze). F1'de bundan sonra kalanlar: Kullanıcı'ya bağlı üç ölçüm (F1.12, F1.13, F1.14 gürültü), günler isteyen kısıtlı kova ölçümü ve her maddenin kendi satırında yazılı küçük açık koşullar; ardından F1 kapanışı (K1 + K2 + K3). "A grubu" (F1.4–F1.6, F1.8–F1.11) 8 Ekim gecesi ölçüldü; her maddenin açık kalan koşulu kendi satırında.
 
 **Açık engeller**
@@ -64,7 +64,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 - ☑ F0.11 Gece kontrolü usulü (`/gece-kontrolu`, `kontrol.mjs --gece`) ve ilk tam kontrol — `docs/gece-kontrolleri.md`
 - ☑ F0.8 Yol haritası (bu dosya) — `0cf287b`
 - ☑ F0.9 Proje beyni (`docs/proje-beyni.md`) ve zorunlu güncelleme kuralı (K3) — `81f1c19`
-- ☑ F0.10 Claude Code altyapısı: ayarlar ve izinler, 4 kanca (17 sınama), 5 kural dosyası, 7 yetenek, 3 denetçi alt ajan, `AGENTS.md` — `docs/claude-code-duzeni.md`
+- ☑ F0.10 Claude Code altyapısı: ayarlar ve izinler, 4 kanca (17 sınama; F0.11 ile 21), 5 kural dosyası, 7 yetenek (F0.11 ile 8), 3 denetçi alt ajan, `AGENTS.md` — `docs/claude-code-duzeni.md`
 
 **Çift kontrol**
 - ☑ K1: `./gradlew :domain:test :app:assembleDebug` başarılı; depoda API anahtarı yok (`git grep`).
@@ -159,7 +159,7 @@ F1'de kapanıştan önce kalan iki ölçüm: kablosuz gece testinin okunması (F
 - ☑ F2.10 Hilt, Coroutines, `DispatcherProvider`; üretim `Clock` / `IdGenerator` / `RandomSource` — `54be010`: `:app` Hilt kökü (`ToparlaApp`, `di/AppModule`), `:data/core/SystemSources`; Hilt 2.60.1 + KSP 2.3.12 + AGP 9.4.1 derlendi; uygulama telefonda açılıp günlüğüne yazdı
 - ☑ F2.11 Room + KSP: H2 tabloları (`Reminder`, `ReminderOccurrence`, `ScheduledAlarm`, `DeliveryLog`), şema dışa aktarımı, DAO testleri — `29b5948`: Room 3.0.3, `data/schemas/…/1.json`, `ReminderStore` (planlayıcıyla uçtan uca), cihazda 10 test
 - ☑ F2.12 Migration düzeni: `MigrationTestHelper`, migration öncesi DB kopyası ve geri dönüş — `29b5948`: `PreMigrationBackup` (kopya + geri dönüş cihazda testli), dışa aktarılan şemadan v1 kurulumu testli. İlk gerçek migration testi şema v2'ye çıkınca yazılır
-- ☑ F2.13 DataStore ayarları, `FeatureFlags`, `Defaults` / `AppConfig` — `29b5948`: `SettingsStore`, `:domain/SettingsRules` ve `FeatureFlag` (3 anahtar, hepsi kapalı başlar); JVM 4 + cihaz 1 test
+- ☑ F2.13 DataStore ayarları, `FeatureFlags`, `Defaults` / `AppConfig` — `29b5948`: `SettingsStore`, `:domain/SettingsRules` ve `FeatureFlag` (2 anahtar: ilaç, güvenilir kişi; ikisi de kapalı başlar); JVM 4 + cihaz 1 test
 - ☑ F2.14 `SecretStore` (Keystore AES-GCM) — `29b5948`: `KeystoreSecretStore` (AES-256-GCM, ad = ek doğrulama verisi, `noBackupFilesDir`); cihazda 3 test (düz metin diskte yok, bozuk/taşınmış dosya çözülmüyor)
 - ☑ F2.15 Kalite araçları: ktlint, detekt, Android Lint, StrictMode ve LeakCanary (dev), Timber döner günlük — ktlint-gradle 14.2.0 + detekt 1.23.8 (tüm ürün modülleri, `:spike` hariç), `.editorconfig`, `config/detekt.yml`; `RotatingLogFile` (4 test) + `FileLogTree`; `debug` kaynak kümesinde `DevTools`
 - ◐ F2.16 Yapı varyantları: `debug` (.dev) / `release` (R8, imzalı); imza anahtarı üretimi ve **iki yerde yedeği** (Kullanıcı ile) — varyantlar ☑, R8 ☑ (release 4,4 MB), imza anahtarı üretildi ve imza doğrulandı ☑, iki sürüm telefona yan yana kuruldu ☑ (`54be010`); **anahtarın iki yerde yedeği ☐ (Kullanıcı)**
@@ -180,7 +180,7 @@ F1'de kapanıştan önce kalan iki ölçüm: kablosuz gece testinin okunması (F
 ### F2-D Hatırlatma motoru Android tarafı (`:reminders`, M6)
 - ☐ F2.25 `ReminderScheduler` uygulaması: üç alarm yolu, idempotent `PendingIntent`
 - ☐ F2.26 Bildirim kanalları (G5: 8 kanal) ve `Notifier`
-- ☐ F2.27 `AlarmReceiver` → `ReminderService` (FGS) teslim hattı; çift teslim engeli
+- ☐ F2.27 `AlarmReceiver` → `ReminderService` (FGS) teslim hattı; çift teslim engeli; ateşlenen alarmın `ScheduledAlarm` kaydı teslimde silinir (planlayıcı vakti geçmiş kayda dokunmaz, kalan kayıt denetçinin kanıtıdır — proje beyni H28)
 - ☐ F2.28 Bildirim eylemleri uygulama açılmadan: Yaptım · 10 dk sonra · Yarın · Bugün olmayacak
 - ☐ F2.29 Merdiven yürütme; `ReminderFullScreenActivity` (kilit ekranı üstü)
 - ☐ F2.30 Israrlı takip yürütme: 30 dk tekrar, birleşik bildirim, değişen metin, susturan durumlar

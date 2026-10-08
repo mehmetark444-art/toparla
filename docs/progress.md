@@ -63,3 +63,9 @@ kapanış ölçümleri (servis yolları, süreç ölümü ve otomatik başlatma,
 (Kullanıcı işaretini bekliyor).
 
 **Sıradaki:** F1 kapanışı → F2-B altyapı (Hilt, Room 3 tabloları, DataStore, `SecretStore`).
+
+### 9 Ekim 2026 — Oturum 2 (gece, devam)
+**Biten:** F2-B altyapı (F2.10–F2.15, F2.17 tam; F2.16 ve F2.18 Kullanıcı'ya bağlı kısımlar hariç); F0 → F2-B ara
+denetimi (1 mantık hatası, 1 gizlilik eksiği düzeltildi; kayıt `gece-kontrolleri.md`). 114 JVM + 15 cihaz testi.
+
+**Sıradaki:** F1 kapanışı (gece testi, gürültü, K1–K3) → F2-C tasarım sistemi.

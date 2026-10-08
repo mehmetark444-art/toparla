@@ -7,6 +7,7 @@ import com.toparla.domain.core.RotatingLogFile
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import java.io.File
+import java.util.concurrent.Executors
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -31,12 +32,16 @@ class ToparlaApp : Application() {
  * Çağıran kural: günlüğe gizli değer, bildirim/ekran içeriği ve sağlık verisi yazılmaz.
  */
 class FileLogTree(private val file: RotatingLogFile, private val clock: Clock) : Timber.Tree() {
+    /** Dosyaya yazma çağıran iş parçacığını (çoğu zaman ana iş parçacığı) bekletmesin diye tek arka plan sırası. */
+    private val writer = Executors.newSingleThreadExecutor { task -> Thread(task, "toparla-log").apply { isDaemon = true } }
+
     override fun isLoggable(tag: String?, priority: Int): Boolean = priority >= Log.INFO
 
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
         val level = LEVELS[priority] ?: priority.toString()
         val error = t?.let { " | ${it.javaClass.simpleName}: ${it.message}" }.orEmpty()
-        file.append("${clock.now()} $level ${tag.orEmpty()} $message$error")
+        val line = "${clock.now()} $level ${tag.orEmpty()} $message$error"
+        writer.execute { file.append(line) }
     }
 
     private companion object {

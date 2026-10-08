@@ -45,3 +45,47 @@ kancası gerçek bir düzenlemeyle denendi.
 
 **8 Ekim sabahı güncelleme:** 1 ve 2 kapandı. Devam eden oturumda başlangıç kancası durumu bağlama
 ekledi; 8 yetenek ve 3 alt ajan listelendi.
+
+## 9 Ekim 2026 — ara denetim (F0 → F2-B; Kullanıcı isteğiyle)
+
+Kapsam: yol haritasında F0, F1, F2-A ve F2-B'de işaretli her madde; 8–9 Ekim'de yazılan kod, betik ve belgeler.
+Bu, günün kapanış kontrolü değil, Kullanıcı'nın istediği ara denetimdir.
+
+**Makine kontrolleri**
+- Yol haritası kanıt taraması (her işaretli satırdaki commit, bulgu başlığı, sınıf ve dosya adı): 52 ☑ maddenin
+  hepsinin kanıtı yerinde. Açık: 19 ◐, 5 ☐ (hepsi satırında gerekçeli; liste aşağıda).
+- Kalite kapısı: 114 JVM testi, ktlint, detekt, Android Lint, debug ve imzalı release derlemesi, `:spike`
+  derlemesi: geçti. Cihaz testleri: 15/15 (düzeltmelerden sonra yeniden koşuldu).
+- Kanca sınaması: hepsi geçti. İzlenen dosyalarda gizli değer, imza anahtarı ya da model dosyası yok.
+- Kasıtlı bozma: F2-A için 16/16, F2-B'nin saf kodu için 8/8 (ilk turda biri kaçtı; testi eklendi).
+
+**Bulunan ve düzeltilen**
+1. **Mantık hatası (H28):** planlayıcı vakti geçmiş alarm kayıtlarını iptal listesine koyuyordu; kayıt silinince
+   teslim denetçisi çalmamış teslimi bulamazdı. Planlayıcı artık yalnız gelecekteki kayıtları iptal eder; testi yazıldı.
+2. **Gizlilik eksiği:** uygulama verisi Android'in bulut yedeği ve "yeni telefona aktar" akışından yalnız eski
+   `allowBackup` ile korunuyordu (Android 12+ için yetersiz). `data_extraction_rules.xml` ile her alan dışlandı.
+3. **Dayanıklılık:** günlük dosyası çağıran (çoğunlukla ana) iş parçacığında yazılıyordu → tek arka plan sırası.
+   Gizli değer anahtarı eşzamanlı ilk kullanımda iki kez üretilebilirdi → kilitlendi.
+4. **Gereksiz kod (H29):** kullanılmayan ve testsiz 4 DAO sorgusu, 1 özellik anahtarı (`DAILY_DRIVER`), 1 yardımcı
+   fonksiyon silindi; ait oldukları fazda eklenecek.
+5. **Eksik test:** tekrar kuralı çözücüsü `ONCE:1` gibi artık eki olan metni kabul ediyordu → reddediliyor, testli.
+6. **Bayat belge:** yol haritası güncelleme tarihi; proje beyninde sırası bozuk zaman çizelgesi, "58 test"
+   yazan hızlı başlangıç, kapanmış açık sorular; F0.10'daki eski sayılar.
+
+**Doğrulanan (sorun çıkmayan)**
+- Karar kayıtları 0001–0014'ün hepsi `CLAUDE.md` özetinde ve proje beyninde; kodla çelişen karar yok
+  (alarm yolları 0006, ısrarlı takip 0003, tek model 0010 belgelerde ve `:domain`'de tutarlı).
+- F1'de "ölçüldü" yazan her maddenin `platform-bulgulari.md`'de yöntemi, ölçüm sayısı ve sınırları var;
+  tek denemeler "tek deneme" diye işaretli.
+- Devredilen ölçümlerin (karar 0014) her biri yol haritasında bir F2/F5/F6/F7 maddesine bağlı.
+
+**Açık kalan (bilerek)**
+1. F1 kapanmadı: kablosuz gece testi okunmadı (telefon bütün gece kabloya bağlı kaldıysa derin Doze yine
+   ölçülmemiş olacak), gürültüde ses tanıma yapılmadı, K1–K3 işaretsiz.
+2. Kullanıcı'nın ertelediği üç iş: imza anahtarının iki yerde yedeği (**tek kopya bu bilgisayarda**), API
+   anahtarının yenilenmesi, push ve Actions'ın ilk koşusu.
+3. `release` sürümü cihazda hiç çalıştırılmadı (ekran yok); `MissingApplicationIcon` Lint uyarısı F2.24'te kapanır.
+4. İlk gerçek migration testi şema v2'ye çıkınca yazılabilir; şu an yalnız düzen ve v1 kurulumu testli.
+5. GitHub Actions iş akışı hiç koşmadı (push yapılmadı): Linux'ta ilk koşuda sorun çıkabilir.
+6. Karar 0002 (yasak kelime listesi yok) için açık "evet" ve karar 0008 (ekran okuma) için sınır onayı bekliyor.
+7. 25 commit yalnız bu bilgisayarda.

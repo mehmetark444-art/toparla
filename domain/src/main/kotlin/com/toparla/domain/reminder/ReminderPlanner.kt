@@ -49,7 +49,9 @@ object ReminderPlanner {
             // Anahtar zamanı içerdiği için normalde key eşitse fireAt de eşittir; karşılaştırma,
             // ScheduledAlarm tablosu sistemle tutarsız kalmışsa kendini onarmak içindir.
             toSchedule = planned.filter { existingByKey[it.key]?.fireAt != it.fireAt },
-            toCancel = existing.map { it.key }.filterNot { it in plannedKeys },
+            // Vakti geçmiş kayda dokunulmaz: sistem alarmı zaten yoktur, kayıt ise teslim denetçisinin
+            // kanıtıdır ([DeliveryAuditor]). Burada silinirse çalmamış teslim sessizce kaybolur.
+            toCancel = existing.filter { it.fireAt.isAfter(now) }.map { it.key }.filterNot { it in plannedKeys },
             dueNow = due,
         )
     }
