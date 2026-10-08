@@ -1,6 +1,6 @@
 # 0012 — Çıraklık dönemi: yerel model Gemini'den öğrenir
 
-Tarih: 8 Ekim 2026  Durum: Kabul (Kullanıcı kararı; mekanizmaların etkisi henüz ölçülmedi)
+Tarih: 8 Ekim 2026  Durum: Kabul (Kullanıcı kararı; ~~mekanizmaların etkisi henüz ölçülmedi~~ → ön ölçüm 8 Ekim 2026 gecesi yapıldı: örnek kanalı 50 soruda 45,5 → 48,5, zincir 6/6; `platform-bulgulari.md` § F1.25. Gölge koşu ve devir kuralı hâlâ ölçülmedi)
 
 **Bağlam:** Karar 0009 "önce yerel", 0010 tek model Gemma 4 E4B, 0011 RAG. Ölçümler yerel modelin
 güvenilir ama sınırlı olduğunu gösterdi (karta dayalı yanıtta ~%65–70; bölme ve ilk adımda hatalar).
