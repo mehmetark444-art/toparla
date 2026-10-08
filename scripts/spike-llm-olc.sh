@@ -25,6 +25,10 @@ if [ -n "$S" ]; then
   SETARG="--es set $S"; INNAME="llm-$S-$M-$R"; OUTNAME="$M-$S-$R"
 fi
 ./scripts/adb shell input keyevent KEYCODE_WAKEUP
+# Kilit ekranı açıkken intent uygulamaya teslim edilmez, koşu hiç başlamaz (proje-beyni H27).
+if ./scripts/adb shell dumpsys window | tr -d '\r' | grep -q "isKeyguardShowing=true"; then
+  echo "TELEFON KİLİTLİ: koşu başlatılmadı. Kilidi açtırıp yeniden dene."; exit 2
+fi
 T0=$(./scripts/adb shell date +%s%3N | tr -d '\r')
 [ -n "$T0" ] || { echo "Başlangıç zamanı okunamadı."; exit 1; }
 # --activity-clear-top: üstte başka sayfa kalmışsa intent teslim edilmiyor (proje-beyni H24).

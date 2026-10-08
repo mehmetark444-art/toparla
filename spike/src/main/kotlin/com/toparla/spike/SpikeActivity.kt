@@ -69,6 +69,9 @@ class SpikeActivity : Activity() {
             "audio" -> AGroup.audioMode(this)
             "tile" -> AGroup.requestTile(this)
             "db" -> DbSpike.run(this)
+            "fgsaction" -> FinalSpikes.postActionNotification(this)
+            "tilefgs" -> FinalSpikes.tileStartsService = true
+            "audiowatch" -> startForegroundService(Intent(this, SpikeService::class.java).putExtra(SpikeService.EXTRA_HOLD, true).putExtra(SpikeService.EXTRA_AUDIO_WATCH, true))
         }
         intent.removeExtra("a")
         if (intent.hasExtra("rag")) {

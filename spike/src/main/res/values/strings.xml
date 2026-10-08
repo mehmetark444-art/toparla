@@ -32,5 +32,10 @@
     <string name="ongoing_title">Odak oturumu denemesi</string>
     <string name="ongoing_text">25 dakikanın 10. dakikası</string>
     <string name="capture_saved">Tamam ✓</string>
+    <string name="channel_action">Eylem denemesi</string>
+    <string name="action_title">Servis başlatma denemesi</string>
+    <string name="action_button">Servisi başlat</string>
+    <string name="screen_read_label">Toparla Spike ekran okuma ölçümü</string>
+    <string name="screen_read_description">Yalnız ölçüm içindir: ekrandaki öğelerin sayısını ve metin uzunluğunu sayar. Hiçbir metni kaydetmez ve hiçbir yere göndermez. Ölçüm bitince kapat.</string>
     <string name="log_empty">Henüz kayıt yok.</string>
 </resources>

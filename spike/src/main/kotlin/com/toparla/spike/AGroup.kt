@@ -173,6 +173,11 @@ class SpikeNotificationListener : NotificationListenerService() {
 class CaptureTile : TileService() {
     override fun onClick() {
         AlarmSpike.log(this, "TILE_CLICK", "tile", 0, "locked=$isLocked secure=$isSecure")
+        if (FinalSpikes.tileStartsService) {
+            FinalSpikes.tileStartsService = false
+            FinalSpikes.startService(this, "fgs-tile")
+            return
+        }
         if (isLocked) {
             // Kilitliyken startActivityAndCollapse bu telefonda PIN istiyor (ölçüldü): tanıma doğrudan servisten.
             listenFromService(SystemClock.uptimeMillis())

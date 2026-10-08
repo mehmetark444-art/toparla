@@ -16,7 +16,8 @@ class AlarmReceiver : BroadcastReceiver() {
         AlarmSpike.resolve(context, key)
 
         when (key.substringBefore('-')) {
-            AlarmSpike.API_FGS -> startService(context, key, plannedAt)
+            AlarmSpike.API_FGS, AlarmSpike.API_FGS_IDLE -> startService(context, key, plannedAt)
+            AlarmSpike.API_CRIT -> AGroup.alarmTest(context)
             AlarmSpike.API_FSI -> postFullScreen(context, key, plannedAt)
             else -> postPlain(context, key, plannedAt)
         }
