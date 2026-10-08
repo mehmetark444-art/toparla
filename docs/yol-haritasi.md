@@ -121,7 +121,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 
 - ◐ F1.24 Ekran okuma ön ölçümü (karar 0008, aday): içerik yetkisiyle gecikme; ekran metnini toplama hızı, pil ve ısı; parola alanı ve hassas uygulama ayrımı (toplama hızı ☑: ortanca 49 ms, %90 276 ms; parola alanı işareti ☑ — `platform-bulgulari.md` § F1.24; kablosuz pil ve ısı, metinden modelin öneri çıkarması ☐)
 
-- ☐ F1.25 Çıraklık ön ölçümü (karar 0012): Gemini'nin ürettiği örnekler isteme eklenince Gemma 4 E4B'nin 50 soruluk setteki puanı ve süresi değişiyor mu; ret → Gemini → kart → yerel yanıt zinciri uçtan uca.
+- ☑ F1.25 Çıraklık ön ölçümü (karar 0012): Gemini'nin ürettiği örnekler isteme eklenince Gemma 4 E4B'nin 50 soruluk setteki puanı ve süresi değişiyor mu; ret → Gemini → kart → yerel yanıt zinciri uçtan uca — `platform-bulgulari.md` § F1.25 (örnekle 45,5 → 48,5/50, süre +%30–40; zincir 6/6; küçük set, örnekler sorulara çok benzer)
 
 ### F1-D Kararlar
 - ☑ F1.21 Karar kaydı: sınıf → alarm yolu (ısrarlı takip dahil) — karar 0006

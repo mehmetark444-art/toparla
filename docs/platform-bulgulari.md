@@ -853,6 +853,44 @@ uygulanabilir. İkinci bir erişilebilirlik servisi açıkken ilk servis (uygula
 görünümlerinde ve oyunlarda boş ağaç oranı · gizli sekme ayrımı · HyperOS'in bu servisi uzun sürede öldürüp
 öldürmediği. Karar 0008 gereği özellik hâlâ **aday**; sınır onayı Kullanıcı'dan ayrıca alınacak.
 
+### 8 Ekim 2026 (gece) — F1.25: çıraklık ön ölçümü (karar 0012)
+
+Araçlar: `scripts/ciraklik-hazirla.mjs`, `scripts/spike-llm-olc.sh` (set adı desteği), `llm-puanla.mjs --set`.
+Tüm istemler uydurma; kişisel veri yok. Cihaz içi model Gemma 4 E4B (GPU), USB bağlı.
+
+**1. Öğretmen (Gemini günlük kademe, `low`) 50 soruluk sette:** 49,5/50 doğru, 49/50 harfiyen; ortanca 1,9 sn.
+50 çağrı toplam 9 875 girdi + 1 254 çıktı + 1 262 düşünme tokeni (yaklaşık 1,7 sent).
+
+**2. "Örnek" kanalı:** her isteme, aynı kategorideki **başka** iki sorunun öğretmen yanıtı örnek olarak eklendi
+(sorunun kendi yanıtı eklenmedi; öğretmen yanıtları doğruluk süzgecinden geçirilmedi). İkişer koşu.
+
+| Koşu | Doğru | Harfiyen | Kod çiti | Ortanca süre | %90 süre | İlk parça |
+|---|---|---|---|---|---|---|
+| E4B, örneksiz (öğleden sonraki ölçüm) | 45,5 · 45,5 | 43 · 43 | 3 · 3 | 3,7 · 4,2 sn | 9,7 · 10,0 sn | 1,4 sn |
+| E4B, iki öğretmen örneğiyle | **48,5 · 48,5** | **48 · 48** | 0 · 0 | 5,2 · 5,2 sn | 11,5 · 11,2 sn | 2,3–2,5 sn |
+
+Düzelenler: bölme (6,5 → 7,5/8), sınıflama (7 → 8/8), tarih (5 → 6/6), kişilik (1 → 2/2), kod çitleri kayboldu.
+**Bozulan:** karta dayalı yanıtta bir soru (`rag-6`) örneklerle "Kartta bu bilgi yok" oldu (8 → 7/8): örnekler modeli
+daha da harfiyen yaptı. Bedel: yanıt süresi ~%30–40, ilk parça ~1 sn arttı; isteme ortalama ~930 karakter eklendi.
+
+**3. Ret → Gemini → kart → yerel yanıt zinciri (6 güncel bilgi sorusu):**
+- Ret: ilgisiz kartla sorulunca E4B 6/6 "Kartta bu bilgi yok" dedi (uydurmadı; 1,7–2,8 sn).
+- Kart üretimi: soru başına bir aramalı çağrı + bir şemalı çağrı (hızlı kademe), toplam ~2,1–2,8 sn;
+  12 çağrı 728 girdi + 420 çıktı tokeni. Her soruda 1 kaynak geldi.
+- Yerel yanıt: aynı sorular üretilen kartla sorulunca 6/6 karttaki bilgiyle yanıtlandı (1,5–4,3 sn;
+  puanlayıcı birini "Nisan 2026" yerine "Nisan" dendiği için 0 saydı, gözle doğru).
+
+**Sonuç:** karar 0012'nin iki kanalı da bu telefonda çalışıyor. Örnek kanalı küçük sette yerel modeli öğretmene
+yaklaştırıyor (45,5 → 48,5; öğretmen 49,5); kart kanalı reddedilen soruyu yerelde yanıtlanır kılıyor.
+Tasarım notları: (a) karta dayalı görevlerde örnek eklemek reddi artırabilir: örnek kanalı görev türüne göre
+açılıp kapatılmalı ve gölge koşuyla ölçülmeli; (b) örnekler süreyi uzatır: sesli/etkileşimli işte örnek sayısı
+1–2'yi geçmemeli.
+
+**Sınırlar:** 50 soru, kategori başına 2–8 soru; örnekler aynı setin kardeş sorularından geldiği için biçim
+olarak sorulara çok yakın (üründe örnekler bu kadar benzer olmayabilir: etki daha küçük çıkabilir); öğretmenin
+kartlarındaki bilgilerin doğruluğu denetlenmedi (yalnız zincirin işlediği ölçüldü); gölge koşu ve devir kuralı
+(≥ 30 koşu, ≥ %90) denenmedi.
+
 **Ortam notu:** PowerShell'de `bash` komutu Windows'un kendi bash'ini (WSL) açıyor; telefon aracı bulunamıyor.
 Kullanıcı'ya verilecek komut Git Bash'i tam yoluyla çağırmalı: `& "C:\Program Files\Git\bin\bash.exe" scripts/…`.
 

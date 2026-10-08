@@ -269,6 +269,10 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 - **Maliyet ve hat (8 Ekim gece):** bir konu taraması 0,1–0,2 sent (konu başına ayda ~0,07–0,11 $). Model
   bazen **hiç arama yapmadan** "yenilik yok" diyor: sorgu sayısı 0 olan tarama başarısız sayılmalı.
   ALO 171 etkin; cep telefonundan ücretli.
+- **Çıraklık ön ölçümü (8 Ekim gece):** öğretmen (Gemini günlük) 50 soruda 49,5. Yerel E4B örneksiz 45,5;
+  aynı kategoriden iki öğretmen örneği eklenince **48,5** (harfiyen 43 → 48), süre ~%30–40 uzun. Karta dayalı
+  yanıtta örnek reddi artırabiliyor (1 soru). Ret → Gemini kartı → yerel yanıt zinciri 6/6 işledi. Karar
+  0012'nin "örnek kanalının etkisi ölçülmedi" notu kapandı (küçük set; örnekler sorulara çok benzer).
 - **Veritabanı yığını (8 Ekim, tek koşu):** Room'un güncel ailesi `androidx.room3` (3.0.3). Room 3 + KSP 2.3.12 +
   `sqlite-bundled` 2.7.1, Kotlin 2.4.20 / AGP 9.4.1 ile derleniyor ve telefonda çalışıyor; FTS5 var
   (SQLite 3.50.1). **FTS5 noktasız ı ile I'yı eşleştirmiyor:** dizine ve sorguya kendi Türkçe katlamamız
