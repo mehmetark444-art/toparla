@@ -52,7 +52,13 @@ object LlmSpike {
         thread(name = "llm-spike") {
             val tag = "$modelName/$backendName"
             try {
-                runSet(app, backendName, modelName, runNo, tag, setName)
+                // "ornekli:1,zincir-a:1" biçimi: birden çok set tek başlatmayla sırayla koşar (her başlatma kilitsiz ekran ister).
+                if (setName != null && setName.contains(':')) {
+                    for (part in setName.split(',')) runSet(app, backendName, modelName, part.substringAfter(':').toInt(), tag, part.substringBefore(':'))
+                    AlarmSpike.log(app, "LLM_BATCH_DONE", tag, 0, setName)
+                } else {
+                    runSet(app, backendName, modelName, runNo, tag, setName)
+                }
             } catch (e: Throwable) {
                 Log.e(TAG, "hata", e)
                 AlarmSpike.log(app, "LLM_ERROR", tag, 0, "${e.javaClass.simpleName}: ${e.message?.take(160)}")

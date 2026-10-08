@@ -3,7 +3,7 @@
 Projenin sıfırdan bitişe tek durum kaynağı. Her oturumda buradan okunur, burada işaretlenir.
 Kapsam `docs/BLUEPRINT.md` (M1–M30) + `docs/decisions/` kararlarıdır; bu dosya kapsam eklemez.
 
-**Son güncelleme:** 8 Ekim 2026, gece (A grubu: ayar bağlantıları, `kur.sh`)
+**Son güncelleme:** 8 Ekim 2026, gece yarısına doğru (A ve C grupları, F1 kapanış ölçümleri)
 
 ## Nasıl okunur
 
@@ -88,20 +88,20 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
   - ☐ Derin Doze (`idle=true`) altında teslim: gece testinde alarm anında hiç gözlenmedi
   - ◐ `setExactAndAllowWhileIdle` 3,5 dk gecikmesi: 8 gece ölçümünde tekrarlanmadı (en çok 28 sn); kök neden bilinmiyor
   - ☐ Kısıtlı bekleme kovası (uygulama günlerce açılmadan)
-  - ☐ Güvenlik uygulaması "Bellek temizleme" sonrası teslim
-  - ☐ Saat elle değişti / saat dilimi değişti → yeniden planlama
-- ◐ F1.2 Kesin alarmdan foreground service başlatma; `specialUse` FGS; her başlatma yolu — `setAlarmClock` yolu ☑ (tek deneme, `platform-bulgulari.md` § Spike 2 ve 3); diğer yollar ☐
-- ◐ F1.3 Tam ekran bildirim + HyperOS "Kilit ekranında göster", "Arka planda açılır pencere" — kilitliyken ☑ (tek deneme, özel izin verilmeden); ekran açıkken davranış ☐
-- ◐ F1.4 Bildirim "cooldown" davranışı, alarm ses akışı, DND aşımı (erişim verilmişken ☑: art arda 3 bildirim kısılmadı, Rahatsız Etme açıkken 3/3 çaldı — `platform-bulgulari.md` § Spike 7; erişim verilmemişken, tam sessizlik ve ekran kapalıyken ☐)
+  - ◐ Güvenlik uygulaması "Bellek temizleme" sonrası teslim: uygulama kilitliyken ☑ (2/2 çaldı, süreç ölmedi — § F1 kapanış ölçümleri); kilitsiz uygulama ☐
+  - ◐ Saat elle değişti ☑ (`TIME_SET` → yeniden kuruldu, 4/4 — § F1 kapanış ölçümleri); saat dilimi değişimi ☐
+- ☑ F1.2 Kesin alarmdan foreground service başlatma; `specialUse` FGS; her başlatma yolu — `setAlarmClock`, `setExactAndAllowWhileIdle`, bildirim eylemi, kutucuk: dördü de başlattı (her biri tek deneme; `platform-bulgulari.md` § Spike 2 ve 3, § F1 kapanış ölçümleri)
+- ☑ F1.3 Tam ekran bildirim + HyperOS "Kilit ekranında göster", "Arka planda açılır pencere" — kilitliyken tam ekran açılıyor (tek deneme, özel izin verilmeden); ekran açık ve kilitsizken tam ekran açılmıyor, üstte şerit geliyor (tek deneme; § F1 kapanış ölçümleri)
+- ◐ F1.4 Bildirim "cooldown" davranışı, alarm ses akışı, DND aşımı (erişim verilmişken ☑: art arda 3 bildirim kısılmadı, Rahatsız Etme açıkken 3/3 çaldı — `platform-bulgulari.md` § Spike 7; ekran kapalı ve kilitliyken ☑ — § F1 kapanış ölçümleri; erişim verilmemişken ve "tam sessizlik" kipinde ☐)
 - ◐ F1.5 HyperOS ayar derin bağlantıları → `hyperos-baglantilar.md` (11 bağlantıdan 10'u açıldı, eski pil kısıtı sayfası yok — `platform-bulgulari.md` § Spike 4; gri tonlama açılışı ve sayfaların doğru uygulamayı gösterdiğinin göz doğrulaması ☐)
 - ◐ F1.6 `kur.sh`: her komutun HyperOS'teki davranışı; `USER_RESTRICTED` ve yol çevirme hatası ele alınmış (betik her adımı geri okuyarak doğruluyor, telefonda bir kez koşuldu — `platform-bulgulari.md` § Spike 19: izinler ve tam ekran tuttu, kullanım istatistikleri ve üstte gösterme `appops` ile **tutmadı**; APK kurulum adımı ve temiz kurulumda tam koşu ☐ → F2.17)
 
 ### F1-B Algılama ve sistem yüzeyleri
-- ◐ F1.7 (`platform-bulgulari.md` § Spike 5: kaydırınca servis ölüyor ve geri gelmiyor; açılışta olay ~2,9 sn geç geliyor, hedef tutmuyor; servisten Activity başlatma ☑; son uygulamalarda kilit "tümünü temizle"den koruyor ☑ (tek deneme); yeniden başlatma sonrası servis kendiliğinden bağlanıyor ☑ (tek deneme); kilidin yeniden başlatma ve güncelleme sonrası kalması, uzun süre ömrü, gecikmenin nedeni ☐) Erişilebilirlik: açılış algılama gecikmesi (hedef ≤ 400 ms), servis ömrü, servisten Activity başlatma; olmazsa overlay yedeği
-- ◐ F1.8 Bildirim erişimi: kısıtlı ayarlar, `allow_listener`, kopma sonrası `requestRebind` (elle açma engelsiz ☑, bildirim okuma ve kod süzgeci ☑ — `platform-bulgulari.md` § Spike 6; `allow_listener` ve kopma sonrası yeniden bağlanma ☐)
+- ◐ F1.7 (`platform-bulgulari.md` § Spike 5: kaydırınca servis ölüyor ve geri gelmiyor; açılışta olay ~2,9 sn geç geliyor, hedef tutmuyor; servisten Activity başlatma ☑; son uygulamalarda kilit "tümünü temizle"den koruyor ☑ (tek deneme); yeniden başlatma sonrası servis kendiliğinden bağlanıyor ☑ (tek deneme); **süreç çökünce servis, otomatik başlatma açık olsa da kendiliğinden dönmüyor** (yalnız güncelleme, yeniden başlatma ya da elle kapat-aç) ☑ — § F1 kapanış ölçümleri; kilidin yeniden başlatma sonrası kalması, uzun süre ömrü, gecikmenin nedeni ☐) Erişilebilirlik: açılış algılama gecikmesi (hedef ≤ 400 ms), servis ömrü, servisten Activity başlatma; olmazsa overlay yedeği
+- ◐ F1.8 Bildirim erişimi: kısıtlı ayarlar, `allow_listener`, kopma sonrası `requestRebind` (elle açma engelsiz ☑, bildirim okuma ve kod süzgeci ☑ — `platform-bulgulari.md` § Spike 6; süreç ölümü sonrası ☑: otomatik başlatma kapalıyken dönmüyor, `requestRebind` etkisiz, bileşeni kapat-aç 1 sn'de bağlıyor; otomatik başlatma açıkken ~18 sn'de kendiliğinden dönüyor — § F1 kapanış ölçümleri; `allow_listener` komutunun sıfırdan etkisi ☐)
 - ☑ F1.9 Tile: kilitliyken yakalama, Tile → mikrofon ≤ 1 sn — `platform-bulgulari.md` § Spike 8 (kilit açık 287 ms, kilitli 245 ms; kilitliyken ekran açılmıyor, yakalama servisten ekransız yapılıyor; koşul başına 1–2 ölçüm)
 - ☑ F1.10 Canlı güncelleme: `ProgressStyle`, "promoted ongoing", HyperOS odak bildirimi — `platform-bulgulari.md` § Spike 16 (tek deneme; hap, panel ve kilit ekranında Kullanıcı gördü)
-- ◐ F1.11 Arama durumu: `AudioManager.getMode` ile izinsiz algılama (giden hücresel arama ☑ — `platform-bulgulari.md` § Spike 17; gelen arama çalma anı, internet araması, arka plandan okuma ☐)
+- ◐ F1.11 Arama durumu: `AudioManager.getMode` ile izinsiz algılama (giden hücresel arama ☑ — `platform-bulgulari.md` § Spike 17; internet araması (`3`) ve arka plandan okuma ☑ — § F1 kapanış ölçümleri; gelen aramanın çalma anı ☐)
 - ☐ F1.12 Geofence: Play Hizmetleri varlığı, arka plan olay gecikmesi
 - ☐ F1.13 Health Connect: Mi Band → Mi Fitness → uyku/adım akışı
 
@@ -119,7 +119,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 - ☑ F1.19 ALO 171 hattının güncelliği — `platform-bulgulari.md` § Spike 18 (resmi sayfa yayında; hat aranarak doğrulanmadı; metinde "ücretsiz" denmez)
 - ☑ F1.20 16 KB sayfa: cihaz 4096 kullanıyor; engel değil — `platform-bulgulari.md`
 
-- ☐ F1.24 Ekran okuma ön ölçümü (karar 0008, aday): içerik yetkisiyle gecikme; ekran metnini toplama hızı, pil ve ısı; parola alanı ve hassas uygulama ayrımı. F1.15'e (cihaz içi model) bağlı.
+- ◐ F1.24 Ekran okuma ön ölçümü (karar 0008, aday): içerik yetkisiyle gecikme; ekran metnini toplama hızı, pil ve ısı; parola alanı ve hassas uygulama ayrımı (toplama hızı ☑: ortanca 49 ms, %90 276 ms; parola alanı işareti ☑ — `platform-bulgulari.md` § F1.24; kablosuz pil ve ısı, metinden modelin öneri çıkarması ☐)
 
 - ☐ F1.25 Çıraklık ön ölçümü (karar 0012): Gemini'nin ürettiği örnekler isteme eklenince Gemma 4 E4B'nin 50 soruluk setteki puanı ve süresi değişiyor mu; ret → Gemini → kart → yerel yanıt zinciri uçtan uca.
 

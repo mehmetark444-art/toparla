@@ -253,6 +253,22 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   - *`kur.sh`:* `pm grant` ve tam ekran `appops` tutuyor; kullanım istatistikleri ve üstte gösterme
     `appops` komutları hata vermeden **tutmadı** (olası neden: `:spike` o izinleri istemiyor; doğrulanmadı).
     Kova, pil muafiyeti varken `5` (muaf) kalıyor. Bildirim erişimi olan uygulama Rahatsız Etme erişimini de alıyor.
+- **Süreç ölümü ve otomatik başlatma (8 Ekim gece, tek denemeler) — tasarımı etkiler:** süreç çökünce
+  HyperOS, "Otomatik başlatma" izni yoksa uygulamayı ve servislerini geri başlatmıyor (sistem kaydı:
+  `AutoStartManagerService … Reject service`). İzin açıkken süreç kendiliğinden kalkıyor ve bildirim
+  dinleyicisi ~18 sn'de bağlanıyor. Dinleyici için `requestRebind` bu telefonda etkisiz; bileşeni kapat-aç
+  1 sn'de bağlıyor. **Erişilebilirlik servisi hiçbir durumda kendiliğinden dönmüyor** (yalnız güncelleme,
+  yeniden başlatma, elle kapat-aç). Sonuç: otomatik başlatma sihirbazda zorunlu; müdahale ekranı "kopabilir"
+  varsayımıyla ve Sağlık uyarısıyla tasarlanır. Alarm teslimi bundan bağımsız (süreç ölse de çalıyor).
+- **Diğer kapanış ölçümleri (8 Ekim gece):** servis dört yoldan da başlatılabiliyor (iki alarm türü, bildirim
+  eylemi, kutucuk). Ekran açık ve kilitsizken tam ekran kart açılmıyor, şerit geliyor. Kritik ses ekran
+  kapalıyken de çalıyor. Kilitli uygulama Güvenlik temizliğinden etkilenmedi. Saat değişince alarmlar
+  yeniden kuruluyor. Arama durumu arka plandan da okunuyor (hücresel `2`, WhatsApp `3`).
+- **Ekran okuma ön ölçümü (8 Ekim gece):** ekran metnini toplamak ortanca 49 ms (%90 276 ms, en çok 2,2 sn),
+  işlemci ~%2; parola alanları sistemce işaretli. Toplama darboğaz değil; açık olan, metni modele işletmek.
+- **Maliyet ve hat (8 Ekim gece):** bir konu taraması 0,1–0,2 sent (konu başına ayda ~0,07–0,11 $). Model
+  bazen **hiç arama yapmadan** "yenilik yok" diyor: sorgu sayısı 0 olan tarama başarısız sayılmalı.
+  ALO 171 etkin; cep telefonundan ücretli.
 - **Veritabanı yığını (8 Ekim, tek koşu):** Room'un güncel ailesi `androidx.room3` (3.0.3). Room 3 + KSP 2.3.12 +
   `sqlite-bundled` 2.7.1, Kotlin 2.4.20 / AGP 9.4.1 ile derleniyor ve telefonda çalışıyor; FTS5 var
   (SQLite 3.50.1). **FTS5 noktasız ı ile I'yı eşleştirmiyor:** dizine ve sorguya kendi Türkçe katlamamız

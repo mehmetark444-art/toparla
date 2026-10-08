@@ -7,12 +7,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const set = JSON.parse(fs.readFileSync(path.join(root, 'spike/src/main/assets/llm-set.json'), 'utf8'));
-const dir = path.join(root, 'build/llm');
 const arg = (name) => {
   const i = process.argv.indexOf(name);
   return i > -1 ? process.argv[i + 1] : null;
 };
+// --set <dosya>: varsayılan 50 soruluk set yerine başka bir set (ör. build/llm-setler/zincir-a.json).
+const set = JSON.parse(fs.readFileSync(path.join(root, arg('--set') ?? 'spike/src/main/assets/llm-set.json'), 'utf8'));
+const dir = path.join(root, 'build/llm');
 
 const TYPES = new Set(['TASK', 'SHOPPING', 'EVENT', 'IDEA', 'WORRY']);
 const LABELS = ['GOREV', 'RANDEVU', 'ALISVERIS', 'FIKIR', 'ENDISE'];
