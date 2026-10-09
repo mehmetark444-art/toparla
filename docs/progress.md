@@ -102,3 +102,6 @@ görüntüler depoda; CI yeniden karşılaştırma kipinde.
 
 **Sıradaki:** F2-C bitti. Kalan F2 işleri (F2-D teslim hattı, cihaz testleri) ve F1 kalanları telefon/bilgisayar ister.
 Gece kontrolü bu gün için henüz yapılmadı.
+
+**Gece kontrolü (9 Ekim):** 23 commit gözden geçirildi; 3 bulgu düzeltildi (Geri al kontrastı, durum çubuğu simge
+rengi, release'e giren önizleme kütüphanesi), bayat belge satırları eşitlendi. Kayıt `docs/gece-kontrolleri.md`, hata H33.

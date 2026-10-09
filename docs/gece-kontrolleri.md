@@ -6,6 +6,7 @@
 | Tarih | İncelenen | Bulunan ve düzeltilen | Açık kalan | Testler | Sonuç |
 |---|---|---|---|---|---|
 | 8 Ekim 2026 (7 Ekim gecesi) | `4ca872c`…`38ff16d` (projenin tamamı) | 9 bulgu, hepsi düzeltildi (aşağıda) | 3 (aşağıda) | 58 birim · 21 kanca | Temiz |
+| 9 Ekim 2026 (bulut oturumu) | `3fc8c7f`…`16e0885` (23 commit, 74 dosya) | 3 bulgu + bayat belge satırları, hepsi düzeltildi (aşağıda) | 5 (aşağıda) | 114 JVM · kontrast 3 · ekran görüntüsü 16 (CI) · kanca sınaması | Temiz (CI yeşil olunca) |
 
 ## 8 Ekim 2026 — ilk kontrol (projenin tamamı)
 
@@ -115,3 +116,45 @@ kısmını kapsadı; burada kalanlar okundu: betikler, `:spike`, yapılandırma,
 4. `release` sürümü cihazda çalıştırılmadı (ekran yok); `MissingApplicationIcon` uyarısı F2.24'te kapanır.
 5. Karar 0002 için açık onay, karar 0008 için sınır onayı bekliyor.
 6. Telefonda `:spike` içinde ekran okuma **ölçüm** servisi kurulu duruyor (kapalı); `:spike` F10.11'de silinir.
+
+## 9 Ekim 2026 — gece kontrolü (bulut oturumu; F2-C: `3fc8c7f`…`16e0885`, 23 commit, 74 dosya)
+
+Kullanıcı telefondan, bulut oturumundan çalıştı. Android derlemesi burada yapılamadığı için makine kontrolünün
+derleme ve test kısmı GitHub Actions'ta koştu; saf kısım (renk ve kontrast) bulutta ayrı bir Gradle projesinde sınandı.
+
+**Göz kontrolü:** `:ui` (tema 10 dosya, bileşen 13 dosya, ikonlar, galeriler, testler), `:app` (`MainActivity`,
+gezinme, kaynaklar, manifest), `SettingsStore`, yapılandırma ve sürüm kataloğu, `check.yml` satır satır okundu.
+Tasarım taslağı kopyaları (`docs/tasarim/**.dc.html`) ve üçüncü taraf yetenek dosyaları içerik olarak değil,
+onay/kaynak kaydı olarak kontrol edildi.
+
+**Bulunan ve düzeltilen**
+1. **Kontrast:** "Geri al" şeridinde metin eylemi açık temada 4,19–4,30:1'di (sınır 4,5). Yarı saydam zemin
+   `surfaceVariant` üstüne biniyordu; `ContrastTest` yalnız jeton çiftlerini ölçtüğü için kaçmıştı. Şeridin zemini
+   `surface` yapıldı; test artık metin eyleminin bindirilmiş zeminini ölçüyor. Kasıtlı bozma: eski çift teste
+   eklenince 6 vurgunun 6'sında da yakalandı, kaldırılınca geçti. 6 eylem görüntüsü gözle denetlenip yenilendi (H33).
+2. **Durum çubuğu:** `enableEdgeToEdge()` simge rengini telefonun temasına göre seçiyordu; uygulama varsayılan koyu
+   açıldığı için açık temalı telefonda saat ve pil görünmez olurdu. Artık uygulamanın temasından veriliyor (H33).
+   Telefonda denenmedi.
+3. **Gereksiz bağımlılık:** önizleme kütüphanesi (`ui-tooling-preview`) release'e de giriyordu; yalnız debug'a alındı.
+4. **Bayat belge:** yol haritasında "Sıradaki tek adım" (ölçülmüş ve devredilmiş işleri bekliyordu), "Son güncelleme",
+   F2.18 Actions satırı; proje beyninde "Şu anki durum" (uygulama "boş kabuk" diyordu). Hepsi güncellendi.
+5. `versionCode` 26100901: ilk ekranlı sürüm telefona kurulurken eskisinin üstüne yazılabilsin diye.
+
+**Bilerek bırakılan:** tasarım jetonlarının bir kısmı (`Motion` işlevleri, `Sizes.avatarLarge`, `Shapes.sheetTop`,
+`Spacing.betweenCards` vb.) henüz kullanılmıyor. F2.19–F2.21'in teslimi blueprint C'nin jeton setinin kendisidir;
+renkler `ContrastTest` ile sınanıyor. İlk kullanan ekran gelene dek silinmez.
+
+**Makine kontrolü**
+- CI (GitHub Actions): 114 JVM testi, ktlint, detekt, Android Lint, debug derlemesi geçti; görüntü karşılaştırması
+  yalnız bilerek değişen 6 eylem görüntüsünde kırmızıydı (koşu 20); yeni temel görüntülerle sonraki koşu sonucu
+  bu commit'in ardından okunur.
+- Bulutta: `ContrastTest` 3/3 (saf Kotlin), ktlint ve detekt temiz, `kontrol.mjs --gece` tutarlı (yalnız iki bilinen
+  uyarı: karar 0002 ve 0008 teyit bekliyor), kanca sınaması hepsi geçti.
+- Gradle'ın `--warning-mode all` derlemesi ve cihaz testleri (15) bulutta koşulamadı.
+
+**Açık kalan**
+1. F1 kapanışı: F1.14 gürültüde ses tanıma, K1, K3 (telefon gerekir).
+2. Kullanıcı'nın ertelediği: imza anahtarının iki yerde yedeği, API anahtarının yenilenmesi.
+3. F2-C hiç telefonda çalıştırılmadı (iskelet, ikon, durum çubuğu, `release` + R8); bu dal ana dala alınmadı.
+4. Cihaz testleri ve uyarılı tam derleme bilgisayar bağlanınca.
+5. Karar 0002 için açık onay, karar 0008 için sınır onayı.
