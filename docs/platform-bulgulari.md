@@ -943,3 +943,13 @@ yöntem, 21 alarm. Kayıt 9 Ekim sabahı kablo takılınca okundu.
 **Sınırlar:** tek gece; `idle=true` anı yakalanmadı (alarm cihazı uyandırdığı için bayrak teslim anında düşmüş
 olabilir ya da telefon derin uykuya hiç girmemiş olabilir: ayırt edilemiyor); pil muafiyeti **olmadan** kablosuz
 gece ölçülmedi.
+
+### 9 Ekim 2026 (gece) — F2.24: iskelet telefonda (bulutta yazılan işin ilk cihaz doğrulaması)
+
+Bulut oturumunda yazılan `:ui` teması, bileşenler ve gezinme iskeleti ana dala alındıktan sonra bu bilgisayarda
+ilk kez derlendi (Compose BOM 2026.06.01, Navigation 2.9.8; debug 40 MB, imzalı release 6,3 MB) ve telefona
+kuruldu. `release` sürümü (`com.toparla.app/.MainActivity`) açıldı: çökme yok (`logcat`'te `FATAL` yok), süreç
+ayakta; ekran görüntüsünde koyu tema, "Gelen kutusu boş." boş durumu, 5 etiketli sekme ve seçili sekme hapı
+taslaktaki gibi. R8, Hilt/Room/Compose/Navigation üretilmiş kodunu bozmadı (tek açılış).
+**Sınırlar:** tek açılış, tek sekme görüntüsü; açık tema, %200 yazı ve geri hareketi cihazda gözle denenmedi;
+Roborazzi karşılaştırması bu bilgisayarda koşulmadı (temel görüntüler CI'da, Linux'ta üretildi).

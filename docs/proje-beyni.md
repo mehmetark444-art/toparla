@@ -483,7 +483,9 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
     Güneş'in bulut katmanı (F6) açılmadan yenilenmeli.
 11. (9 Ekim) `release` sürümü cihazda hiç çalıştırılmadı (ekran yok): R8'in Hilt/Room üretilmiş kodunu
     bozmadığı ilk ekranla (F2.24) doğrulanacak. (9 Ekim akşamı: ilk ekran yazıldı ama bulutta yazıldığı için
-    telefona kurulmadı; doğrulama telefon bağlanınca.)
+    telefona kurulmadı; doğrulama telefon bağlanınca.) → kapandı (9 Ekim gece): bulut dalı ana dala alındı,
+    bu bilgisayarda derlendi (114 JVM testi, ktlint, detekt, Lint, debug + imzalı release), iki sürüm telefona
+    kuruldu; `release` açıldı, çökmedi, 5 sekmeli iskelet ve koyu tema ekranda (ekran görüntüsüyle görüldü).
 13. (9 Ekim) Bulut oturumunda yazılan işin tek doğrulaması GitHub Actions: Robolectric ekran görüntüsü gerçek
     telefondaki çizimin aynısı değildir; F2-C'nin telefonda gözle denenmesi (yazı ölçeği, HyperOS gezinme
     çubuğu, öngörülü geri) hâlâ yapılmadı.
