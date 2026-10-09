@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Şimdi ekranı</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:#47705F}a:hover{color:#2F4A3F}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 1888px; height: 1035px; box-sizing: border-box; padding: 32px; background: #ECEAE6; display: flex; align-items: flex-start; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;">
+<sc-for list="{{variants}}" as="v" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 16px; margin-right: {{v.gapAfter}};">
+<div style="height: 40px; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; color: #2B2825;">
+<strong style="font-size: 16px; font-weight: 600;">Seçenek {{v.opt}} · {{v.name}}</strong>
+<span style="font-size: 13px; color: #5A544C;">{{v.theme}} tema</span>
+</div>
+<div style="position: relative; width: 412px; height: 915px; border-radius: 40px; overflow: hidden; background: {{v.bg}}; color: {{v.on}}; box-shadow: 0 0 0 1px rgba(0,0,0,0.14), 0 24px 60px rgba(40,30,20,0.18); font-variant-numeric: {{v.num}};">
+<div style="padding: 24px {{v.edge}} 120px {{v.edge}}; display: flex; flex-direction: column; gap: 16px;">
+
+<header style="display: flex; align-items: center; gap: 4px; min-height: 56px;">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+<h1 style="margin: 0; font-size: {{v.fHead}}; line-height: {{v.lHead}}; font-weight: 600;">Şimdi</h1>
+<span style="font-size: {{v.fCap}}; line-height: {{v.lCap}}; color: {{v.onv}};">Perşembe · 14:20 · enerji: orta</span>
+</div>
+<button aria-label="Güneş" style="width: 48px; height: 48px; border: none; background: transparent; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+<span style="display: block; width: 34px; height: 34px; border-radius: 50%; background: {{v.tc}}; box-shadow: 0 0 0 2px {{v.sun}}, {{v.glow}};"></span>
+</button>
+<button aria-label="Profil" style="width: 48px; height: 48px; border: none; background: transparent; padding: 0; display: flex; align-items: center; justify-content: center; color: {{v.onv}}; cursor: pointer;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c1.6-3.6 4.6-5 8-5s6.4 1.4 8 5"></path></svg>
+</button>
+</header>
+
+<section aria-label="Şimdi kartı" style="background: {{v.surface}}; border: {{v.border}}; box-shadow: {{v.shadow}}; border-radius: 28px; padding: {{v.pad}}; display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; align-items: center; gap: 8px;">
+<span style="background: {{v.sv}}; color: {{v.onv}}; font-size: {{v.fCap}}; line-height: {{v.lCap}}; font-weight: {{v.wMed}}; padding: 4px 12px; border-radius: 999px;">Görev</span>
+<span style="flex: 1;"></span>
+<span style="display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; background: {{v.sv}}; color: {{v.on}}; font-size: {{v.fCap}}; font-weight: {{v.wMed}};">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+≈ 2 dk</span>
+</div>
+<h2 style="margin: 0; font-size: 32px; line-height: 40px; font-weight: 600; letter-spacing: -0.2px;">Sigorta kartını çantaya koy</h2>
+<p style="margin: 0; display: flex; gap: 8px; align-items: center; font-size: {{v.fCap}}; line-height: {{v.lCap}}; color: {{v.onv}};"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{v.sun}}; flex: none;"></span>Dişçi 15:00'te; şimdi koyarsan yolda aramazsın.</p>
+<button style="height: 56px; border: none; border-radius: 20px; background: {{v.primary}}; color: {{v.onPrimary}}; font-size: {{v.fBtn}}; font-weight: 600; box-shadow: {{v.btnShine}}; cursor: pointer;">Başla</button>
+<div style="display: flex; gap: 8px; margin-top: -4px;">
+<button style="flex: 1; height: 48px; border: none; border-radius: 16px; background: {{v.ta}}; color: {{v.primary}}; font-size: {{v.fLabel}}; font-weight: {{v.wMed}}; cursor: pointer;">Ertele</button>
+<button style="flex: 1; height: 48px; border: none; border-radius: 16px; background: {{v.ta}}; color: {{v.primary}}; font-size: {{v.fLabel}}; font-weight: {{v.wMed}}; cursor: pointer;">Değiştir</button>
+<button style="flex: 1; height: 48px; border: none; border-radius: 16px; background: {{v.ta}}; color: {{v.primary}}; font-size: {{v.fLabel}}; font-weight: {{v.wMed}}; cursor: pointer;">Bitti</button>
+</div>
+</section>
+
+<section aria-label="Bugünün 3 önceliği" style="display: flex; flex-direction: column; gap: 0px; margin-top: {{v.secTop}};">
+<h3 style="margin: 0 0 4px 0; font-size: {{v.fTitle}}; line-height: {{v.lTitle}}; font-weight: {{v.wMed}};">Bugünün 3 önceliği</h3>
+<div style="min-height: 48px; display: flex; align-items: center; gap: 12px;">
+<svg aria-label="Tamamlandı" width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="{{v.success}}"></circle><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="{{v.bg}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span style="flex: 1; font-size: {{v.fBody}}; line-height: {{v.lBody}}; color: {{v.onv}};">Market listesini yaz</span>
+</div>
+<div style="min-height: 48px; display: flex; align-items: center; gap: 12px;">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="none" stroke="{{v.primary}}" stroke-width="2"></circle><circle cx="12" cy="12" r="4.5" fill="{{v.primary}}"></circle></svg>
+<span style="flex: 1; font-size: {{v.fBody}}; line-height: {{v.lBody}}; font-weight: {{v.wMed}};">Sigorta kartını çantaya koy</span>
+<span style="background: {{v.pc}}; color: {{v.onPc}}; font-size: {{v.fCap}}; line-height: {{v.lCap}}; font-weight: {{v.wMed}}; padding: 4px 10px; border-radius: 999px;">Şimdi</span>
+</div>
+<div style="min-height: 48px; display: flex; align-items: center; gap: 12px;">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="none" stroke="{{v.onv}}" stroke-width="2"></circle></svg>
+<span style="flex: 1; font-size: {{v.fBody}}; line-height: {{v.lBody}};">Elektrik faturasını öde</span>
+<span style="display: inline-flex; align-items: center; gap: 4px; background: {{v.cc}}; color: {{v.carriedText}}; font-size: {{v.fCap}}; line-height: {{v.lCap}}; font-weight: {{v.wMed}}; padding: 4px 10px; border-radius: 999px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 8H9a5 5 0 0 0 0 10h3"></path><path d="M16 4l4 4-4 4"></path></svg>
+Taşınan</span>
+</div>
+</section>
+
+<section aria-label="Odak alışkanlıklar" style="display: flex; flex-direction: column; gap: 8px; margin-top: {{v.secTop}};">
+<h3 style="margin: 0; font-size: {{v.fTitle}}; line-height: {{v.lTitle}}; font-weight: {{v.wMed}};">Odak alışkanlıklar</h3>
+<sc-for list="{{v.habits}}" as="h" hint-placeholder-count="2">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 72px; box-sizing: border-box; background: {{v.surface}}; border: {{v.border}}; box-shadow: {{v.shadowSm}}; border-radius: 20px; padding: 8px 8px 8px 16px;">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+<span style="font-size: {{v.fBody}}; line-height: {{v.lBody}}; font-weight: {{v.wMed}};">{{h.name}}</span>
+<div aria-label="{{h.label}}" style="display: flex; gap: 8px; align-items: center;">
+<sc-for list="{{h.dots}}" as="d" hint-placeholder-count="7">
+<span style="{{d.style}}"></span>
+</sc-for>
+</div>
+</div>
+<button style="height: 48px; padding: 0 16px; border-radius: 16px; border: {{v.secBorder}}; background: {{v.ta}}; color: {{v.primary}}; font-size: {{v.fLabel}}; font-weight: {{v.wMed}}; cursor: pointer;">{{h.action}}</button>
+</div>
+</sc-for>
+</section>
+</div>
+
+<button aria-label="Yakala: dokun ses, uzun bas yazı" style="position: absolute; right: 16px; bottom: 96px; width: 64px; height: 64px; border-radius: 50%; border: none; background: {{v.pc}}; color: {{v.onPc}}; box-shadow: {{v.fabShadow}}; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0"></path><path d="M12 18v3"></path></svg>
+<span style="position: absolute; left: -4px; bottom: -4px; width: 24px; height: 24px; border-radius: 50%; background: {{v.surface}}; border: 1px solid {{v.outline}}; color: {{v.onv}}; display: flex; align-items: center; justify-content: center;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M7 14h10"></path></svg>
+</span>
+</button>
+
+<nav aria-label="Ana gezinme" style="position: absolute; left: 0; right: 0; bottom: 0; height: 80px; background: {{v.dim}}; display: flex; align-items: center; padding: 0 8px;">
+<a href="#" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: {{v.on}}; font-size: {{v.fCap}}; font-weight: 600;">
+<span style="width: 56px; height: 32px; border-radius: 16px; background: {{v.pc}}; color: {{v.onPc}}; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4" fill="currentColor"></circle><path d="M12 3v2M12 19v2M3 12h2M19 12h2"></path></svg></span>Şimdi</a>
+<a href="#" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: {{v.onv}}; font-size: {{v.fCap}};">
+<span style="position: relative; width: 56px; height: 32px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l3-8h12l3 8v6H3z"></path><path d="M3 13h5l1 2h6l1-2h5"></path></svg><span aria-label="Yeni var" style="position: absolute; top: 4px; right: 14px; width: 6px; height: 6px; border-radius: 50%; background: {{v.onv}};"></span></span>Gelen</a>
+<a href="#" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: {{v.onv}}; font-size: {{v.fCap}};">
+<span style="width: 56px; height: 32px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10h16M9 3v4M15 3v4"></path></svg></span>Plan</a>
+<a href="#" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: {{v.onv}}; font-size: {{v.fCap}};">
+<span style="width: 56px; height: 32px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9c3-3 6 3 9 0s6 3 9 0"></path><path d="M3 15c3-3 6 3 9 0s6 3 9 0"></path></svg></span>Akış</a>
+<a href="#" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: {{v.onv}}; font-size: {{v.fCap}};">
+<span style="width: 56px; height: 32px; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="8.5" stroke-dasharray="2 3"></circle></svg></span>Güneş</a>
+</nav>
+</div>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1888,"height":1035}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var AD = {bg:'#1B1917',surface:'#242220',sv:'#2E2B28',dim:'#151311',on:'#ECE7DF',onv:'#AFA79B',outline:'#4A453F',primary:'#8DBBA9',onPrimary:'#12261E',pc:'#2F4A3F',onPc:'#D7E8E0',tertiary:'#B1A9DA',tc:'#3B3756',sun:'#F2B661',carried:'#E0BC6A',carriedText:'#E0BC6A',cc:'#4A3E1E',success:'#8CC2A0',critical:'#E5645A',onCritical:'#1B0E0D'};
+    var AL = {bg:'#FAF7F2',surface:'#FFFFFF',sv:'#F1ECE4',dim:'#E9E3D9',on:'#2B2825',onv:'#6B645B',outline:'#D8D0C4',primary:'#5E8C7B',onPrimary:'#FFFFFF',pc:'#D7E8E0',onPc:'#1F3B31',tertiary:'#8279B3',tc:'#E6E2F3',sun:'#E8A23A',carried:'#C9A04A',carriedText:'#C9A04A',cc:'#F6EBCF',success:'#6FA383',critical:'#C0392B',onCritical:'#FFFFFF'};
+    var BD = Object.assign({}, AD);
+    var BL = Object.assign({}, AL, {primary:'#47705F',onv:'#625B52',carriedText:'#7C5B12',success:'#3E7553',tertiary:'#675E9C',critical:'#B3362A'});
+    var sA = function (c) { return {edge:'20px',pad:'20px',border:'1px solid ' + c.outline,shadow:'none',shadowSm:'none',fabShadow:'0 2px 6px rgba(0,0,0,0.25)',btnShine:'none',secBorder:'1px solid ' + c.outline,fHead:'24px',lHead:'32px',fTitle:'20px',lTitle:'28px',fBody:'15px',lBody:'22px',fLabel:'14px',fBtn:'14px',fCap:'12px',lCap:'16px',wMed:'500',num:'normal',glow:'0 0 0 0 transparent',ta:'transparent',secTop:'12px'}; };
+    var sB = function (c, dark) { return {edge:'24px',pad:'24px',border: dark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(71,112,95,0.07)',shadow: dark ? '0 10px 28px rgba(6,4,2,0.45)' : '0 10px 28px rgba(92,64,30,0.10)',shadowSm: dark ? '0 4px 14px rgba(6,4,2,0.35)' : '0 4px 14px rgba(92,64,30,0.07)',fabShadow: dark ? '0 8px 20px rgba(6,4,2,0.5)' : '0 8px 20px rgba(92,64,30,0.18)',btnShine:'inset 0 1px 0 rgba(255,255,255,0.18)',secBorder:'none',fHead:'20px',lHead:'28px',fTitle:'20px',lTitle:'28px',fBody:'16px',lBody:'24px',fLabel:'16px',fBtn:'16px',fCap:'13px',lCap:'18px',wMed:'600',num:'tabular-nums',glow: dark ? '0 0 22px rgba(242,182,97,0.30)' : '0 0 22px rgba(232,162,58,0.32)',ta: dark ? 'rgba(141,187,169,0.10)' : 'rgba(71,112,95,0.08)',secTop:'16px'}; };
+    var make = function (opt, name, theme, c, s, dark, gapAfter) { return Object.assign({opt: opt, name: name, theme: theme, gapAfter: gapAfter}, c, s(c, dark)); };
+    var vs = [make('A','Blueprint C','Koyu',AD,sA,true,'40px'), make('A','Blueprint C','Açık',AL,sA,false,'96px'), make('B','Yetenek önerisi','Koyu',BD,sB,true,'40px'), make('B','Yetenek önerisi','Açık',BL,sB,false,'0px')];
+    var dot = function (v, k) {
+      var base = 'display:block;box-sizing:border-box;width:12px;height:12px;border-radius:50%;';
+      if (k === 'f') return base + 'background:' + v.primary + ';border:1.5px solid ' + v.primary;
+      if (k === 'h') return base + 'background:linear-gradient(90deg,' + v.primary + ' 50%,transparent 50%);border:1.5px solid ' + v.primary;
+      if (k === 's') return base + 'border:1.5px dashed ' + v.onv;
+      return base + 'border:1.5px solid ' + v.onv;
+    };
+    vs.forEach(function (v) {
+      v.habits = [
+        {name:'Sigara · bırakma', action:'Dürtü anı', label:'Son 7 gün: 5 dumansız gün, 1 yarım gün, 1 boş gün', dots:['f','f','h','f','e','f','f'].map(function (k) { return {style: dot(v, k)}; })},
+        {name:'Uyku ritmi · 23:30', action:'Yaptım', label:'Son 7 gün: 4 gün yapıldı, 1 esneme günü, bugün henüz değil', dots:['f','e','f','s','f','f','e'].map(function (k) { return {style: dot(v, k)}; })}
+      ];
+    });
+    return { variants: vs };
+  }
+}
+</script>
+</body>
+</html>

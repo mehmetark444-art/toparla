@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Hatırlatma Sağlığı</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:#47705F}a:hover{color:#2F4A3F}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 1888px; height: 1035px; box-sizing: border-box; padding: 32px; background: #ECEAE6; display: flex; align-items: flex-start; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;">
+<sc-for list="{{variants}}" as="v" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 16px; margin-right: {{v.gapAfter}};">
+<div style="height: 40px; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; color: #2B2825;">
+<strong style="font-size: 16px; font-weight: 600;">Seçenek {{v.opt}} · {{v.name}}</strong>
+<span style="font-size: 13px; color: #5A544C;">{{v.theme}} tema</span>
+</div>
+<div style="position: relative; width: 412px; height: 915px; border-radius: 40px; overflow: hidden; background: {{v.bg}}; color: {{v.on}}; box-shadow: 0 0 0 1px rgba(0,0,0,0.14), 0 24px 60px rgba(40,30,20,0.18); font-variant-numeric: {{v.num}};">
+<div style="padding: 24px {{v.edge}} 160px {{v.edge}}; display: flex; flex-direction: column; gap: 16px;">
+
+<header style="display: flex; align-items: center; gap: 4px; min-height: 56px; margin-left: -12px;">
+<button aria-label="Geri" style="width: 48px; height: 48px; border: none; background: transparent; color: {{v.on}}; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>
+</button>
+<h1 style="margin: 0; font-size: {{v.fHead}}; line-height: {{v.lHead}}; font-weight: 600;">Hatırlatma Sağlığı</h1>
+</header>
+
+<section style="background: {{v.surface}}; border: {{v.border}}; box-shadow: {{v.shadow}}; border-radius: 20px; padding: {{v.pad}}; display: flex; gap: 16px; align-items: center;">
+<span style="flex: none; width: 48px; height: 48px; border-radius: 50%; background: {{v.pc}}; color: {{v.onPc}}; display: flex; align-items: center; justify-content: center;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"></path><path d="M8.5 12l2.5 2.5 4.5-5"></path></svg>
+</span>
+<div style="display: flex; flex-direction: column; gap: 2px;">
+<strong style="font-size: {{v.fTitle}}; line-height: {{v.lTitle}}; font-weight: {{v.wMed}};">Hatırlatmalar çalışıyor</strong>
+<span style="font-size: {{v.fBody}}; line-height: {{v.lBody}}; color: {{v.onv}};">Bir ayar bakmak istiyor.</span>
+</div>
+</section>
+
+<h2 style="margin: {{v.secTop}} 0 0 0; font-size: {{v.fTitle}}; line-height: {{v.lTitle}}; font-weight: {{v.wMed}};">Kontroller</h2>
+<section style="background: {{v.surface}}; border: {{v.border}}; box-shadow: {{v.shadow}}; border-radius: 20px; overflow: hidden;">
+<sc-for list="{{v.rows}}" as="r" hint-placeholder-count="9">
+<div style="min-height: 64px; box-sizing: border-box; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 16px; {{r.divider}}">
+<sc-if value="{{r.ok}}" hint-placeholder-val="{{true}}">
+<svg aria-label="Tamam" width="22" height="22" viewBox="0 0 24 24" style="flex: none;"><circle cx="12" cy="12" r="10" fill="{{v.success}}"></circle><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="{{v.surface}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</sc-if>
+<sc-if value="{{r.fix}}" hint-placeholder-val="{{false}}">
+<svg aria-label="Bakılmalı" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{v.carriedText}}" stroke-width="2" stroke-linecap="round" style="flex: none;"><circle cx="12" cy="12" r="9.5"></circle><path d="M12 7.5v5.5M12 16.5h.01"></path></svg>
+</sc-if>
+<sc-if value="{{r.info}}" hint-placeholder-val="{{false}}">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{v.onv}}" stroke-width="2" stroke-linecap="round" style="flex: none;"><circle cx="12" cy="12" r="9.5"></circle><path d="M12 7v5l3 2"></path></svg>
+</sc-if>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+<span style="font-size: {{v.fBody}}; line-height: {{v.lBody}}; font-weight: {{v.wMed}};">{{r.title}}</span>
+<span style="font-size: {{v.fCap}}; line-height: {{v.lCap}}; color: {{v.onv}};">{{r.sub}}</span>
+</div>
+<sc-if value="{{r.fix}}" hint-placeholder-val="{{false}}">
+<button style="height: 48px; padding: 0 16px; border: none; border-radius: 16px; background: {{v.cc}}; color: {{v.carriedText}}; font-size: {{v.fLabel}}; font-weight: 600; cursor: pointer;">Düzelt</button>
+</sc-if>
+<sc-if value="{{r.value}}" hint-placeholder-val="{{true}}">
+<span style="font-size: {{v.fCap}}; line-height: {{v.lCap}}; color: {{v.onv}}; padding-right: 4px;">{{r.value}}</span>
+</sc-if>
+</div>
+</sc-for>
+</section>
+</div>
+
+<div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 16px {{v.edge}} 24px {{v.edge}}; background: {{v.bg}}; border-top: {{v.footBorder}}; display: flex; flex-direction: column; gap: 8px;">
+<button style="height: 56px; border: none; border-radius: 20px; background: {{v.primary}}; color: {{v.onPrimary}}; font-size: {{v.fBtn}}; font-weight: 600; box-shadow: {{v.btnShine}}; cursor: pointer;">Hatırlatmaları sına</button>
+<span style="text-align: center; font-size: {{v.fCap}}; line-height: {{v.lCap}}; color: {{v.onv}};">2 dakika sürer. Sonra uygulamayı kapatmanı isteyeceğim.</span>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1888,"height":1035}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var AD = {bg:'#1B1917',surface:'#242220',sv:'#2E2B28',dim:'#151311',on:'#ECE7DF',onv:'#AFA79B',outline:'#4A453F',primary:'#8DBBA9',onPrimary:'#12261E',pc:'#2F4A3F',onPc:'#D7E8E0',tertiary:'#B1A9DA',tc:'#3B3756',sun:'#F2B661',carried:'#E0BC6A',carriedText:'#E0BC6A',cc:'#4A3E1E',success:'#8CC2A0',critical:'#E5645A',onCritical:'#1B0E0D'};
+    var AL = {bg:'#FAF7F2',surface:'#FFFFFF',sv:'#F1ECE4',dim:'#E9E3D9',on:'#2B2825',onv:'#6B645B',outline:'#D8D0C4',primary:'#5E8C7B',onPrimary:'#FFFFFF',pc:'#D7E8E0',onPc:'#1F3B31',tertiary:'#8279B3',tc:'#E6E2F3',sun:'#E8A23A',carried:'#C9A04A',carriedText:'#C9A04A',cc:'#F6EBCF',success:'#6FA383',critical:'#C0392B',onCritical:'#FFFFFF'};
+    var BD = Object.assign({}, AD);
+    var BL = Object.assign({}, AL, {primary:'#47705F',onv:'#625B52',carriedText:'#7C5B12',success:'#3E7553',tertiary:'#675E9C',critical:'#B3362A'});
+    var sA = function (c) { return {edge:'20px',pad:'20px',border:'1px solid ' + c.outline,shadow:'none',btnShine:'none',footBorder:'1px solid ' + c.outline,divColor:c.outline,fHead:'24px',lHead:'32px',fTitle:'20px',lTitle:'28px',fBody:'15px',lBody:'22px',fLabel:'14px',fBtn:'14px',fCap:'12px',lCap:'16px',wMed:'500',num:'normal',secTop:'12px'}; };
+    var sB = function (c, dark) { return {edge:'24px',pad:'24px',border: dark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(71,112,95,0.07)',shadow: dark ? '0 10px 28px rgba(6,4,2,0.45)' : '0 10px 28px rgba(92,64,30,0.10)',btnShine:'inset 0 1px 0 rgba(255,255,255,0.18)',footBorder:'none',divColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(43,40,37,0.07)',fHead:'20px',lHead:'28px',fTitle:'20px',lTitle:'28px',fBody:'16px',lBody:'24px',fLabel:'16px',fBtn:'16px',fCap:'13px',lCap:'18px',wMed:'600',num:'tabular-nums',secTop:'16px'}; };
+    var make = function (opt, name, theme, c, s, dark, gapAfter) { return Object.assign({opt: opt, name: name, theme: theme, gapAfter: gapAfter}, c, s(c, dark)); };
+    var vs = [make('A','Blueprint C','Koyu',AD,sA,true,'40px'), make('A','Blueprint C','Açık',AL,sA,false,'96px'), make('B','Yetenek önerisi','Koyu',BD,sB,true,'40px'), make('B','Yetenek önerisi','Açık',BL,sB,false,'0px')];
+    var data = [
+      {k:'ok', title:'Bildirim izni', sub:'Bildirim gösterebiliyorum', value:'Açık'},
+      {k:'ok', title:'Bildirim kanalları', sub:'Sekiz kanalın ayarı doğru', value:'8/8'},
+      {k:'ok', title:'Tam ekran bildirim', sub:'Kritik hatırlatma ekranı açılabilir', value:'İzinli'},
+      {k:'fix', title:'Pil kısıtı', sub:'“Kısıtlama yok” olmalı; şimdi “Akıllı”', value:''},
+      {k:'ok', title:'Otomatik başlatma', sub:'Son sınamada uygulama kendiliğinden açıldı', value:'Açık'},
+      {k:'ok', title:'Rahatsız Etme erişimi', sub:'Kritik ses sessiz kipte de çalar', value:'İzinli'},
+      {k:'info', title:'Son teslim', sub:'Bugün 09:00 · 1,2 sn gecikme', value:''},
+      {k:'info', title:'Bekleyen alarmlar', sub:'Kayıtla eşleşiyor', value:'6'},
+      {k:'info', title:'Son 7 günde kaçan', sub:'Hepsi zamanında geldi', value:'0'}
+    ];
+    vs.forEach(function (v) {
+      v.rows = data.map(function (d, i) {
+        return {title: d.title, sub: d.sub, value: d.value, ok: d.k === 'ok', fix: d.k === 'fix', info: d.k === 'info', divider: i === 0 ? '' : 'border-top: 1px solid ' + v.divColor + ';'};
+      });
+    });
+    return { variants: vs };
+  }
+}
+</script>
+</body>
+</html>

@@ -72,3 +72,11 @@ denetimi (1 mantık hatası, 1 gizlilik eksiği düzeltildi; kayıt `gece-kontro
 
 ### 9 Ekim 2026 — Oturum 3
 **Hedef:** F1.14 gürültüde ses tanıma ölçümü (bugün iş yerinde yapılması planlanıyordu); ardından F1 K1 + K3 ile fazı kapatmak.
+
+### 9 Ekim 2026 — Oturum 4
+**Hedef:** F2.47 görsel dil taslağı: Şimdi ekranı, kritik hatırlatma ve Hatırlatma Sağlığı; koyu + açık temada blueprint C
+(A) ile yetenek önerisi (B) yan yana; Kullanıcı seçsin, sonra F2.19–F2.24 kodlansın.
+
+**Biten:** taslak tuvalde ve `docs/tasarim/2026-10-09-gorsel-dil/`. Kontrast hesabı: blueprint açık paletinde 5 çift 4,5:1 altında.
+
+**Açık:** Kullanıcı seçimi (A / B / karışık). B seçilirse açık palet blueprint'ten sapar → karar kaydı.

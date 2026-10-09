@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Kritik hatırlatma</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:#47705F}a:hover{color:#2F4A3F}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 1888px; height: 1035px; box-sizing: border-box; padding: 32px; background: #ECEAE6; display: flex; align-items: flex-start; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;">
+<sc-for list="{{variants}}" as="v" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 16px; margin-right: {{v.gapAfter}};">
+<div style="height: 40px; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; color: #2B2825;">
+<strong style="font-size: 16px; font-weight: 600;">Seçenek {{v.opt}} · {{v.name}}</strong>
+<span style="font-size: 13px; color: #5A544C;">{{v.theme}} tema</span>
+</div>
+<div style="position: relative; width: 412px; height: 915px; border-radius: 40px; overflow: hidden; background: {{v.bg}}; color: {{v.on}}; box-shadow: 0 0 0 1px rgba(0,0,0,0.14), 0 24px 60px rgba(40,30,20,0.18); font-variant-numeric: {{v.num}}; display: flex; flex-direction: column; box-sizing: border-box; padding: 32px {{v.edge}} 32px {{v.edge}};">
+
+<div style="display: flex; align-items: center; gap: 8px; min-height: 48px; color: {{v.critical}}; font-size: {{v.fLabel}}; font-weight: 600;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7"></circle><path d="M12 10v3l2 1.5M5 4L2.5 6.5M19 4l2.5 2.5"></path></svg>
+Kritik hatırlatma
+</div>
+
+<div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-align: center;">
+<div style="width: 112px; height: 112px; border-radius: 50%; box-sizing: border-box; border: 3px solid {{v.critical}}; background: {{v.surface}}; box-shadow: {{v.shadow}}; display: flex; align-items: center; justify-content: center; color: {{v.critical}};">
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7"></circle><path d="M12 10v3l2 1.5M5 4L2.5 6.5M19 4l2.5 2.5"></path></svg>
+</div>
+<div style="font-size: 56px; line-height: 64px; font-weight: 600; letter-spacing: -0.5px; margin-top: 8px;">15:00</div>
+<h1 style="margin: 0; font-size: 32px; line-height: 40px; font-weight: 600;">Dişçi</h1>
+<p style="margin: 0; font-size: {{v.fBodyL}}; line-height: {{v.lBodyL}}; color: {{v.onv}};">Yola çıkma vakti. Yol yaklaşık 25 dk.</p>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<button style="height: 56px; border: none; border-radius: 20px; background: {{v.critical}}; color: {{v.onCritical}}; font-size: {{v.fBtn}}; font-weight: 600; box-shadow: {{v.btnShine}}; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+Yaptım</button>
+<button style="height: 56px; border-radius: 20px; border: {{v.secBorder}}; background: {{v.ta2}}; color: {{v.on}}; font-size: {{v.fBtn}}; font-weight: {{v.wMed}}; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+10 dk sonra</button>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1888,"height":1035}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var AD = {bg:'#1B1917',surface:'#242220',sv:'#2E2B28',dim:'#151311',on:'#ECE7DF',onv:'#AFA79B',outline:'#4A453F',primary:'#8DBBA9',onPrimary:'#12261E',pc:'#2F4A3F',onPc:'#D7E8E0',tertiary:'#B1A9DA',tc:'#3B3756',sun:'#F2B661',carried:'#E0BC6A',carriedText:'#E0BC6A',cc:'#4A3E1E',success:'#8CC2A0',critical:'#E5645A',onCritical:'#1B0E0D'};
+    var AL = {bg:'#FAF7F2',surface:'#FFFFFF',sv:'#F1ECE4',dim:'#E9E3D9',on:'#2B2825',onv:'#6B645B',outline:'#D8D0C4',primary:'#5E8C7B',onPrimary:'#FFFFFF',pc:'#D7E8E0',onPc:'#1F3B31',tertiary:'#8279B3',tc:'#E6E2F3',sun:'#E8A23A',carried:'#C9A04A',carriedText:'#C9A04A',cc:'#F6EBCF',success:'#6FA383',critical:'#C0392B',onCritical:'#FFFFFF'};
+    var BD = Object.assign({}, AD);
+    var BL = Object.assign({}, AL, {primary:'#47705F',onv:'#625B52',carriedText:'#7C5B12',success:'#3E7553',tertiary:'#675E9C',critical:'#B3362A'});
+    var sA = function (c) { return {edge:'20px',shadow:'none',btnShine:'none',secBorder:'1px solid ' + c.outline,ta2:'transparent',fBodyL:'17px',lBodyL:'26px',fLabel:'14px',fBtn:'14px',wMed:'500',num:'normal'}; };
+    var sB = function (c, dark) { return {edge:'24px',shadow: dark ? '0 10px 28px rgba(6,4,2,0.45)' : '0 10px 28px rgba(92,64,30,0.10)',btnShine:'inset 0 1px 0 rgba(255,255,255,0.18)',secBorder:'none',ta2: c.sv,fBodyL:'16px',lBodyL:'24px',fLabel:'16px',fBtn:'16px',wMed:'600',num:'tabular-nums'}; };
+    var make = function (opt, name, theme, c, s, dark, gapAfter) { return Object.assign({opt: opt, name: name, theme: theme, gapAfter: gapAfter}, c, s(c, dark)); };
+    return { variants: [make('A','Blueprint C','Koyu',AD,sA,true,'40px'), make('A','Blueprint C','Açık',AL,sA,false,'96px'), make('B','Yetenek önerisi','Koyu',BD,sB,true,'40px'), make('B','Yetenek önerisi','Açık',BL,sB,false,'0px')] };
+  }
+}
+</script>
+</body>
+</html>

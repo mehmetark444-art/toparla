@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Okunaklılık karnesi</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:#47705F}a:hover{color:#2F4A3F}
+</style>
+</helmet>
+<div style="width: 720px; height: 1035px; box-sizing: border-box; padding: 48px 40px; background: #FAF7F2; color: #2B2825; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; display: flex; flex-direction: column; gap: 24px;">
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<h1 style="margin: 0; font-size: 32px; line-height: 40px; font-weight: 600;">Okunaklılık karnesi</h1>
+<p style="margin: 0; font-size: 16px; line-height: 24px; color: #5A544C;">Yazı ile arkasındaki renk arasındaki fark. Sınır 4,5; altı güneşte ve yorgun gözle zor okunur. Koyu temada iki seçenek de her çiftte geçiyor (en düşük 5,1). Fark açık temada:</p>
+</div>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 120px 120px; border-top: 1px solid #D8D0C4;">
+<span style="padding: 12px 0; font-size: 13px; color: #5A544C; font-weight: 600;">Açık tema · çift</span>
+<span style="padding: 12px 0; font-size: 13px; color: #5A544C; font-weight: 600; text-align: right;">A · Blueprint</span>
+<span style="padding: 12px 0; font-size: 13px; color: #5A544C; font-weight: 600; text-align: right;">B · Öneri</span>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="9">
+<span style="padding: 14px 0; border-top: 1px solid #E9E3D9; font-size: 16px; line-height: 24px;">{{r.pair}}</span>
+<span style="padding: 14px 0; border-top: 1px solid #E9E3D9; font-size: 16px; line-height: 24px; text-align: right; color: {{r.aColor}}; font-weight: 600;">{{r.a}}</span>
+<span style="padding: 14px 0; border-top: 1px solid #E9E3D9; font-size: 16px; line-height: 24px; text-align: right; color: #2B6A4A; font-weight: 600;">{{r.b}}</span>
+</sc-for>
+</div>
+<p style="margin: 0; font-size: 13px; line-height: 18px; color: #5A544C;">✗ = 4,5 sınırının altında · ✓ = geçiyor. Kırmızı (kriz/kritik) iki seçenekte de geçiyor. Hesap: WCAG 2.1 kontrast formülü.</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":720,"height":1035}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var bad = '#7C5B12';
+    var ok = '#2B6A4A';
+    var raw = [
+      ['Ana metin · zemin', '13,7 ✓', '13,7 ✓', true],
+      ['İkincil metin · kart', '5,8 ✓', '6,7 ✓', true],
+      ['Başla düğmesinin yazısı', '3,8 ✗', '5,6 ✓', false],
+      ['Yeşil yazı (Ertele, Bitti) · zemin', '3,6 ✗', '5,2 ✓', false],
+      ['“Taşınan” yazısı · rozeti', '2,1 ✗', '5,3 ✓', false],
+      ['Tamamlandı işareti · kart', '2,9 ✗', '5,4 ✓', false],
+      ['Güneş lavantası · kart', '3,9 ✗', '5,7 ✓', false],
+      ['Alt çubuk yazısı · çubuk', '4,6 ✓', '5,2 ✓', true],
+      ['Kritik düğmenin yazısı', '5,4 ✓', '6,0 ✓', true]
+    ];
+    return { rows: raw.map(function (r) { return {pair: r[0], a: r[1], b: r[2], aColor: r[3] ? ok : bad}; }) };
+  }
+}
+</script>
+</body>
+</html>

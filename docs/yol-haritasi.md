@@ -43,7 +43,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F9 | S8 | Konu Motoru | ☐ |
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
-**Şu an:** F1 kapanışa yakın (kablosuz gece testi 9 Ekim sabahı okundu: 21/21; K2 Kullanıcı onayı alındı; kalan: gürültüde ses tanıma, sonra K1 ve K3). F2-A (hatırlatma saf mantığı) ve F2-B (altyapı) yazıldı: 114 JVM testi + cihazda 15 test; 9 Ekim ara denetiminden geçti (`docs/gece-kontrolleri.md`). F2-B'de Kullanıcı'ya bağlı üç iş açık: imza anahtarının iki yerde yedeği, API anahtarının yenilenmesi, push sonrası Actions'ın ilk koşusu. Sırada F2-C (tasarım sistemi).
+**Şu an:** F1 kapanışa yakın (kablosuz gece testi 9 Ekim sabahı okundu: 21/21; K2 Kullanıcı onayı alındı; kalan: gürültüde ses tanıma, sonra K1 ve K3). F2-A (hatırlatma saf mantığı) ve F2-B (altyapı) yazıldı: 114 JVM testi + cihazda 15 test; 9 Ekim ara denetiminden geçti (`docs/gece-kontrolleri.md`). F2-B'de Kullanıcı'ya bağlı üç iş açık: imza anahtarının iki yerde yedeği, API anahtarının yenilenmesi, push sonrası Actions'ın ilk koşusu. F2-C başladı: F2.47 görsel dil taslağı (A: blueprint C, B: yetenek önerisi) Kullanıcı onayını bekliyor.
 **Sıradaki tek adım:** F1 "B grubu": F1.12 konum (geofence) → F1.13 Mi Band / Health Connect → F1.14 gürültüde ses tanıma. Kullanıcı durumu (8 Ekim): evden çıkamıyor (F1.12 bekler), Mi Band siparişte (F1.13 bekler), gürültü ölçümü 9 Ekim'de iş yerinde. C grubu 8 Ekim gecesi ölçüldü (F1.16–F1.19, F1.24, F1.25). **9 Ekim sabahı ilk iş:** kablosuz gece testinin kaydını okumak (F1.1 derin Doze). F1'de bundan sonra kalanlar: Kullanıcı'ya bağlı üç ölçüm (F1.12, F1.13, F1.14 gürültü), günler isteyen kısıtlı kova ölçümü ve her maddenin kendi satırında yazılı küçük açık koşullar; ardından F1 kapanışı (K1 + K2 + K3). "A grubu" (F1.4–F1.6, F1.8–F1.11) 8 Ekim gecesi ölçüldü; her maddenin açık kalan koşulu kendi satırında.
 
 **Açık engeller**
@@ -172,7 +172,7 @@ F1'de kapanıştan önce kalan iki ölçüm: kablosuz gece testinin okunması (F
 ### F2-C Tasarım sistemi (`:ui`)
 Karar 0015: bu başlıktan itibaren Kullanıcı'nın göreceği her yüzey `mobile-app-ui-design` yeteneğiyle tasarlanır;
 önce taslak (`docs/tasarim/`), Kullanıcı onayı, sonra Compose. Kurallar: `.claude/rules/tasarim.md`.
-- ☐ F2.47 Görsel dil taslağı: Şimdi ekranı + bir hatırlatma kartı + Hatırlatma Sağlığı satırları, koyu ve açık temada; blueprint C paleti ile yeteneğin önerdiği seçenek yan yana. **Kullanıcı onayı** olmadan F2.19–F2.24 kodlanmaz
+- ◐ F2.47 Görsel dil taslağı: Şimdi ekranı + bir hatırlatma kartı + Hatırlatma Sağlığı satırları, koyu ve açık temada; blueprint C paleti ile yeteneğin önerdiği seçenek yan yana. **Kullanıcı onayı** olmadan F2.19–F2.24 kodlanmaz — taslak hazır, onay bekliyor: `docs/tasarim/2026-10-09-gorsel-dil/README.md`. Bulgu: blueprint'in açık paletinde 5 renk çifti 4,5:1'in altında (en düşük 2,1 "Taşınan"); Seçenek B düzeltiyor
 - ☐ F2.19 Renk jetonları: Koyu / Açık / AMOLED + 6 vurgu; `ExtendedColors`
 - ☐ F2.20 Otomatik kontrast testi (her tema × vurgu × metin/zemin ≥ 4,5:1)
 - ☐ F2.21 Tipografi, boşluk, şekil, hareket jetonları; "Animasyonları azalt"
