@@ -1010,3 +1010,24 @@ vakti gelmiş gibi ateşler). Durum her denemeden sonra uygulama veritabanından
 bildirim izni kapalıyken davranış, güvenlik ağı işleri (WorkManager) ve **Yarın** düğmesi cihazda denenmedi
 (birim testleri var). Israrlı takibin 30 dakikalık gerçek aralığı beklenmedi (simüle edildi); alarm zamanlaması
 aynı yolu kullanan merdiven basamaklarında ölçüldü.
+
+### 9 Ekim 2026 (gece) — F2-D: kilitli yeniden başlatma (asıl uygulama, debug sürümü)
+
+Yöntem: iki hatırlatma (kritik ve önemli, 5 sn arayla) ~110 sn sonraya kuruldu; Kullanıcı telefonu yeniden
+başlattı, kilit ekranında bekledi, alarm çalınca PIN girdi. İki tur (ikincisi düzeltmeden sonra).
+
+| | Tur 1 (düzeltmeden önce) | Tur 2 (düzeltmeden sonra) |
+|---|---|---|
+| Kilit açılmadan, vaktinde | Alarm sesi çaldı; "Hatırlatman var" bildirimi geldi (Kullanıcı) | Alarm sesi çaldı (Kullanıcı) |
+| Kilit açılınca kritik | Aynı saniyede geldi (22:12:40; planlanan 22:11:36) | Aynı saniyede geldi (22:19:14; planlanan 22:18:20) |
+| Kilit açılınca önemli | **86 sn sonra**, ancak başka bir eylem motoru tetikleyince (22:14:06) | Aynı saniyede geldi (22:19:14) |
+| Sonraki merdiven basamakları | — | İkisi için de kuruldu (+2 dk ve +30 dk) |
+
+**Kusur ve düzeltme:** kilit açıldığında vakti 59 sn önce geçmiş teslim, denetçinin 60 sn'lik toleransı içinde
+kaldığı için "sistem teslim ediyordur" diye bekletiliyor, sonra da 12 saatlik bakıma kadar bir daha bakılmıyordu.
+Şimdi (1) kilitliyken çalan teslimler cihaz korumalı depolamaya not ediliyor ve kilit açılır açılmaz gösteriliyor;
+(2) tolerans içinde bekleyen kayıt varsa motor tolerans dolunca kendiliğinden yeniden bakıyor (birim testli).
+
+Doğrulananlar: Direct Boot kopyasından kilit açılmadan alarm kurma ve çalma; `BOOT_COMPLETED` sonrası toparlanma;
+geç teslimin kaydı (`MISSED_DETECTED`). **Sınırlar:** iki tur, debug sürümü; kilit açılmadan çalan bildirim
+içeriksiz ("Hatırlatman var"): başlık kopyada tutulmuyor; kilitsiz (PIN'siz) yeniden başlatma ayrıca denenmedi.
