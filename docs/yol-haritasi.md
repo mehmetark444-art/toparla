@@ -43,7 +43,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F9 | S8 | Konu Motoru | ☐ |
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
-**Şu an:** F1 kapanışa yakın (kalan: kablosuz gece testinin okunması, gürültüde ses tanıma, K1–K3). F2-A (hatırlatma saf mantığı) ve F2-B (altyapı) yazıldı: 114 JVM testi + cihazda 15 test; 9 Ekim ara denetiminden geçti (`docs/gece-kontrolleri.md`). F2-B'de Kullanıcı'ya bağlı üç iş açık: imza anahtarının iki yerde yedeği, API anahtarının yenilenmesi, push sonrası Actions'ın ilk koşusu. Sırada F2-C (tasarım sistemi).
+**Şu an:** F1 kapanışa yakın (kablosuz gece testi 9 Ekim sabahı okundu: 21/21; kalan: gürültüde ses tanıma, K1–K3). F2-A (hatırlatma saf mantığı) ve F2-B (altyapı) yazıldı: 114 JVM testi + cihazda 15 test; 9 Ekim ara denetiminden geçti (`docs/gece-kontrolleri.md`). F2-B'de Kullanıcı'ya bağlı üç iş açık: imza anahtarının iki yerde yedeği, API anahtarının yenilenmesi, push sonrası Actions'ın ilk koşusu. Sırada F2-C (tasarım sistemi).
 **Sıradaki tek adım:** F1 "B grubu": F1.12 konum (geofence) → F1.13 Mi Band / Health Connect → F1.14 gürültüde ses tanıma. Kullanıcı durumu (8 Ekim): evden çıkamıyor (F1.12 bekler), Mi Band siparişte (F1.13 bekler), gürültü ölçümü 9 Ekim'de iş yerinde. C grubu 8 Ekim gecesi ölçüldü (F1.16–F1.19, F1.24, F1.25). **9 Ekim sabahı ilk iş:** kablosuz gece testinin kaydını okumak (F1.1 derin Doze). F1'de bundan sonra kalanlar: Kullanıcı'ya bağlı üç ölçüm (F1.12, F1.13, F1.14 gürültü), günler isteyen kısıtlı kova ölçümü ve her maddenin kendi satırında yazılı küçük açık koşullar; ardından F1 kapanışı (K1 + K2 + K3). "A grubu" (F1.4–F1.6, F1.8–F1.11) 8 Ekim gecesi ölçüldü; her maddenin açık kalan koşulu kendi satırında.
 
 **Açık engeller**
@@ -85,7 +85,7 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
   - ☑ Yeniden başlatma
   - ☑ Kilitli yeniden başlatma (Direct Boot)
   - ☑ Gece: 1–8 saat, 3 yöntem, 24 alarm; 24/24 çaldı — `platform-bulgulari.md` § gece testi sonucu
-  - ◐ Derin Doze (`idle=true`) altında teslim: ilk gece testinde alarm anında hiç gözlenmedi; kablosuz gece testi 8 Ekim 23:26'da kuruldu (21 alarm), sonuç 9 Ekim sabahı okunacak
+  - ☑ Kablosuz gece (Doze koşulları): 7 saat, şarjsız, 21/21 çaldı; kesin yollar ≤ 2,1 sn, esnek yol ~1 dk — `platform-bulgulari.md` § Spike 1: kablosuz gece testi sonucu. Sınır: teslim anında `idle=true` bayrağı yakalanmadı (hafif uyku 4 kez görüldü); pil muafiyeti olmadan kablosuz gece ölçülmedi → F2.44
   - ◐ `setExactAndAllowWhileIdle` 3,5 dk gecikmesi: 8 gece ölçümünde tekrarlanmadı (en çok 28 sn); kök neden bilinmiyor
   - ☐ Kısıtlı bekleme kovası (uygulama günlerce açılmadan)
   - ◐ Güvenlik uygulaması "Bellek temizleme" sonrası teslim: uygulama kilitliyken ☑ (2/2 çaldı, süreç ölmedi — § F1 kapanış ölçümleri); kilitsiz uygulama ☐
@@ -207,7 +207,7 @@ Karar 0015: bu başlıktan itibaren Kullanıcı'nın göreceği her yüzey `mobi
 ### F2-G F1'den devredilen ölçümler (karar 0014)
 - ☐ F2.42 Cihaz matrisine eklenenler: kilitsiz uygulamada Güvenlik temizliği sonrası teslim; saat dilimi değişimi; Rahatsız Etme erişimi yokken ve "tam sessizlik" kipinde kritik ses; gelen aramanın çalma anı
 - ☐ F2.43 `kur.sh` temiz kurulumda tam koşu: APK kurulum adımı, `allow_listener`'ın sıfırdan etkisi, kullanım istatistikleri ve üstte gösterme `appops` adımları (izin manifestte istenirken)
-- ☐ F2.44 7 günlük kullanımda teslim günlüğünden: kısıtlı bekleme kovası altında teslim; `setExactAndAllowWhileIdle` gecikmesinin tekrar edip etmediği
+- ☐ F2.44 7 günlük kullanımda teslim günlüğünden: kısıtlı bekleme kovası altında teslim; pil muafiyeti verilmemişken kablosuz gece teslimi; `setExactAndAllowWhileIdle` gecikmesinin tekrar edip etmediği
 - ☐ F2.45 Kurulum sihirbazında her ayar sayfasının doğru uygulamayı gösterdiği Kullanıcı gözüyle doğrulandı; **otomatik başlatma zorunlu adım** (F1 bulgusu); erişilebilirlik ve bildirim dinleyicisi kopunca Sağlık uyarısı ve kapat-aç kurtarması
 
 **Çift kontrol**

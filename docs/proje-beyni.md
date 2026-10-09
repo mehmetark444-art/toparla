@@ -250,6 +250,9 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 - **Gece testi (8 saat, 24 alarm, özel izin yok):** hepsi çaldı. `setAlarmClock` ≤ 1,4 sn,
   `setExactAndAllowWhileIdle` ≤ 28 sn. **`setAndAllowWhileIdle` 2–5 saat geç**, ekran açıkken bile;
   zamanlı hiçbir işte kullanılmaz (karar 0006). Derin Doze alarm anında hiç gözlenmedi: o koşul açık.
+- **Kablosuz gece testi (9 Ekim; 7 saat, şarjsız, pil muafiyeti ve otomatik başlatma açık):** 21/21 çaldı;
+  kesin yollar ≤ 2,1 sn; esnek yol bu kez yalnız ~1 dk gecikti (ilk gece 2–5 saatti: o gece USB bağlıydı ve
+  muafiyet yoktu). Karar 0006 değişmez. Teslim anında `idle=true` yakalanmadı; hafif uyku 4 kez görüldü.
 - **Kaydırıp kapatma zorla durdurma değildir:** HyperOS 3'te alarmlar korunur (`stopped=false`).
   Bu, otomatik başlatma / pil muafiyeti **verilmeden** gözlendi (tek deneme, 2 dk ufuk).
 - **Zorla durdurma** alarmları siler; uygulama yeniden açılınca sistem `BOOT_COMPLETED`

@@ -919,3 +919,27 @@ yolu (kütüphanede `ResponseFormat` var, denenmedi) · gömme modeli ve RAG · 
 - **Sınırlar:** release sürümü cihazda hiç çalıştırılmadı (ekranı yok); R8'in Room/Hilt üretilmiş kodunu
   bozmadığı ancak ilk ekranla (F2.24) görülecek. Keystore anahtarının yeniden başlatma ve kilitli durumda
   davranışı ölçülmedi (Direct Boot'ta kullanılmayacak; o dönem için ayrı kopya F2.32).
+
+### 9 Ekim 2026 — Spike 1: kablosuz gece testi sonucu
+
+Koşullar: telefon USB'den çıkarıldı (pil %88 → %83, şarjsız), ekran kapalı, 7 saat dokunulmadı; otomatik başlatma
+açık, uygulama son uygulamalarda kilitli, pil muafiyeti listede (kova `5` = muaf). 00:26–06:26 arası her saat üç
+yöntem, 21 alarm. Kayıt 9 Ekim sabahı kablo takılınca okundu.
+
+| Yöntem | Çalan | Sapma |
+|---|---|---|
+| `setAlarmClock` | 7/7 | 0,0–2,1 sn |
+| `setExactAndAllowWhileIdle` | 7/7 | 0,0–2,0 sn |
+| `setAndAllowWhileIdle` | 7/7 | 54–77 sn |
+
+- Kaçan ya da yeniden planlanan alarm yok. Alarm anında hafif uyku (`light=true`) 4 saatte görüldü
+  (01:26, 03:26, 04:26, 06:26); derin uyku bayrağı (`idle=true`) hiçbir kayıtta görülmedi.
+- **İlk gece testiyle fark:** o gece esnek yol 2–5 saat gecikmişti (USB bağlı, pil muafiyeti ve otomatik
+  başlatma yok). Bu gece aynı yol yalnız ~1 dakika gecikti. İki koşul birden değiştiği için hangisinin etkili
+  olduğu ayrıştırılamaz; en olası açıklama pil muafiyetidir (doğrulanmadı). Karar 0006 değişmez: zamanlı işler
+  kesin yolda kalır; bu bulgu yalnız "pil muafiyeti varken esnek yol da kullanılabilir düzeyde" bilgisini ekler.
+- 3,5 dakikalık `setExactAndAllowWhileIdle` gecikmesi bu gece de tekrarlanmadı (toplam 15 gece ölçümünde en çok 28 sn).
+
+**Sınırlar:** tek gece; `idle=true` anı yakalanmadı (alarm cihazı uyandırdığı için bayrak teslim anında düşmüş
+olabilir ya da telefon derin uykuya hiç girmemiş olabilir: ayırt edilemiyor); pil muafiyeti **olmadan** kablosuz
+gece ölçülmedi.
