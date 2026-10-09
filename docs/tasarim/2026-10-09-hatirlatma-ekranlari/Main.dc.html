@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Hatırlatma ekle</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.t-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+.t-root button{font-family:inherit;cursor:pointer}
+.t-root input{font-family:inherit}
+</style>
+</helmet>
+<div class="t-root" style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: {{c.bg}}; color: {{c.ink}}">
+  <div style="display: flex; align-items: center; gap: 8px; padding: 20px 24px 8px 12px">
+    <button aria-label="Kapat" style="width: 48px; height: 48px; border: 0; background: transparent; color: {{c.ink2}}; display: flex; align-items: center; justify-content: center">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <h1 style="margin: 0; font-size: 20px; font-weight: 600">Hatırlatma ekle</h1>
+  </div>
+
+  <div style="flex: 1 1 auto; overflow: hidden; padding: 8px 24px 0 24px; display: flex; flex-direction: column; gap: 24px">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="ne" style="font-size: 13px; color: {{c.ink2}}">Ne hatırlatayım?</label>
+      <input id="ne" value="Faturayı öde" style="height: 56px; box-sizing: border-box; border-radius: 16px; border: 1.5px solid {{c.primary}}; background: {{c.surface}}; color: {{c.ink}}; font-size: 20px; padding: 0 16px; outline: none">
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <div style="font-size: 13px; color: {{c.ink2}}">Ne zaman?</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{times}}" as="t" hint-placeholder-count="5">
+          <button onClick="{{t.pick}}" style="min-height: 48px; padding: 0 16px; border-radius: 999px; border: 1px solid {{t.border}}; background: {{t.bg}}; color: {{t.fg}}; font-size: 16px; font-weight: {{t.weight}}">{{t.label}}</button>
+        </sc-for>
+      </div>
+      <div style="font-size: 13px; color: {{c.ink2}}">{{whenText}}</div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <div style="font-size: 13px; color: {{c.ink2}}">Ne kadar önemli?</div>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <sc-for list="{{levels}}" as="l" hint-placeholder-count="3">
+          <button onClick="{{l.pick}}" style="min-height: 56px; text-align: left; padding: 8px 16px; border-radius: 16px; border: 1.5px solid {{l.border}}; background: {{l.bg}}; color: {{c.ink}}; display: flex; align-items: center; gap: 12px">
+            <span aria-hidden="true" style="width: 20px; height: 20px; border-radius: 50%; box-sizing: border-box; border: 2px solid {{l.dot}}; background: {{l.fill}}; flex: none"></span>
+            <span style="display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 16px; font-weight: 600">{{l.label}}</span>
+              <span style="font-size: 13px; color: {{c.ink2}}">{{l.hint}}</span>
+            </span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <button onClick="{{toggle}}" role="switch" aria-checked="{{persistent}}" style="min-height: 56px; text-align: left; padding: 8px 0; border: 0; background: transparent; color: {{c.ink}}; display: flex; align-items: center; gap: 12px">
+      <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 16px; font-weight: 600">Yaptım diyene kadar sor</span>
+        <span style="font-size: 13px; color: {{c.ink2}}">Yarım saatte bir yeniden hatırlatırım. Gece sormam.</span>
+      </span>
+      <span aria-hidden="true" style="width: 52px; height: 32px; border-radius: 999px; background: {{sw.track}}; display: flex; align-items: center; padding: 0 4px; box-sizing: border-box; justify-content: {{sw.side}}; flex: none">
+        <span style="width: 24px; height: 24px; border-radius: 50%; background: {{sw.knob}}"></span>
+      </span>
+    </button>
+  </div>
+
+  <div style="padding: 16px 24px 28px 24px; display: flex; flex-direction: column; gap: 8px">
+    <div style="font-size: 13px; color: {{c.ink2}}; text-align: center">{{summary}}</div>
+    <button style="height: 56px; border: 0; border-radius: 20px; background: {{c.primary}}; color: {{c.onPrimary}}; font-size: 16px; font-weight: 600">Hatırlat</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["koyu","acik"],"default":"koyu"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dark = (this.props.theme ?? 'koyu') !== 'acik';
+    const c = dark
+      ? { bg: '#1B1917', surface: '#242220', surface2: '#2E2B28', ink: '#ECE7DF', ink2: '#AFA79B', primary: '#8DBBA9', onPrimary: '#12261E', soft: 'rgba(141,187,169,0.16)', line: '#4A453F' }
+      : { bg: '#FAF7F2', surface: '#FFFFFF', surface2: '#F1ECE4', ink: '#2B2825', ink2: '#625B52', primary: '#47705F', onPrimary: '#FFFFFF', soft: 'rgba(71,112,95,0.12)', line: '#D8D0C4' };
+    const s = this.state || {};
+    const time = s.time ?? 2;
+    const level = s.level ?? 1;
+    const persistent = s.persistent ?? true;
+    const timeLabels = ['10 dk sonra', '1 saat sonra', 'Bu akşam 20:00', 'Yarın 09:00', 'Başka zaman…'];
+    const whenTexts = ['Bugün 22:40', 'Bugün 23:30', 'Bugün 20:00', 'Yarın, Cumartesi 09:00', 'Tarih ve saat seç'];
+    const levelDefs = [
+      { label: 'Kritik', hint: 'Alarm gibi çalar; sessizde bile. Randevu, uçuş.' },
+      { label: 'Önemli', hint: 'Sesli bildirim; yanıt gelmezse yarım saat sonra bir kez daha.' },
+      { label: 'Normal', hint: 'Hafif bildirim.' },
+    ];
+    return {
+      c, persistent,
+      whenText: whenTexts[time],
+      summary: `${levelDefs[level].label} · ${whenTexts[time]}${persistent ? ' · yaptım diyene kadar' : ''}`,
+      toggle: () => this.setState({ persistent: !persistent }),
+      sw: { track: persistent ? c.primary : c.surface2, knob: persistent ? c.onPrimary : c.ink2, side: persistent ? 'flex-end' : 'flex-start' },
+      times: timeLabels.map((label, i) => ({
+        label, pick: () => this.setState({ time: i }),
+        bg: i === time ? c.soft : 'transparent', border: i === time ? c.primary : c.line, fg: i === time ? c.ink : c.ink2, weight: i === time ? 600 : 400,
+      })),
+      levels: levelDefs.map((d, i) => ({
+        ...d, pick: () => this.setState({ level: i }),
+        bg: i === level ? c.soft : c.surface, border: i === level ? c.primary : 'transparent',
+        dot: i === level ? c.primary : c.ink2, fill: i === level ? c.primary : 'transparent',
+      })),
+    };
+  }
+}
+</script>
+</body>
+</html>
