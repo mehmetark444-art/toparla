@@ -35,9 +35,6 @@ val LocalExtendedColors = staticCompositionLocalOf<ExtendedColors> {
     error("ExtendedColors yalnız ToparlaTheme içinde okunur")
 }
 
-private const val PRIMARY_SOFT_ALPHA_DARK = 0.10f
-private const val PRIMARY_SOFT_ALPHA_LIGHT = 0.08f
-
 /** Paletin Material 3 karşılığı. Dinamik renk (Material You) kullanılmaz (blueprint C1). */
 fun ToparlaPalette.toColorScheme(mode: ThemeMode): ColorScheme {
     val base = if (mode == ThemeMode.LIGHT) lightColorScheme() else darkColorScheme()

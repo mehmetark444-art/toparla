@@ -10,7 +10,7 @@ import org.junit.Test
  */
 class ContrastTest {
 
-    private fun textPairs(p: ToparlaPalette): List<Triple<String, Long, Long>> = listOf(
+    private fun textPairs(mode: ThemeMode, p: ToparlaPalette): List<Triple<String, Long, Long>> = listOf(
         Triple("onSurface/background", p.onSurface, p.background),
         Triple("onSurface/surface", p.onSurface, p.surface),
         Triple("onSurface/surfaceVariant", p.onSurface, p.surfaceVariant),
@@ -30,7 +30,12 @@ class ContrastTest {
         Triple("onSurface/tertiaryContainer", p.onSurface, p.tertiaryContainer),
         Triple("onCarriedContainer/carriedContainer", p.onCarriedContainer, p.carriedContainer),
         Triple("onCarriedContainer/surface", p.onCarriedContainer, p.surface),
+        // Metin eylemi (TextAction): vurgu rengi, kendi yarı saydam zemini yüzeye bindirilmiş hâlde.
+        Triple("primary/primarySoft@surface", p.accent.primary, primarySoftOver(mode, p, p.surface)),
+        Triple("primary/primarySoft@background", p.accent.primary, primarySoftOver(mode, p, p.background)),
         Triple("success/surface", p.success, p.surface),
+        Triple("success/background", p.success, p.background),
+        Triple("onCarriedContainer/background", p.onCarriedContainer, p.background),
         Triple("info/surface", p.info, p.surface),
         Triple("onSurface/infoContainer", p.onSurface, p.infoContainer),
         Triple("urge/surface", p.urge, p.surface),
@@ -43,7 +48,7 @@ class ContrastTest {
     fun her_tema_ve_vurguda_metin_cifti_en_az_dort_bucuk() {
         val failures = ThemeMode.entries.flatMap { mode ->
             Accent.entries.flatMap { accent ->
-                textPairs(Palettes.of(mode, accent))
+                textPairs(mode, Palettes.of(mode, accent))
                     .map { (name, fg, bg) -> Triple("$mode/$accent/$name", ColorMath.contrastRatio(fg, bg), MIN_TEXT) }
                     .filter { (_, ratio, min) -> ratio < min }
             }
@@ -69,7 +74,23 @@ class ContrastTest {
         }
     }
 
+    private fun primarySoftOver(mode: ThemeMode, p: ToparlaPalette, base: Long): Long {
+        val alpha = if (mode == ThemeMode.LIGHT) PRIMARY_SOFT_ALPHA_LIGHT else PRIMARY_SOFT_ALPHA_DARK
+        return composite(p.accent.primary, alpha, base)
+    }
+
+    private fun composite(fg: Long, alpha: Float, bg: Long): Long =
+        listOf(RED_SHIFT, GREEN_SHIFT, 0).fold(OPAQUE) { acc, shift ->
+            val f = (fg shr shift) and CHANNEL
+            val b = (bg shr shift) and CHANNEL
+            acc or (Math.round(f * alpha + b * (1 - alpha)).toLong() shl shift)
+        }
+
     private companion object {
+        const val RED_SHIFT = 16
+        const val GREEN_SHIFT = 8
+        const val CHANNEL = 0xFFL
+        const val OPAQUE = 0xFF000000L
         const val MIN_TEXT = 4.5
         const val DELTA = 1e-9
         const val ROUNDED_DELTA = 0.01

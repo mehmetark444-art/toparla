@@ -21,8 +21,8 @@ android {
         minSdk = libs.versions.sdk.get().toInt()
         targetSdk = libs.versions.sdk.get().toInt()
         // versionCode = yyMMddNN (blueprint B7): yıl, ay, gün, o günkü sıra. Her kurulan sürümde artar.
-        versionCode = 26100801
-        versionName = "0.0.2"
+        versionCode = 26100901
+        versionName = "0.0.3"
     }
 
     signingConfigs {

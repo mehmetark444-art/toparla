@@ -3,7 +3,7 @@
 Projenin sıfırdan bitişe tek durum kaynağı. Her oturumda buradan okunur, burada işaretlenir.
 Kapsam `docs/BLUEPRINT.md` (M1–M30) + `docs/decisions/` kararlarıdır; bu dosya kapsam eklemez.
 
-**Son güncelleme:** 9 Ekim 2026, gece (F2-A, F2-B ve F0–F2-B ara denetimi)
+**Son güncelleme:** 9 Ekim 2026, akşam (F2-C bitti; bulut oturumu)
 
 ## Nasıl okunur
 
@@ -43,8 +43,8 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F9 | S8 | Konu Motoru | ☐ |
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
-**Şu an:** F1 kapanışa yakın (kablosuz gece testi 9 Ekim sabahı okundu: 21/21; K2 Kullanıcı onayı alındı; kalan: gürültüde ses tanıma, sonra K1 ve K3). F2-A (hatırlatma saf mantığı) ve F2-B (altyapı) yazıldı: 114 JVM testi + cihazda 15 test; 9 Ekim ara denetiminden geçti (`docs/gece-kontrolleri.md`). F2-B'de Kullanıcı'ya bağlı üç iş açık: imza anahtarının iki yerde yedeği, API anahtarının yenilenmesi, push sonrası Actions'ın ilk koşusu. F2-C başladı: F2.47 görsel dil onaylandı (Seçenek B, karar 0016); F2.19–F2.23 bitti (tema, kontrast testi, 11+3 bileşen, ekran görüntüsü karşılaştırması; CI koşu 13 yeşil). **F2-C bitti** (9 Ekim): F2.24 uygulama ikonu (A) ve 5 sekmeli gezinme iskeleti onaylandı ve kodlandı (CI koşu 18 yeşil); telefonda henüz denenmedi. Bulut oturumunda Android derlenemiyor; doğrulama GitHub Actions'ta.
-**Sıradaki tek adım:** F1 "B grubu": F1.12 konum (geofence) → F1.13 Mi Band / Health Connect → F1.14 gürültüde ses tanıma. Kullanıcı durumu (8 Ekim): evden çıkamıyor (F1.12 bekler), Mi Band siparişte (F1.13 bekler), gürültü ölçümü 9 Ekim'de iş yerinde. C grubu 8 Ekim gecesi ölçüldü (F1.16–F1.19, F1.24, F1.25). **9 Ekim sabahı ilk iş:** kablosuz gece testinin kaydını okumak (F1.1 derin Doze). F1'de bundan sonra kalanlar: Kullanıcı'ya bağlı üç ölçüm (F1.12, F1.13, F1.14 gürültü), günler isteyen kısıtlı kova ölçümü ve her maddenin kendi satırında yazılı küçük açık koşullar; ardından F1 kapanışı (K1 + K2 + K3). "A grubu" (F1.4–F1.6, F1.8–F1.11) 8 Ekim gecesi ölçüldü; her maddenin açık kalan koşulu kendi satırında.
+**Şu an:** F1 kapanışa yakın (kablosuz gece testi 9 Ekim sabahı okundu: 21/21; K2 Kullanıcı onayı alındı; kalan: gürültüde ses tanıma, sonra K1 ve K3). F2-A (hatırlatma saf mantığı) ve F2-B (altyapı) yazıldı: 114 JVM testi + cihazda 15 test; 9 Ekim ara denetiminden geçti (`docs/gece-kontrolleri.md`). F2-B'de Kullanıcı'ya bağlı iki iş açık: imza anahtarının iki yerde yedeği, API anahtarının yenilenmesi (Actions koşusu artık doğrulandı, F2.18). F2-C başladı: F2.47 görsel dil onaylandı (Seçenek B, karar 0016); F2.19–F2.23 bitti (tema, kontrast testi, 11+3 bileşen, ekran görüntüsü karşılaştırması; CI koşu 13 yeşil). **F2-C bitti** (9 Ekim): F2.24 uygulama ikonu (A) ve 5 sekmeli gezinme iskeleti onaylandı ve kodlandı (CI koşu 18 yeşil); telefonda henüz denenmedi. Bulut oturumunda Android derlenemiyor; doğrulama GitHub Actions'ta.
+**Sıradaki tek adım:** ~~F1 "B grubu": F1.12 konum → F1.13 Mi Band → F1.14 gürültü; 9 Ekim sabahı kablosuz gece testinin okunması.~~ → (9 Ekim akşamı) Gece testi okundu; F1.12 ve F1.13 karar 0014 ile F7.0'a devredildi. **Telefon ve bilgisayar bağlanınca ilk iş F1 kapanışı:** F1.14 gürültüde ses tanıma (Kullanıcı ile) → K1 (spike listesi son kontrol) → K3 (proje beyni kapanış kaydı). Ardından bu daldaki (`claude/faz-2-tasarim-yweqr9`) işin ana dala alınması ve uygulamanın telefona kurulup iskeletin gözle denenmesi; sonra F2-D. Telefonsuz yapılabilecek iş: F2-E ekranlarının (Hatırlatma Sağlığı, geçici hatırlatma ekleme) taslağı ve Kullanıcı onayı.
 
 **Açık engeller**
 - Yok. (Gemini bakiyesi 8 Ekim'de geldi; çağrıyla doğrulandı.)
@@ -166,7 +166,7 @@ F1'de kapanıştan önce kalan iki ölçüm: kablosuz gece testinin okunması (F
 - ☑ F2.17 `scripts/kur.sh`, `log-cek.sh`; `versionCode = yyMMddNN` — `kur.sh` (F1.6), `log-cek.sh` (telefonda denendi), `versionCode = 26100801`; `kur.sh`'ın asıl uygulamada tam koşusu F2.43'te
 - ◐ F2.18 Depo GitHub'a taşındı, Actions ile `check` koşuyor; API anahtarı yenilendi (karar 0005-1, 0001)
   - ☑ Depo gizli yapıldı ve ilk push tamamlandı (8 Ekim 2026; yerel = uzak `6bc3304`)
-  - ☑ GitHub Actions ile `check`: `.github/workflows/check.yml` (testler, ktlint, detekt, Lint, derleme, tutarlılık); 9 Ekim push'undan sonraki ilk koşu yeşil (Kullanıcı Actions sayfasında gördü; bu bilgisayarda GitHub komut aracı olmadığı için ben doğrulayamadım)
+  - ☑ GitHub Actions ile `check`: `.github/workflows/check.yml` (testler, ktlint, detekt, Lint, derleme, tutarlılık); 9 Ekim push'undan sonraki ilk koşu yeşil (Kullanıcı Actions sayfasında gördü); bulut oturumundan GitHub üzerinden doğrulandı: `claude/faz-2-tasarim-yweqr9` dalında 19 koşu, son koşu (19, `5516ae4`) yeşil; iş akışı artık ekran görüntüsü karşılaştırmasını da koşuyor
   - ☐ API anahtarı yenilendi ve yalnız Gemini API'sine kısıtlandı
 
 ### F2-C Tasarım sistemi (`:ui`)

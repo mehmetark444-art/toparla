@@ -83,7 +83,10 @@ fun SecondaryButton(
     )
 }
 
-/** Metin eylemi (Ertele · Değiştir · Bitti): 48 dp kutu, vurgunun hafif zemini, vurgu renginde yazı (karar 0016). */
+/**
+ * Metin eylemi (Ertele · Değiştir · Bitti): 48 dp kutu, vurgunun hafif zemini, vurgu renginde yazı (karar 0016).
+ * Yalnız `surface` ya da `background` üstünde kullanılır: `surfaceVariant` üstünde açık temada 4,5:1'in altına düşer.
+ */
 @Composable
 fun TextAction(
     text: String,

@@ -78,6 +78,13 @@ data class ToparlaPalette(
     val cardShadow: Long,
 )
 
+/**
+ * `primarySoft` (metin eyleminin zemini): vurgunun bu saydamlıkta yüzeye bindirilmiş hâli (karar 0016).
+ * Kontrastı `ContrastTest` bindirilmiş rengiyle ölçer.
+ */
+internal const val PRIMARY_SOFT_ALPHA_DARK = 0.10f
+internal const val PRIMARY_SOFT_ALPHA_LIGHT = 0.08f
+
 /** Kip ve vurguya göre paleti kurar. */
 object Palettes {
     private val dark = ToparlaPalette(

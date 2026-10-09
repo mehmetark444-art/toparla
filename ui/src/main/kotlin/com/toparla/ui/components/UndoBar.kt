@@ -25,6 +25,9 @@ import com.toparla.ui.theme.ToparlaTheme
 /**
  * Altta "Geri al" şeridi (blueprint C7): varsayılan 10 sn, sayaç halkasıyla. Durumsuzdur: kalan saniye
  * çağırandan (ViewModel) gelir; süre bitince şeridi kaldırmak da çağıranın işidir.
+ *
+ * Zemin `surface`: "Geri al" metin eylemi `surfaceVariant` üstünde açık temada 4,5:1'in altına düşüyordu
+ * (9 Ekim gece kontrolü, `ContrastTest`).
  */
 @Composable
 fun UndoBar(
@@ -41,7 +44,7 @@ fun UndoBar(
             .fillMaxWidth()
             .semantics { liveRegion = LiveRegionMode.Polite },
         shape = Shapes.card,
-        color = MaterialTheme.colorScheme.surfaceVariant,
+        color = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface,
         shadowElevation = Elevation.small,
     ) {

@@ -1,11 +1,14 @@
 package com.toparla.app
 
+import android.graphics.Color
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -13,6 +16,7 @@ import androidx.lifecycle.viewModelScope
 import com.toparla.app.nav.ToparlaRoot
 import com.toparla.data.settings.SettingsStore
 import com.toparla.ui.theme.AppearanceChoices
+import com.toparla.ui.theme.ThemeMode
 import com.toparla.ui.theme.ToparlaTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,10 +35,20 @@ class MainActivity : ComponentActivity() {
     private val appearance: AppearanceViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
+        // İlk kare pencere zemini gibi koyu (themes.xml); ayar okununca aşağıda temaya göre yeniden kurulur.
+        val initial = SystemBarStyle.dark(Color.TRANSPARENT)
+        enableEdgeToEdge(statusBarStyle = initial, navigationBarStyle = initial)
         super.onCreate(savedInstanceState)
         setContent {
             val choices by appearance.choices.collectAsState()
+            val darkBars = choices.mode != ThemeMode.LIGHT
+            // Durum çubuğu simgeleri telefonun değil uygulamanın temasına uysun; yoksa varsayılan koyu temada,
+            // telefon açık temadayken saat ve pil koyu zeminde koyu çizilir (9 Ekim gece kontrolü).
+            DisposableEffect(darkBars) {
+                val style = if (darkBars) SystemBarStyle.dark(Color.TRANSPARENT) else SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
+                onDispose {}
+            }
             ToparlaTheme(
                 mode = choices.mode,
                 accent = choices.accent,
