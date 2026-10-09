@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.toparla.ui.R
+import com.toparla.ui.components.ActionItem
 import com.toparla.ui.components.ActionRow
 import com.toparla.ui.components.CalmDialogContent
 import com.toparla.ui.components.Chip
@@ -27,7 +28,6 @@ import com.toparla.ui.components.ProgressRing
 import com.toparla.ui.components.SecondaryButton
 import com.toparla.ui.components.SectionHeader
 import com.toparla.ui.components.SettingRow
-import com.toparla.ui.components.TextAction
 import com.toparla.ui.components.ToparlaCard
 import com.toparla.ui.components.UndoBar
 import com.toparla.ui.theme.Spacing
@@ -51,11 +51,13 @@ fun ActionGallery(showEndless: Boolean = true) {
         if (showEndless) {
             PrimaryButton(text = stringResource(R.string.preview_start), onClick = {}, loading = true)
         }
-        ActionRow {
-            TextAction(text = stringResource(R.string.preview_snooze), onClick = {}, modifier = Modifier.weight(1f))
-            TextAction(text = stringResource(R.string.preview_change), onClick = {}, modifier = Modifier.weight(1f))
-            TextAction(text = stringResource(R.string.preview_finish), onClick = {}, modifier = Modifier.weight(1f))
-        }
+        ActionRow(
+            actions = listOf(
+                ActionItem(stringResource(R.string.preview_snooze)) {},
+                ActionItem(stringResource(R.string.preview_change)) {},
+                ActionItem(stringResource(R.string.preview_finish)) {},
+            ),
+        )
         SecondaryButton(text = stringResource(R.string.preview_later_10), onClick = {}, modifier = Modifier.fillMaxWidth())
         ChipRow {
             Chip(label = stringResource(R.string.preview_chip_15), selected = true, onClick = {})

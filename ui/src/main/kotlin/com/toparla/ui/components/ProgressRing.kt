@@ -26,6 +26,9 @@ import com.toparla.ui.theme.ToparlaTheme
 private const val FULL_SWEEP = 360f
 private const val START_AT_TOP = -90f
 
+// Metin halkanın iç dairesine sığsın diye kutudan bu oranda içeride durur.
+private const val TEXT_INSET_RATIO = 0.16f
+
 /**
  * Azalan dolgu halkası, ortada kalan süre (blueprint C7). Durumsuzdur: kalan oran ve metin çağırandan gelir
  * (zaman UI'da okunmaz). Halka titremez, yanıp sönmez (C5). Ortadaki metin halkaya sığmazsa (büyük yazı ölçeği)
@@ -66,7 +69,7 @@ fun ProgressRing(
         }
         BasicText(
             text = centerText,
-            modifier = Modifier.padding(strokeWidth * 2),
+            modifier = Modifier.padding(size * TEXT_INSET_RATIO),
             style = textStyle.copy(color = MaterialTheme.colorScheme.onSurface),
             maxLines = 1,
             autoSize = TextAutoSize.StepBased(maxFontSize = textStyle.fontSize),
