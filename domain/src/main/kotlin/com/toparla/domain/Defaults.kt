@@ -24,6 +24,9 @@ object Defaults {
     /** Teslim bu süreden fazla gecikirse "geç teslim" sayılır (kritikte ±1 dk sözü). */
     const val LATE_DELIVERY_TOLERANCE_SEC = 60L
 
+    /** Merdiveni biten yanıtsız iş bu kadar dakika sonra "süresi doldu" sayılır (blueprint Bölüm I: +60 dk). */
+    const val UNANSWERED_EXPIRY_MIN = 60L
+
     /** Kritik bekçinin ileriye baktığı süre, dakika (v3 §10.6). */
     const val CRITICAL_WATCHDOG_LOOKAHEAD_MIN = 20L
 

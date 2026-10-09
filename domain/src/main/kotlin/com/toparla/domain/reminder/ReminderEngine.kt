@@ -1,0 +1,233 @@
+package com.toparla.domain.reminder
+
+import com.toparla.domain.Defaults
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import java.time.Duration
+import java.time.Instant
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
+
+/**
+ * Hatırlatma motoru (Katman 0; AI yok). Planlayıcıyı, depoyu, sistem alarmlarını ve bildirimi birbirine bağlar:
+ * pencere doldurma, teslim, merdiven, ısrarlı takip, eylemler, geç teslim ve kritik bekçi (blueprint Bölüm I).
+ *
+ * Her giriş noktası idempotenttir: aynı alarm ya da aynı dokunuş ikinci kez gelirse sonuç değişmez.
+ * Zaman dışarıdan verilir; Android'e dokunmaz (yan etkiler arayüzlerin arkasındadır).
+ */
+class ReminderEngine(
+    private val repo: ReminderRepository,
+    private val scheduler: ReminderScheduler,
+    private val notifier: ReminderNotifier,
+    private val followUpConfig: suspend () -> FollowUpConfig,
+) {
+    private val mutex = Mutex()
+
+    /**
+     * Pencereyi doldurur: eksik alarmı kurar, fazlayı iptal eder, vakti geçmiş teslimleri hemen teslim eder.
+     * @param rearm sistem alarmlarının silinmiş olabileceği durumlarda (açılış, güncelleme, saat değişimi) true:
+     * kayıtlı olsa da her alarm yeniden kurulur.
+     */
+    suspend fun replan(now: Instant, rearm: Boolean = false) = mutex.withLock { replanLocked(now, rearm) }
+
+    /** Sistem alarmı ateşlendi (ana teslim, merdiven basamağı, ısrarlı takip sorusu ya da erteleme). */
+    suspend fun onAlarmFired(key: String, now: Instant) = mutex.withLock {
+        val plannedAt = repo.scheduled().firstOrNull { it.key == key }?.fireAt
+        if (deliver(key, now, plannedAt)) replanLocked(now, rearm = false)
+    }
+
+    /** Bildirim eylemi ya da ekrandan gelen yanıt. Geçersiz ya da yinelenen eylem yok sayılır. */
+    suspend fun onAction(occurrenceKey: String, action: ReminderAction, now: Instant, snoozeDelay: Duration? = null) = mutex.withLock {
+        val occurrence = repo.occurrence(occurrenceKey) ?: return@withLock
+        val info = repo.info(occurrence.reminderId)
+        val changed = when (action) {
+            ReminderAction.OPENED -> transition(occurrence, OccurrenceEvent.OPENED, now, resolves = false)
+            ReminderAction.DONE -> transition(occurrence, OccurrenceEvent.MARKED_DONE, now, resolves = true)
+            ReminderAction.SNOOZE -> snooze(occurrence, info, now, snoozeDelay)
+            ReminderAction.TOMORROW -> snoozeUntil(occurrence, now, nextWake(now))
+            ReminderAction.NOT_TODAY ->
+                if (info?.persistent == true) {
+                    // Israrlı iş sessizce bitmez: açık seçimle ertesi sabaha taşınır (karar 0003).
+                    snoozeUntil(occurrence, now, nextWake(now))
+                } else {
+                    transition(occurrence, OccurrenceEvent.SKIP, now, resolves = true)
+                }
+        }
+        if (changed) {
+            repo.log(occurrenceKey, now, EVENT_ACTION, action.name)
+            refreshPersistent(now)
+            replanLocked(now, rearm = false)
+        }
+    }
+
+    /** Kritik bekçi (15 dk'da bir): yakındaki kritik olayın alarmı yoksa hemen kurar ve kayda yazar. */
+    suspend fun watchdog(now: Instant) = mutex.withLock {
+        val missing = CriticalWatchdog.missing(now, repo.activeDefinitions(), repo.scheduled())
+        if (missing.isEmpty()) return@withLock
+        missing.forEach {
+            scheduler.schedule(it)
+            repo.log(it.key, now, EVENT_WATCHDOG_REARMED)
+        }
+        repo.applyPlan(missing, emptyList())
+    }
+
+    private suspend fun replanLocked(now: Instant, rearm: Boolean) {
+        val config = followUpConfig()
+        for (pass in 0 until MAX_PASSES) {
+            expireStale(now, config)
+            val definitions = repo.activeDefinitions()
+            val existing = repo.scheduled()
+            val inFlight = repo.openOccurrences().mapNotNull { inFlightOf(it) }
+            val snoozes = repo.pendingSnoozes().mapNotNull { o ->
+                repo.info(o.reminderId)?.let { SnoozedDelivery(o.key, o.reminderId, it.klass, o.plannedAt) }
+            }
+            val result = ReminderPlanner.plan(now, definitions, existing, inFlight = inFlight, snoozes = snoozes, followUp = config)
+            result.toCancel.forEach(scheduler::cancel)
+            val toArm = if (rearm && pass == 0) {
+                // Sistem alarmları silinmiş olabilir: tabloda kayıtlı olanlar dahil hepsi yeniden kurulur.
+                ReminderPlanner.plan(now, definitions, emptyList(), inFlight = inFlight, snoozes = snoozes, followUp = config).toSchedule
+            } else {
+                result.toSchedule
+            }
+            toArm.forEach(scheduler::schedule)
+            repo.applyPlan(result.toSchedule, result.toCancel)
+
+            var delivered = false
+            val past = existing.filter { !it.fireAt.isAfter(now) }
+            val fired = repo.firedKeys(past.map { it.key })
+            // Ateşlenmiş ama kaydı kalmış satır (teslim sırasında süreç öldüyse) temizlenir.
+            past.filter { it.key in fired }.forEach { repo.removeScheduled(it.key) }
+            for (unfired in DeliveryAuditor.findUnfired(now, existing, fired)) {
+                repo.log(unfired.key, now, EVENT_MISSED_DETECTED)
+                if (deliver(unfired.key, now, unfired.fireAt)) delivered = true
+            }
+            for (due in result.dueNow) {
+                if (deliver(due.key, now, due.fireAt)) delivered = true
+            }
+            // Teslim yeni basamak ya da soru doğurabilir; onları da kurmak için bir tur daha.
+            if (!delivered) break
+        }
+        scheduler.scheduleMaintenance(MaintenancePolicy.nextMaintenanceAt(now))
+    }
+
+    /** @return bir şey gösterildiyse ya da durum değiştiyse true */
+    private suspend fun deliver(key: String, now: Instant, plannedFire: Instant?): Boolean {
+        val first = repo.recordFired(key, now)
+        repo.removeScheduled(key)
+        if (!first) return false
+        val parsed = AlarmKey.parse(key)
+        val info = repo.info(parsed.reminderId) ?: return false
+        return when (parsed.kind) {
+            AlarmKeyKind.MAIN, AlarmKeyKind.SNOOZE -> deliverOccurrence(parsed, info, now, plannedFire ?: plannedAtOf(key) ?: now)
+            AlarmKeyKind.LADDER -> deliverLadderStep(parsed, info, now)
+            AlarmKeyKind.FOLLOW_UP -> deliverFollowUp(parsed, now)
+        }
+    }
+
+    private suspend fun deliverOccurrence(parsed: AlarmKey, info: ReminderInfo, now: Instant, plannedAt: Instant): Boolean {
+        val existing = repo.occurrence(parsed.occurrenceKey)
+        val base = existing ?: OccurrenceRecord(parsed.occurrenceKey, parsed.reminderId, plannedAt, OccurrenceState.PLANNED)
+        val next = OccurrenceStateMachine.next(base.state, OccurrenceEvent.FIRED) ?: return false
+        repo.saveOccurrence(base.copy(state = next, deliveredAt = now, ladderStepsDone = 1, lastAskedAt = now))
+        notifier.show(notice(parsed.occurrenceKey, info, LadderAction.NOTIFY, base.plannedAt, DeliveryGrouping.lateBy(base.plannedAt, now)))
+        repo.log(parsed.occurrenceKey, now, EVENT_POSTED)
+        return true
+    }
+
+    private suspend fun deliverLadderStep(parsed: AlarmKey, info: ReminderInfo, now: Instant): Boolean {
+        val occurrence = repo.occurrence(parsed.occurrenceKey)?.takeIf { it.state in OPEN_STATES } ?: return false
+        val step = Ladder.stepsFor(info.klass, followUpConfig().trustedContactEnabled).getOrNull(parsed.index) ?: return false
+        repo.saveOccurrence(occurrence.copy(ladderStepsDone = maxOf(occurrence.ladderStepsDone, parsed.index + 1), lastAskedAt = now))
+        notifier.show(notice(parsed.occurrenceKey, info, step.action, occurrence.plannedAt, Duration.ZERO))
+        return true
+    }
+
+    private suspend fun deliverFollowUp(parsed: AlarmKey, now: Instant): Boolean {
+        val occurrence = repo.occurrence(parsed.occurrenceKey)?.takeIf { it.state in OPEN_STATES } ?: return false
+        repo.saveOccurrence(occurrence.copy(asksDone = maxOf(occurrence.asksDone, parsed.index + 1), lastAskedAt = now))
+        refreshPersistent(now)
+        return true
+    }
+
+    private suspend fun transition(occurrence: OccurrenceRecord, event: OccurrenceEvent, now: Instant, resolves: Boolean): Boolean {
+        val next = OccurrenceStateMachine.next(occurrence.state, event) ?: return false
+        repo.saveOccurrence(occurrence.copy(state = next, resolvedAt = if (resolves) now else occurrence.resolvedAt))
+        if (resolves) notifier.cancel(occurrence.key)
+        return true
+    }
+
+    private suspend fun snooze(occurrence: OccurrenceRecord, info: ReminderInfo?, now: Instant, requested: Duration?): Boolean {
+        if (OccurrenceStateMachine.next(occurrence.state, OccurrenceEvent.SNOOZE) == null) return false
+        return when (val decision = SnoozePolicy.decide(occurrence.snoozeCount, requested)) {
+            is SnoozeDecision.Snooze -> snoozeUntil(occurrence, now, now.plus(decision.delay))
+            SnoozeDecision.AskCarryOrSkip -> {
+                if (info != null) notifier.askCarryOrSkip(occurrence.key, info)
+                false
+            }
+        }
+    }
+
+    /** Ertelenen teslim kapanır; aynı olayın yeni anahtarlı yeni teslimi [until] anına kurulur. */
+    private suspend fun snoozeUntil(occurrence: OccurrenceRecord, now: Instant, until: Instant): Boolean {
+        if (!transition(occurrence, OccurrenceEvent.SNOOZE, now, resolves = true)) return false
+        val index = occurrence.snoozeCount + 1
+        val rootKey = occurrence.key.replace(SNOOZE_TAIL, "")
+        repo.saveOccurrence(
+            OccurrenceRecord(SnoozePolicy.snoozedKey(rootKey, index), occurrence.reminderId, until, OccurrenceState.PLANNED, snoozeCount = index),
+        )
+        return true
+    }
+
+    /** Merdiveni bitmiş, yanıtsız kalmış ısrarsız iş bir süre sonra "süresi doldu" olur (gün kapanışında Taşınan). */
+    private suspend fun expireStale(now: Instant, config: FollowUpConfig) {
+        for (occurrence in repo.openOccurrences()) {
+            val info = repo.info(occurrence.reminderId) ?: continue
+            if (info.persistent) continue
+            val ladderDone = occurrence.ladderStepsDone >= Ladder.stepsFor(info.klass, config.trustedContactEnabled).size
+            val lastAsked = occurrence.lastAskedAt ?: continue
+            if (ladderDone && !lastAsked.plus(EXPIRY).isAfter(now)) {
+                transition(occurrence, OccurrenceEvent.LADDER_EXHAUSTED, now, resolves = false)
+            }
+        }
+    }
+
+    private suspend fun refreshPersistent(now: Instant) {
+        val items = repo.openOccurrences().mapNotNull { o ->
+            repo.info(o.reminderId)?.takeIf { it.persistent }?.let { PersistentItem(o.key, it, o.asksDone) }
+        }
+        notifier.showPersistent(items, now)
+    }
+
+    private suspend fun inFlightOf(o: OccurrenceRecord): InFlightOccurrence? {
+        val info = repo.info(o.reminderId) ?: return null
+        val firedAt = o.deliveredAt ?: return null
+        return InFlightOccurrence(o.key, o.reminderId, info.klass, firedAt, o.ladderStepsDone.coerceAtLeast(1), info.persistent, o.lastAskedAt ?: firedAt, o.asksDone)
+    }
+
+    /** Uyku penceresinin bittiği ilk an (şimdiden sonra): "Yarın" ve "Bugün olmayacak" buraya taşır. */
+    private suspend fun nextWake(now: Instant): Instant {
+        val config = followUpConfig()
+        val local = now.atZone(config.zone)
+        val today = ZonedDateTime.of(local.toLocalDate(), config.sleepEnd, config.zone).toInstant()
+        return if (today.isAfter(now)) today else ZonedDateTime.of(local.toLocalDate().plusDays(1), config.sleepEnd, config.zone).toInstant()
+    }
+
+    private fun notice(occurrenceKey: String, info: ReminderInfo, action: LadderAction, plannedAt: Instant, lateBy: Duration) =
+        DeliveryNotice(occurrenceKey, info, action, plannedAt, lateBy, "g@${plannedAt.truncatedTo(ChronoUnit.MINUTES).toEpochMilli()}")
+
+    /** Ana teslim anahtarı planlanan anı taşır (`id@ms`). */
+    private fun plannedAtOf(key: String): Instant? =
+        key.substringAfter('@', "").substringBefore('#').toLongOrNull()?.let(Instant::ofEpochMilli)
+
+    companion object {
+        const val EVENT_MISSED_DETECTED = "MISSED_DETECTED"
+        const val EVENT_WATCHDOG_REARMED = "WATCHDOG_REARMED"
+        const val EVENT_POSTED = "POSTED"
+        const val EVENT_ACTION = "ACTION"
+
+        val EXPIRY: Duration = Duration.ofMinutes(Defaults.UNANSWERED_EXPIRY_MIN)
+        private const val MAX_PASSES = 3
+        private val OPEN_STATES = setOf(OccurrenceState.DELIVERED, OccurrenceState.SEEN)
+        private val SNOOZE_TAIL = Regex("""#s\d+$""")
+    }
+}
