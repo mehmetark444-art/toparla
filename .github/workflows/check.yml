@@ -44,6 +44,16 @@ jobs:
         with:
           name: ekran-goruntuleri
           path: ui/src/test/screenshots/
+      # Bulut oturumu Actions dosya deposuna erişemiyor; görüntüleri günlükten okuyabilsin diye metin olarak da yazılır.
+      - name: Ekran görüntüleri (günlüğe, yalnız claude/** dalları)
+        if: always() && startsWith(github.ref, 'refs/heads/claude/')
+        run: |
+          for f in ui/src/test/screenshots/*.png; do
+            [ -e "$f" ] || continue
+            echo "@@PNG-BASLA $(basename "$f")"
+            base64 -w 0 "$f"; echo
+            echo "@@PNG-BITTI"
+          done
       - name: Depo tutarlılığı
         run: node .claude/skills/dogrula/kontrol.mjs
       - name: Raporlar
