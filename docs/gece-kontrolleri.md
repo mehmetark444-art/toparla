@@ -6,7 +6,7 @@
 | Tarih | İncelenen | Bulunan ve düzeltilen | Açık kalan | Testler | Sonuç |
 |---|---|---|---|---|---|
 | 8 Ekim 2026 (7 Ekim gecesi) | `4ca872c`…`38ff16d` (projenin tamamı) | 9 bulgu, hepsi düzeltildi (aşağıda) | 3 (aşağıda) | 58 birim · 21 kanca | Temiz |
-| 9 Ekim 2026 (bulut oturumu) | `3fc8c7f`…`16e0885` (23 commit, 74 dosya) | 3 bulgu + bayat belge satırları, hepsi düzeltildi (aşağıda) | 5 (aşağıda) | 114 JVM · kontrast 3 · ekran görüntüsü 16 (CI) · kanca sınaması | Temiz (CI yeşil olunca) |
+| 9 Ekim 2026 (bulut oturumu) | `3fc8c7f`…`16e0885` (23 commit, 74 dosya) | 3 bulgu + bayat belge satırları, hepsi düzeltildi (aşağıda) | 5 (aşağıda) | 114 JVM · kontrast 3 · ekran görüntüsü 16 (CI) · kanca sınaması | Temiz (CI koşu 21 yeşil, `135224d`) |
 
 ## 8 Ekim 2026 — ilk kontrol (projenin tamamı)
 
@@ -146,8 +146,8 @@ renkler `ContrastTest` ile sınanıyor. İlk kullanan ekran gelene dek silinmez.
 
 **Makine kontrolü**
 - CI (GitHub Actions): 114 JVM testi, ktlint, detekt, Android Lint, debug derlemesi geçti; görüntü karşılaştırması
-  yalnız bilerek değişen 6 eylem görüntüsünde kırmızıydı (koşu 20); yeni temel görüntülerle sonraki koşu sonucu
-  bu commit'in ardından okunur.
+  yalnız bilerek değişen 6 eylem görüntüsünde kırmızıydı (koşu 20); yeni temel görüntülerle koşu 21
+  tamamen yeşil (`135224d`).
 - Bulutta: `ContrastTest` 3/3 (saf Kotlin), ktlint ve detekt temiz, `kontrol.mjs --gece` tutarlı (yalnız iki bilinen
   uyarı: karar 0002 ve 0008 teyit bekliyor), kanca sınaması hepsi geçti.
 - Gradle'ın `--warning-mode all` derlemesi ve cihaz testleri (15) bulutta koşulamadı.
