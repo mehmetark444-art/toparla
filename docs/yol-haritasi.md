@@ -3,7 +3,7 @@
 Projenin sıfırdan bitişe tek durum kaynağı. Her oturumda buradan okunur, burada işaretlenir.
 Kapsam `docs/BLUEPRINT.md` (M1–M30) + `docs/decisions/` kararlarıdır; bu dosya kapsam eklemez.
 
-**Son güncelleme:** 9 Ekim 2026, akşam (F2-C bitti; bulut oturumu)
+**Son güncelleme:** 9 Ekim 2026, gece (F1 kapandı; iskelet telefonda)
 
 ## Nasıl okunur
 
@@ -32,7 +32,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | Faz | Blueprint dilimi | Konu | Durum |
 |---|---|---|---|
 | F0 | — | Hazırlık ve temel | ☑ |
-| F1 | S0 | Cihaz denemeleri (spike) | ◐ |
+| F1 | S0 | Cihaz denemeleri (spike) | ☑ |
 | F2 | S1 | İskelet + Hatırlatma motoru | ◐ |
 | F3 | S2 | Günlük sürücü | ☐ |
 | F4 | S3 | Ritim | ☐ |
@@ -43,7 +43,7 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 | F9 | S8 | Konu Motoru | ☐ |
 | F10 | S9 | Dayanıklılık ve kapanış | ☐ |
 
-**Şu an:** F1 kapanışa yakın (kablosuz gece testi 9 Ekim sabahı okundu: 21/21; K2 Kullanıcı onayı alındı; kalan: gürültüde ses tanıma, sonra K1 ve K3). F2-A (hatırlatma saf mantığı) ve F2-B (altyapı) yazıldı: 114 JVM testi + cihazda 15 test; 9 Ekim ara denetiminden geçti (`docs/gece-kontrolleri.md`). F2-B'de Kullanıcı'ya bağlı iki iş açık: imza anahtarının iki yerde yedeği, API anahtarının yenilenmesi (Actions koşusu artık doğrulandı, F2.18). F2-C başladı: F2.47 görsel dil onaylandı (Seçenek B, karar 0016); F2.19–F2.23 bitti (tema, kontrast testi, 11+3 bileşen, ekran görüntüsü karşılaştırması; CI koşu 13 yeşil). **F2-C bitti** (9 Ekim): F2.24 uygulama ikonu (A) ve 5 sekmeli gezinme iskeleti onaylandı ve kodlandı (CI koşu 18 yeşil); telefonda henüz denenmedi. Bulut oturumunda Android derlenemiyor; doğrulama GitHub Actions'ta.
+**Şu an:** **F1 kapandı (9 Ekim 2026 gece).** Bulut dalı ana dalda; iskeletli uygulama telefonda (release açıldı, çökmedi). F2'de sıradaki iş F2-D (hatırlatmanın Android tarafı); F1-A kapandığı için kapı açık. Önceki durum: F1 kapanışa yakın (kablosuz gece testi 9 Ekim sabahı okundu: 21/21; K2 Kullanıcı onayı alındı; kalan: gürültüde ses tanıma, sonra K1 ve K3). F2-A (hatırlatma saf mantığı) ve F2-B (altyapı) yazıldı: 114 JVM testi + cihazda 15 test; 9 Ekim ara denetiminden geçti (`docs/gece-kontrolleri.md`). F2-B'de Kullanıcı'ya bağlı iki iş açık: imza anahtarının iki yerde yedeği, API anahtarının yenilenmesi (Actions koşusu artık doğrulandı, F2.18). F2-C başladı: F2.47 görsel dil onaylandı (Seçenek B, karar 0016); F2.19–F2.23 bitti (tema, kontrast testi, 11+3 bileşen, ekran görüntüsü karşılaştırması; CI koşu 13 yeşil). **F2-C bitti** (9 Ekim): F2.24 uygulama ikonu (A) ve 5 sekmeli gezinme iskeleti onaylandı ve kodlandı (CI koşu 18 yeşil); telefonda henüz denenmedi. Bulut oturumunda Android derlenemiyor; doğrulama GitHub Actions'ta.
 **Sıradaki tek adım:** ~~F1 "B grubu": F1.12 konum → F1.13 Mi Band → F1.14 gürültü; 9 Ekim sabahı kablosuz gece testinin okunması.~~ → (9 Ekim akşamı) Gece testi okundu; F1.12 ve F1.13 karar 0014 ile F7.0'a devredildi. **Telefon ve bilgisayar bağlanınca ilk iş F1 kapanışı:** F1.14 gürültüde ses tanıma (Kullanıcı ile) → K1 (spike listesi son kontrol) → K3 (proje beyni kapanış kaydı). Ardından bu daldaki (`claude/faz-2-tasarim-yweqr9`) işin ana dala alınması ve uygulamanın telefona kurulup iskeletin gözle denenmesi; sonra F2-D. Telefonsuz yapılabilecek iş: F2-E ekranlarının (Hatırlatma Sağlığı, geçici hatırlatma ekleme) taslağı ve Kullanıcı onayı.
 
 **Açık engeller**
@@ -73,52 +73,52 @@ faz ☑ işaretlenemez. Bu şart her fazın çift kontrol listesinde ayrı satı
 
 ---
 
-## F1 — Cihaz denemeleri (S0 spike) ◐
+## F1 — Cihaz denemeleri (S0 spike) ☑
 
 **Amaç:** Blueprint'teki her `[DOĞRULA]` / `[Spike]` varsayımını bu telefonda ölçmek. Hiçbir
 platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılır.
 
 ### F1-A Alarm ve teslim (ürünü taşıyan varsayımlar)
-- ◐ F1.1 Alarm teslimi: `setAlarmClock` ↔ `setExactAndAllowWhileIdle` ↔ `setAndAllowWhileIdle`
+- ☑ F1.1 Alarm teslimi: `setAlarmClock` ↔ `setExactAndAllowWhileIdle` ↔ `setAndAllowWhileIdle` — ölçülen koşullar aşağıda; kalanlar karar 0014 ile F2.42 ve F2.44'e devredildi
   - ☑ Ekran açık / kapalı (2 dk)
   - ☑ Son uygulamalardan kaydırıp kapatma (tek deneme, 2 dk)
   - ☑ Yeniden başlatma
   - ☑ Kilitli yeniden başlatma (Direct Boot)
   - ☑ Gece: 1–8 saat, 3 yöntem, 24 alarm; 24/24 çaldı — `platform-bulgulari.md` § gece testi sonucu
   - ☑ Kablosuz gece (Doze koşulları): 7 saat, şarjsız, 21/21 çaldı; kesin yollar ≤ 2,1 sn, esnek yol ~1 dk — `platform-bulgulari.md` § Spike 1: kablosuz gece testi sonucu. Sınır: teslim anında `idle=true` bayrağı yakalanmadı (hafif uyku 4 kez görüldü); pil muafiyeti olmadan kablosuz gece ölçülmedi → F2.44
-  - ◐ `setExactAndAllowWhileIdle` 3,5 dk gecikmesi: 8 gece ölçümünde tekrarlanmadı (en çok 28 sn); kök neden bilinmiyor
-  - ☐ Kısıtlı bekleme kovası (uygulama günlerce açılmadan)
-  - ◐ Güvenlik uygulaması "Bellek temizleme" sonrası teslim: uygulama kilitliyken ☑ (2/2 çaldı, süreç ölmedi — § F1 kapanış ölçümleri); kilitsiz uygulama ☐
-  - ◐ Saat elle değişti ☑ (`TIME_SET` → yeniden kuruldu, 4/4 — § F1 kapanış ölçümleri); saat dilimi değişimi ☐
+  - ☑ `setExactAndAllowWhileIdle` 3,5 dk gecikmesi: 15 gece ölçümünde tekrarlanmadı (en çok 28 sn) — § gece testi sonucu, § kablosuz gece testi sonucu; kök neden bilinmiyor → karar 0014 (F2.44: tekrar ederse araştırılır)
+  - Kısıtlı bekleme kovası (uygulama günlerce açılmadan): **ölçülmedi; karar 0014 ile F2.44'e devredildi.**
+  - ☑ (ölçülen kısım; kilitsiz uygulama → karar 0014, F2.42) Güvenlik uygulaması "Bellek temizleme" sonrası teslim: uygulama kilitliyken ☑ (2/2 çaldı, süreç ölmedi — § F1 kapanış ölçümleri); kilitsiz uygulama ☐
+  - ☑ (ölçülen kısım; saat dilimi → karar 0014, F2.42) Saat elle değişti ☑ (`TIME_SET` → yeniden kuruldu, 4/4 — § F1 kapanış ölçümleri); saat dilimi değişimi ☐
 - ☑ F1.2 Kesin alarmdan foreground service başlatma; `specialUse` FGS; her başlatma yolu — `setAlarmClock`, `setExactAndAllowWhileIdle`, bildirim eylemi, kutucuk: dördü de başlattı (her biri tek deneme; `platform-bulgulari.md` § Spike 2 ve 3, § F1 kapanış ölçümleri)
 - ☑ F1.3 Tam ekran bildirim + HyperOS "Kilit ekranında göster", "Arka planda açılır pencere" — kilitliyken tam ekran açılıyor (tek deneme, özel izin verilmeden); ekran açık ve kilitsizken tam ekran açılmıyor, üstte şerit geliyor (tek deneme; § F1 kapanış ölçümleri)
-- ◐ F1.4 Bildirim "cooldown" davranışı, alarm ses akışı, DND aşımı (erişim verilmişken ☑: art arda 3 bildirim kısılmadı, Rahatsız Etme açıkken 3/3 çaldı — `platform-bulgulari.md` § Spike 7; ekran kapalı ve kilitliyken ☑ — § F1 kapanış ölçümleri; erişim verilmemişken ve "tam sessizlik" kipinde ☐)
-- ◐ F1.5 HyperOS ayar derin bağlantıları → `hyperos-baglantilar.md` (11 bağlantıdan 10'u açıldı, eski pil kısıtı sayfası yok — `platform-bulgulari.md` § Spike 4; gri tonlama açılışı ve sayfaların doğru uygulamayı gösterdiğinin göz doğrulaması ☐)
-- ◐ F1.6 `kur.sh`: her komutun HyperOS'teki davranışı; `USER_RESTRICTED` ve yol çevirme hatası ele alınmış (betik her adımı geri okuyarak doğruluyor, telefonda bir kez koşuldu — `platform-bulgulari.md` § Spike 19: izinler ve tam ekran tuttu, kullanım istatistikleri ve üstte gösterme `appops` ile **tutmadı**; APK kurulum adımı ve temiz kurulumda tam koşu ☐ → F2.17)
+- ☑ F1.4 [ölçülen kısım ☑; kalan → karar 0014, F2.34] Bildirim "cooldown" davranışı, alarm ses akışı, DND aşımı (erişim verilmişken ☑: art arda 3 bildirim kısılmadı, Rahatsız Etme açıkken 3/3 çaldı — `platform-bulgulari.md` § Spike 7; ekran kapalı ve kilitliyken ☑ — § F1 kapanış ölçümleri; erişim verilmemişken ve "tam sessizlik" kipinde ☐)
+- ☑ F1.5 [ölçülen kısım ☑; kalan → karar 0014, F2.37 / F2.45] HyperOS ayar derin bağlantıları → `hyperos-baglantilar.md` (11 bağlantıdan 10'u açıldı, eski pil kısıtı sayfası yok — `platform-bulgulari.md` § Spike 4; gri tonlama açılışı ve sayfaların doğru uygulamayı gösterdiğinin göz doğrulaması ☐)
+- ☑ F1.6 [ölçülen kısım ☑; kalan → karar 0014, F2.43] `kur.sh`: her komutun HyperOS'teki davranışı; `USER_RESTRICTED` ve yol çevirme hatası ele alınmış (betik her adımı geri okuyarak doğruluyor, telefonda bir kez koşuldu — `platform-bulgulari.md` § Spike 19: izinler ve tam ekran tuttu, kullanım istatistikleri ve üstte gösterme `appops` ile **tutmadı**; APK kurulum adımı ve temiz kurulumda tam koşu ☐ → F2.17)
 
 ### F1-B Algılama ve sistem yüzeyleri
-- ◐ F1.7 (`platform-bulgulari.md` § Spike 5: kaydırınca servis ölüyor ve geri gelmiyor; açılışta olay ~2,9 sn geç geliyor, hedef tutmuyor; servisten Activity başlatma ☑; son uygulamalarda kilit "tümünü temizle"den koruyor ☑ (tek deneme); yeniden başlatma sonrası servis kendiliğinden bağlanıyor ☑ (tek deneme); **süreç çökünce servis, otomatik başlatma açık olsa da kendiliğinden dönmüyor** (yalnız güncelleme, yeniden başlatma ya da elle kapat-aç) ☑ — § F1 kapanış ölçümleri; kilidin yeniden başlatma sonrası kalması, uzun süre ömrü, gecikmenin nedeni ☐) Erişilebilirlik: açılış algılama gecikmesi (hedef ≤ 400 ms), servis ömrü, servisten Activity başlatma; olmazsa overlay yedeği
-- ◐ F1.8 Bildirim erişimi: kısıtlı ayarlar, `allow_listener`, kopma sonrası `requestRebind` (elle açma engelsiz ☑, bildirim okuma ve kod süzgeci ☑ — `platform-bulgulari.md` § Spike 6; süreç ölümü sonrası ☑: otomatik başlatma kapalıyken dönmüyor, `requestRebind` etkisiz, bileşeni kapat-aç 1 sn'de bağlıyor; otomatik başlatma açıkken ~18 sn'de kendiliğinden dönüyor — § F1 kapanış ölçümleri; `allow_listener` komutunun sıfırdan etkisi ☐)
+- ☑ F1.7 [ölçülen kısım ☑; kalan → karar 0014, F5.7] (`platform-bulgulari.md` § Spike 5: kaydırınca servis ölüyor ve geri gelmiyor; açılışta olay ~2,9 sn geç geliyor, hedef tutmuyor; servisten Activity başlatma ☑; son uygulamalarda kilit "tümünü temizle"den koruyor ☑ (tek deneme); yeniden başlatma sonrası servis kendiliğinden bağlanıyor ☑ (tek deneme); **süreç çökünce servis, otomatik başlatma açık olsa da kendiliğinden dönmüyor** (yalnız güncelleme, yeniden başlatma ya da elle kapat-aç) ☑ — § F1 kapanış ölçümleri; kilidin yeniden başlatma sonrası kalması, uzun süre ömrü, gecikmenin nedeni ☐) Erişilebilirlik: açılış algılama gecikmesi (hedef ≤ 400 ms), servis ömrü, servisten Activity başlatma; olmazsa overlay yedeği
+- ☑ F1.8 [ölçülen kısım ☑; kalan → karar 0014, F2.43] Bildirim erişimi: kısıtlı ayarlar, `allow_listener`, kopma sonrası `requestRebind` (elle açma engelsiz ☑, bildirim okuma ve kod süzgeci ☑ — `platform-bulgulari.md` § Spike 6; süreç ölümü sonrası ☑: otomatik başlatma kapalıyken dönmüyor, `requestRebind` etkisiz, bileşeni kapat-aç 1 sn'de bağlıyor; otomatik başlatma açıkken ~18 sn'de kendiliğinden dönüyor — § F1 kapanış ölçümleri; `allow_listener` komutunun sıfırdan etkisi ☐)
 - ☑ F1.9 Tile: kilitliyken yakalama, Tile → mikrofon ≤ 1 sn — `platform-bulgulari.md` § Spike 8 (kilit açık 287 ms, kilitli 245 ms; kilitliyken ekran açılmıyor, yakalama servisten ekransız yapılıyor; koşul başına 1–2 ölçüm)
 - ☑ F1.10 Canlı güncelleme: `ProgressStyle`, "promoted ongoing", HyperOS odak bildirimi — `platform-bulgulari.md` § Spike 16 (tek deneme; hap, panel ve kilit ekranında Kullanıcı gördü)
-- ◐ F1.11 Arama durumu: `AudioManager.getMode` ile izinsiz algılama (giden hücresel arama ☑ — `platform-bulgulari.md` § Spike 17; internet araması (`3`) ve arka plandan okuma ☑ — § F1 kapanış ölçümleri; gelen aramanın çalma anı ☐)
+- ☑ F1.11 [ölçülen kısım ☑; kalan → karar 0014, F2.42] Arama durumu: `AudioManager.getMode` ile izinsiz algılama (giden hücresel arama ☑ — `platform-bulgulari.md` § Spike 17; internet araması (`3`) ve arka plandan okuma ☑ — § F1 kapanış ölçümleri; gelen aramanın çalma anı ☐)
 - F1.12 (Geofence) ve F1.13 (Health Connect / Mi Band): **ölçülmedi; karar 0014 ile F7.0'a devredildi.**
 
 ### F1-C Ses ve yapay zekâ
-- ◐ F1.14 (sessiz ortam ☑: gerçek hata ~%6, karar 0013 — `platform-bulgulari.md` § Spike 9; gürültü, kulaklık, uzun konuşma ☐) Türkçe cihaz içi konuşma tanıma: 30 cümlelik set, WER; yetersizse yerel Whisper
-- ◐ F1.15 (çalışma zamanı ve model edinme yolu ☑; beş adayın eleme turu ☑: Gemma 4 E2B, E4B ve Qwen3 4B kaldı; Phi-4 mini ve Ministral elendi — `platform-bulgulari.md` § Spike 10; 50 soruluk Türkçe set ☑ (E2B 46,5 · E4B 45,5 · Qwen3 32; karar adayı 0010); gömme modeli ve gerçek RAG ☑ (karar 0011); düşünme kipiyle karta dayalı yanıt, kablosuz pil, çok turlu sohbet, görsel/ses ☐) Cihaz içi model: LiteRT-LM + Gemma güncel adları, GPU/NPU, token/sn, ilk token, 10 dk sıcaklık, 50 örnek Türkçe kalite; model dosyasını edinme yolu
-- ◐ F1.16 Gemini API — `platform-bulgulari.md` § Spike 11: Gemini API ölçümleri
+- ☑ F1.14 (sessiz ortam ☑: gerçek hata ~%6, karar 0013 — `platform-bulgulari.md` § Spike 9; konuşmalı ev gürültüsü ☑: 12/20 anlamca doğru, ortamdaki konuşma metne karışıyor — § Spike 9: Türkçe konuşma tanıma, gürültülü ortam; sokak gürültüsü, kulaklık, uzun konuşma → karar 0014, F3.6) Türkçe cihaz içi konuşma tanıma: 30 cümlelik set, WER; yetersizse yerel Whisper
+- ☑ F1.15 [ölçülen kısım ☑; kalan → karar 0014, F6.3 / F6.13] (çalışma zamanı ve model edinme yolu ☑; beş adayın eleme turu ☑: Gemma 4 E2B, E4B ve Qwen3 4B kaldı; Phi-4 mini ve Ministral elendi — `platform-bulgulari.md` § Spike 10; 50 soruluk Türkçe set ☑ (E2B 46,5 · E4B 45,5 · Qwen3 32; karar adayı 0010); gömme modeli ve gerçek RAG ☑ (karar 0011); düşünme kipiyle karta dayalı yanıt, kablosuz pil, çok turlu sohbet, görsel/ses ☐) Cihaz içi model: LiteRT-LM + Gemma güncel adları, GPU/NPU, token/sn, ilk token, 10 dk sıcaklık, 50 örnek Türkçe kalite; model dosyasını edinme yolu
+- ☑ F1.16 Gemini API — `platform-bulgulari.md` § Spike 11: Gemini API ölçümleri (429 gövdesi → karar 0014, F6.2)
   - ☑ Uç nokta: Developer API; model listesi alındı
   - ☑ Kademe modelleri (hızlı / günlük / derin) ve fiyatlar resmi sayfadan kilitlendi — karar 0007 (`pricing.json` F6.4'te yazılır)
   - ☑ Akış (SSE), şemalı çıktı, işlev çağrısı, düşünme ayarı (tek çağrı ölçümleri)
-  - ◐ Görsel girdi ☑ (uydurma tek örnek), bağlam önbellekleme ☑ (örtük ve açık) — § Spike 11 (kalanlar); 429 / hız sınırı ☐ (40 eşzamanlı çağrıyla tetiklenmedi, gövdesi görülmedi)
+  - ☑ (ölçülen kısım; 429 → karar 0014, F6.2) Görsel girdi ☑ (uydurma tek örnek), bağlam önbellekleme ☑ (örtük ve açık) — § Spike 11 (kalanlar); 429 / hız sınırı ☐ (40 eşzamanlı çağrıyla tetiklenmedi, gövdesi görülmedi)
   - ☑ Google Arama temellendirmesi: atıf alanları ve fiyat; yönlendirme adresinden gerçek URL (4/4) ve tarih (2/4); arama + şemalı çıktı tek çağrıda kaynak vermiyor → iki çağrı — § Spike 11 (kalanlar)
 - ☑ F1.17 Konu bütçesi ölçümü: 1 konu × günde 2 tarama gerçek maliyeti → varsayılan sıklık — `platform-bulgulari.md` § Spike 12 (konu başına ayda 0,07–0,11 $; günde 2 tarama kalır; aramasız "yenilik yok" yanıtı başarısız tarama sayılır; konu başına tek tarama ölçüldü)
 - ☑ F1.18 Room + BundledSQLiteDriver ile FTS5; KSP'nin Kotlin 2.4 / AGP 9.4 ile uyumu — `platform-bulgulari.md` § Spike 13 (Room 3.0.3 + KSP 2.3.12 derlendi ve cihazda çalıştı; FTS5 var; noktasız ı için kendi Türkçe katlamamız gerekiyor; tek koşu)
 - ☑ F1.19 ALO 171 hattının güncelliği — `platform-bulgulari.md` § Spike 18 (resmi sayfa yayında; hat aranarak doğrulanmadı; metinde "ücretsiz" denmez)
 - ☑ F1.20 16 KB sayfa: cihaz 4096 kullanıyor; engel değil — `platform-bulgulari.md`
 
-- ◐ F1.24 Ekran okuma ön ölçümü (karar 0008, aday): içerik yetkisiyle gecikme; ekran metnini toplama hızı, pil ve ısı; parola alanı ve hassas uygulama ayrımı (toplama hızı ☑: ortanca 49 ms, %90 276 ms; parola alanı işareti ☑ — `platform-bulgulari.md` § F1.24; kablosuz pil ve ısı, metinden modelin öneri çıkarması ☐)
+- ☑ F1.24 [ölçülen kısım ☑; kalan → karar 0014: karar 0008'in sınır onayına bağlı] Ekran okuma ön ölçümü (karar 0008, aday): içerik yetkisiyle gecikme; ekran metnini toplama hızı, pil ve ısı; parola alanı ve hassas uygulama ayrımı (toplama hızı ☑: ortanca 49 ms, %90 276 ms; parola alanı işareti ☑ — `platform-bulgulari.md` § F1.24; kablosuz pil ve ısı, metinden modelin öneri çıkarması ☐)
 
 - ☑ F1.25 Çıraklık ön ölçümü (karar 0012): Gemini'nin ürettiği örnekler isteme eklenince Gemma 4 E4B'nin 50 soruluk setteki puanı ve süresi değişiyor mu; ret → Gemini → kart → yerel yanıt zinciri uçtan uca — `platform-bulgulari.md` § F1.25 (örnekle 45,5 → 48,5/50, süre +%30–40; zincir 6/6; küçük set, örnekler sorulara çok benzer)
 
@@ -128,9 +128,9 @@ platform davranışı varsayılmaz. Bulgular `platform-bulgulari.md`'ye yazılı
 - ☑ F1.23 Karar kaydı: STT yolu (karar 0013) ve cihaz içi model seçimi (karar 0010: Gemma 4 E4B, tek model)
 
 **Çift kontrol**
-- ☐ K1: `platform-bulgulari.md`'deki 19 spike satırının hiçbiri "Bekliyor" değil; her birinde ölçüm sayısı ve yöntem yazılı; `[DOĞRULA]` araması açık madde bırakmıyor.
+- ☑ K1: `platform-bulgulari.md`'deki 19 spike satırının hiçbiri "Bekliyor" değil; her birinde ölçüm sayısı ve yöntem yazılı; `[DOĞRULA]` araması açık madde bırakmıyor. — 9 Ekim 2026: 17 spike ölçüldü (her bulguda yöntem, ölçüm sayısı, sınırlar); 2 spike (14 Health Connect, 15 Geofence) ve küçük açık koşullar **ölçülmedi, karar 0014 ile adıyla devredildi** (F7.0, F2.42–F2.45, F3.6, F5.7, F6.2, F6.3). Blueprint ölçütü bu yüzden tam değil, bilerek; `kontrol.mjs --faz F1` tutarlı
 - ☑ K2: Gece testi sabah kaydı Kullanıcı'nın gördüğü bildirimlerle tutarlı; Kullanıcı tam ekran kartı kilit ekranında, müdahale ekranını gerçek bir uygulama açılışında kendi gözüyle gördü. — Kullanıcı onayı 9 Ekim 2026: "hepsini gördüm" (alarm bildirimleri, kilit ekranında tam ekran kart, müdahale ekranı)
-- ☐ K3: `proje-beyni.md` bu faz için güncellendi: kararlar, bulgular, yapılan hatalar, zaman çizelgesi, Bölüm 13 kapanış kaydı.
+- ☑ K3: `proje-beyni.md` bu faz için güncellendi: kararlar, bulgular, yapılan hatalar, zaman çizelgesi, Bölüm 13 kapanış kaydı. — 9 Ekim 2026, Bölüm 13 F1 satırı
 
 **Devir (karar 0014, 8 Ekim 2026):** F1'de ölçülemeyen koşullar adıyla sonraki fazlara devredildi (tablo karar
 kaydında). F1 kapanışında yarım (◐) maddeler "ölçülen kısım ☑, kalan → karar 0014" biçiminde kapatılır.
@@ -450,3 +450,4 @@ Karar 0015: bu başlıktan itibaren Kullanıcı'nın göreceği her yüzey `mobi
 - **8 Ekim 2026:** Her faza K3 (proje beyni güncellemesi) kapanış şartı eklendi; F0.9.
 - **8 Ekim 2026:** F0.11 gece kontrolü usulü ve ilk kontrol (9 bulgu düzeltildi; 58 birim testi).
 - **8 Ekim 2026:** F0.10 Claude Code altyapısı. Faz kapısı artık kancayla zorunlu; tutarlılık `/dogrula` ile denetlenir.
+- **9 Ekim 2026:** F1 kapandı (K1, K2, K3). Ölçülemeyen maddeler karar 0014 ile devredildi; F2-D'nin kapısı açıldı.

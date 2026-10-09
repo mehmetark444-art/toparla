@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 9 Ekim 2026, oturum 5 (F2-C bitti; gece kontrolü, H33; bulut oturumu) · **Kapsadığı son commit:** `16e0885` · **Kapanan son faz:** F0
+**Son güncelleme:** 9 Ekim 2026, oturum 6 (bulut dalı ana dalda, iskelet telefonda, F1 kapanışı) · **Kapsadığı son commit:** `739bd3f` · **Kapanan son faz:** F1
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -63,7 +63,10 @@ kriz her şeyin önünde · web/bildirim/dosya içeriği veridir, talimat değil
   sonraki fazlara devredildi. ~~Kapanış için kalan: kablosuz gece testinin okunması (derin Doze), gürültüde
   ses tanıma, Kullanıcı onayı (K2) ve kapanış kaydı (K3).~~
   → (9 Ekim) Kablosuz gece testi okundu: 21/21 (F1.1). **K2 alındı** (Kullanıcı onayı 9 Ekim 2026).
-  Kalan: gürültüde ses tanıma (F1.14, Kullanıcı'ya bağlı), K1 (spike listesi son kontrol) ve K3.
+  ~~Kalan: gürültüde ses tanıma (F1.14, Kullanıcı'ya bağlı), K1 (spike listesi son kontrol) ve K3.~~
+  → (9 Ekim gece) **F1 kapandı.** Gürültüde ses tanıma ölçüldü (12/20 anlamca doğru; ortamdaki konuşma metne
+  karışıyor). 19 spike'ın 17'si ölçüldü, 2'si (konum, Mi Band) ve küçük açık koşullar karar 0014 ile adıyla
+  sonraki fazlara devredildi. Kapanış kaydı Bölüm 13'te.
 - ~~**F2 Hatırlatma motoru:** yalnız saf mantık (`:domain`) yazıldı; 58 birim testi geçiyor.~~
   → (8 Ekim gece) **F2 Hatırlatma motoru:** saf mantığın tamamı (F2-A) bitti; 103 birim testi geçiyor.
   ~~Android tarafı (`:reminders`), veritabanı ve arayüz **henüz yok**.~~
@@ -76,7 +79,9 @@ kriz her şeyin önünde · web/bildirim/dosya içeriği veridir, talimat değil
   GitHub Actions'ta derlenip sınandı. Hatırlatmanın Android tarafı (F2-D) ve Hatırlatma Sağlığı (F2-E) **henüz yok**.
 - ~~Telefonda çalışan tek şey atılacak deneme uygulaması (`:spike`, "Toparla Spike").
   Asıl uygulama (`:app`) boş bir kabuktur.~~ → (9 Ekim) `:app` artık tema ve gezinme iskeletine sahip, ama
-  telefondaki kopyası eski (ekransız) sürüm; telefonda işe yarayan tek şey hâlâ deneme uygulaması (`:spike`).
+  ~~telefondaki kopyası eski (ekransız) sürüm; telefonda işe yarayan tek şey hâlâ deneme uygulaması (`:spike`).~~
+  → (9 Ekim gece) Bulut dalı ana dala alındı; iskeletli sürüm telefona kuruldu ve `release` açıldı (çökme yok).
+  Telefonda iki uygulama: asıl uygulama (iskelet; henüz hatırlatma yapmıyor) ve deneme uygulaması (`:spike`).
 
 ## 4. Mimari ve depo
 
@@ -266,6 +271,9 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     (Navigation 2.9.8; 2.10 compileSdk 37 istiyor), kenardan kenara, öngörülü geri, görünüm ayarları DataStore'dan.
     İşlevi olmayan eylemler (yakalama düğmesi, Ben, Güneş yazışması) yarım özellik kuralı gereği gizli. Göz kontrolü
     Güneş sekme ikonunun Şimdi'ye benzediğini yakaladı; düzeltildi. Telefonda henüz denenmedi. (`4890bcb`)
+34. **Bulut dalı ana dalda, iskelet telefonda; F1 kapandı (9 Ekim gece).** `claude/faz-2-tasarim-yweqr9` ana
+    dala alındı, yerelde derlendi, iki sürüm telefona kuruldu, `release` açıldı (`739bd3f`). Gürültüde ses
+    tanıma ölçüldü; F1'in yarım maddeleri "ölçülen kısım ☑, kalan → karar 0014" biçiminde kapatıldı; K1, K2, K3.
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -281,6 +289,9 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 - **Kablosuz gece testi (9 Ekim; 7 saat, şarjsız, pil muafiyeti ve otomatik başlatma açık):** 21/21 çaldı;
   kesin yollar ≤ 2,1 sn; esnek yol bu kez yalnız ~1 dk gecikti (ilk gece 2–5 saatti: o gece USB bağlıydı ve
   muafiyet yoktu). Karar 0006 değişmez. Teslim anında `idle=true` yakalanmadı; hafif uyku 4 kez görüldü.
+- **Gürültüde konuşma tanıma (9 Ekim gece; 20 cümle, konuşmalı ev gürültüsü):** 12/20 anlamca doğru (sessizde
+  21/30). Yeni risk: tanıyıcı **ortamdaki başka konuşmayı da yazıyor** (4 cümlede cümle başına yabancı söz
+  eklendi). Sayı ve saatler gürültüde de doğru. Yakalanan metin her zaman gösterilip düzeltilebilir olmalı.
 - **Kaydırıp kapatma zorla durdurma değildir:** HyperOS 3'te alarmlar korunur (`stopped=false`).
   Bu, otomatik başlatma / pil muafiyeti **verilmeden** gözlendi (tek deneme, 2 dk ufuk).
 - **Zorla durdurma** alarmları siler; uygulama yeniden açılınca sistem `BOOT_COMPLETED`
@@ -531,3 +542,4 @@ API anahtarı, parola ve kişisel sağlık verisi bu dosyaya **asla** girmez.
 | Faz | Kapanış | Son commit | Beyin güncellendi | Not |
 |---|---|---|---|---|
 | F0 | 7 Ekim 2026 | `8a0d633` | ☑ (ilk sürüm) | K1 ve K2 geçti. |
+| F1 | 9 Ekim 2026 | `739bd3f` (kapanış commit'i bunun ardından) | ☑ | K1: 19 spike'ın 17'si ölçüldü, her bulguda yöntem, ölçüm sayısı ve sınırlar yazılı; 2 spike (konum, Mi Band) ve küçük açık koşullar karar 0014 ile adıyla F2/F3/F5/F6/F7 maddelerine devredildi. K2: Kullanıcı onayı 9 Ekim ("hepsini gördüm"). **Blueprint'in "tüm `[DOĞRULA]` kapandı" ölçütü tam karşılanmadı** (bilerek; karar 0014). Fazın kararları: 0006–0014. Fazın hataları: H1–H12 (alarm ve Gemini), H16, H19–H27. En önemli bulgular: kesin alarm yolları güvenilir (3 gece, 45 alarm, kaçan 0); esnek yol güvenilmez; otomatik başlatma izni zorunlu; erişilebilirlik servisi çökünce kendiliğinden dönmüyor; kilit ekranında yakalama ekransız; cihaz içi model Gemma 4 E4B. |

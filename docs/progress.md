@@ -105,3 +105,10 @@ Gece kontrolü bu gün için henüz yapılmadı.
 
 **Gece kontrolü (9 Ekim):** 23 commit gözden geçirildi; 3 bulgu düzeltildi (Geri al kontrastı, durum çubuğu simge
 rengi, release'e giren önizleme kütüphanesi), bayat belge satırları eşitlendi. Kayıt `docs/gece-kontrolleri.md`, hata H33.
+
+### 9 Ekim 2026 — Oturum 6 (gece)
+**Biten:** bulut dalı (`claude/faz-2-tasarim-yweqr9`) ana dalda; yerelde derlendi, iki sürüm telefona kuruldu,
+`release` açıldı. Gürültüde ses tanıma ölçüldü. **F1 kapandı** (K1 + K2 + K3).
+
+**Sıradaki:** F2-D hatırlatmanın Android tarafı (F2.25–F2.34, F2.46); görünür yüzeyler için önce taslak ve
+Kullanıcı onayı (karar 0015).

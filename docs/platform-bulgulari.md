@@ -953,3 +953,29 @@ ayakta; ekran görüntüsünde koyu tema, "Gelen kutusu boş." boş durumu, 5 et
 taslaktaki gibi. R8, Hilt/Room/Compose/Navigation üretilmiş kodunu bozmadı (tek açılış).
 **Sınırlar:** tek açılış, tek sekme görüntüsü; açık tema, %200 yazı ve geri hareketi cihazda gözle denenmedi;
 Roborazzi karşılaştırması bu bilgisayarda koşulmadı (temel görüntüler CI'da, Linux'ta üretildi).
+
+### 9 Ekim 2026 (gece) — Spike 9: Türkçe konuşma tanıma, gürültülü ortam
+
+Yöntem: aynı ölçüm ekranı (`SttActivity`, cihaz içi tanıyıcı, `tr-TR`), setin ilk 20 cümlesi, tek tur, tek
+konuşmacı. Gürültü kaynağı: evde açık televizyon/konuşmalı yayın (sokak gürültüsü değil). Telefon elde.
+
+| Ölçüm | Sessiz ortam (8 Ekim, 30 cümle) | Gürültü (20 cümle) |
+|---|---|---|
+| Anlamca tam doğru cümle | 21/30 (%70) | 12/20 (%60) |
+| Mikrofon hazır (ortanca) | 242 ms | benzer |
+
+Gürültüde anlamı bozan 8 cümlenin dökümü:
+- **Araya giren yabancı konuşma (4 cümle):** televizyondaki ses cümlenin başına eklendi ("yapay zeka annemin
+  doğum günü…", "insan gözünün bugün 3.500 adım…", "ben benzinin pahalanmasından korkuyorum mehmet'in…") ya da
+  ilk sözcüğü değiştirdi ("kira" → "siri").
+- **Yanlış duyulan sözcük (4 cümle):** "dişçi" → "dizisi", "Bey'e" → "kaya", "Gökhan'ı" → "gürkan'a",
+  "Mehmet'e" → "mehmet'in". Özel adlar ve hâl ekleri sessiz ortamda da en zayıf noktaydı.
+- Sayı, saat ve tutarlar gürültüde de doğru ve rakamla geldi (9.00'da, 15.30'da, 437, 3.500, 11.30'da).
+
+**Sonuç:** karar 0013 geçerli (cihaz içi tanıyıcı kalır). Gürültüde yeni risk, tanıyıcının **ortamdaki başka
+konuşmayı da yazması**: yakalanan metin her zaman Kullanıcı'ya gösterilir ve tek dokunuşla düzeltilebilir /
+geri alınabilir olmalı (F3.6, F3.7); yakalama ekransızken (kilitli kutucuk) metin sonradan Gelen'de görülür.
+"Bitiş" algısı konuşmalı gürültüde gecikebilir: sessizlikte bitiş yanında elle "bitti" dokunuşu da gerekir.
+
+**Sınırlar:** tek tur, 20 cümle, konuşmalı ev gürültüsü; sokak/iş yeri uğultusu, kulaklık mikrofonu ve 2–3
+dakikalık kesintisiz konuşma ölçülmedi (karar 0014 ile F3.6'ya devredildi).
