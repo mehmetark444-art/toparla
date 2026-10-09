@@ -1,6 +1,6 @@
 # Uygulama ikonu ve gezinme iskeleti taslağı (F2.24) — 9 Ekim 2026
 
-**Durum:** Kullanıcı onayı bekliyor. Onay gelmeden F2.24 kodlanmaz (karar 0015).
+**Durum:** Onaylandı (9 Ekim 2026): ikon A, iskelet taslaktaki gibi.
 **Görüntüle:** https://claude.ai/artifact/NWvorVLq9amKHye9LXwWvu (panolar 4 ve 5; bu klasördeki dosyalar onların kopyası).
 **Görsel dil:** onaylı Seçenek B (karar 0016). Örnek metinler uydurmadır.
 
@@ -17,5 +17,9 @@ dolu hap). Sağ altta yakalama düğmesi (dokun: ses, uzun bas: yazı); Güneş 
 Kenardan kenara çizim ve Android'in geri hareketi görsel değil, teknik iştir; taslak gerektirmez.
 
 ## Onay
-- İkon: _(bekliyor)_
-- İskelet: _(bekliyor)_
+- İkon: **A · Toparlanmış ip** — Kullanıcı onayı 9 Ekim 2026.
+- İskelet: **taslaktaki gibi** — Kullanıcı onayı 9 Ekim 2026. Uygulamada işlevi henüz olmayan eylemler (yakalama
+  düğmesi, Ben/Ayarlar, Güneş yazı/ses çubuğu) ait oldukları fazlara dek gizli; ekran görüntüsü testleri taslağın
+  tamamını çizer.
+- Uygulama sonrası düzeltme: Güneş sekme ikonu ilk kodlamada Şimdi'ye benzedi; taslaktaki gibi ışınsız iç içe iki
+  halkaya çevrildi (`51748a6`).

@@ -91,3 +91,14 @@ ktlint ve detekt temiz. Compose derlemesi ve ekran görüntüleri için CI bu da
 **Kapanış (oturum 4):** F2.19–F2.23 ☑ (CI koşu 13 yeşil, `57ec7c1`). Göz kontrolünde 3 kusur bulunup düzeltildi.
 **Sıradaki:** F2.24 (uygulama ikonu, gezinme iskeleti) için önce görsel taslak ve Kullanıcı onayı; telefon gerektiren
 işler (F1 kalanları, F2-D cihaz testleri) bilgisayar/telefon bağlanınca. Gece kontrolü bu gün için yapılmadı.
+
+### 9 Ekim 2026 — Oturum 5 (bulut)
+**Hedef:** F2.24 uygulama ikonu ve gezinme iskeleti: taslak, Kullanıcı onayı, Compose; böylece F2-C biter.
+
+**Biten:** Kullanıcı ikon A'yı ve iskeleti onayladı. Adaptif + monokrom ikon, tek Activity, 5 sekmeli tür güvenli
+gezinme, kenardan kenara, öngörülü geri, görünüm ayarları DataStore'dan temaya. İşlevi olmayan eylemler telefonda
+gizli. 4 iskelet ekran görüntüsü gözle denetlendi (Güneş sekme ikonu Şimdi'ye benziyordu → düzeltildi), temel
+görüntüler depoda; CI yeniden karşılaştırma kipinde.
+
+**Sıradaki:** F2-C bitti. Kalan F2 işleri (F2-D teslim hattı, cihaz testleri) ve F1 kalanları telefon/bilgisayar ister.
+Gece kontrolü bu gün için henüz yapılmadı.

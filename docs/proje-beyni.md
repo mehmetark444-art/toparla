@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 9 Ekim 2026, oturum 4 (F2.47 Seçenek B onayı, karar 0016; F2.19–F2.23 bitti, bulut oturumu) · **Kapsadığı son commit:** `57ec7c1` · **Kapanan son faz:** F0
+**Son güncelleme:** 9 Ekim 2026, oturum 5 (F2.24 ikon ve gezinme iskeleti; F2-C bitti, bulut oturumu) · **Kapsadığı son commit:** `4890bcb` · **Kapanan son faz:** F0
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -256,6 +256,11 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     ile 12 ekran görüntüsü, temel görüntüler depoda ve CI'da karşılaştırılıyor. CI `claude/**` dallarında da koşuyor;
     bulut oturumu görüntüleri günlükten okuyor. Göz kontrolü 3 gerçek kusur buldu (koyu temada siyah metin, %200'de
     bölünen kelimeler, taşan halka metni); hepsi düzeltildi. 13 CI koşusu; yanlışlar H30–H31. (`57ec7c1`)
+33. **F2.24 ve F2-C bitti (9 Ekim, bulut oturumu).** Uygulama ikonu ve gezinme iskeleti önce tuvalde çizildi;
+    Kullanıcı ikon A'yı (toparlanmış ip) ve iskeleti onayladı. Tek Activity, 5 sekmeli tür güvenli gezinme
+    (Navigation 2.9.8; 2.10 compileSdk 37 istiyor), kenardan kenara, öngörülü geri, görünüm ayarları DataStore'dan.
+    İşlevi olmayan eylemler (yakalama düğmesi, Ben, Güneş yazışması) yarım özellik kuralı gereği gizli. Göz kontrolü
+    Güneş sekme ikonunun Şimdi'ye benzediğini yakaladı; düzeltildi. Telefonda henüz denenmedi. (`4890bcb`)
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -399,6 +404,7 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 | H29 | F2-B'nin ilk yazımında kullanılmayan DAO sorguları, bir özellik anahtarı ve bir yardımcı fonksiyon eklendi; uygulama verisi Android'in bulut yedeği ve cihaz aktarımına karşı yalnız eski `allowBackup` ile korunuyordu; günlük dosyası çağıran iş parçacığında yazılıyordu; gizli değer anahtarı eşzamanlı ilk kullanımda iki kez üretilebilirdi | H18'in tekrarı ("ileride lazım olur"); Lint uyarıları okunmadan geçildi | Kod yazıldıktan sonra Lint raporunun uyarılarını tek tek oku; kullanılmayan her genel üyeyi sil. Dördü de düzeltildi (`data_extraction_rules.xml`, arka plan günlük sırası, `@Synchronized`). |
 | H30 | F2.19–F2.23'ün ilk CI koşusu kırmızı: `:ui:checkDebugAarMetadata`, Compose 1.12 (BOM 2026.09.00) compileSdk 37 istiyor | En yeni BOM sürümü sayfadan doğrulandı ama **gereksinimi** (compileSdk) okunmadı; bulut oturumunda Android derlemesi yapılamadığı için ilk sınama CI oldu | Yeni androidx sürümü seçerken sürümün yanında en düşük `compileSdk` gereksinimini de oku. Proje SDK 36'da kaldıkça Compose 1.11.x (BOM 2026.06.01). SDK 37'ye geçiş ayrı karar ister (bilgisayara SDK 37 kurulumu gerekir). |
 | H31 | Ekran görüntüsü testleri önce Robolectric'in iç hatasıyla düştü, sonra 14+ dk takıldı, sonra derleme betiği bir yazım hatasıyla kırıldı (CI koşu 5–7) | (1) Robolectric'in JDK 17+ `--add-opens` gereksinimi okunmadan kuruldu; (2) galeride bitmeyen animasyon (yükleniyor çubuğu) vardı, Compose hiç durulmadı ve çekim sonsuza dek bekledi; (3) `build.gradle.kts`'te `java.time` adı Android'in `java {}` uzantısıyla çakıştı. Üçü de bulut oturumunda yerel derleme olmadığı için ancak CI'da görüldü | Robolectric kurulumunda resmi `--add-opens` listesi baştan eklenir. Ekran görüntüsü testine bitmeyen animasyon girmez; test görevine süre sınırı konur (10 dk). Gradle betiğinde JDK sınıfları tam adla değil `import` ile kullanılır. |
+| H32 | Güneş sekme ikonu düzeltmesi ktlint hatasıyla commit'lendi; CI koşu 17 kırmızı | ktlint ile commit aynı komutta `;` ile zincirlenmişti; ktlint düşse de commit atıldı | Denetim ile commit'i `&&` ile bağla ya da çıkış kodunu okumadan commit atma. |
 | H15 | Yol haritası birkaç kez `sed`/`awk` ile değiştirildi | Alışkanlık; o sırada kanca yoktu | Kabuk komutuyla yapılan değişiklik düzenleme kancalarından (faz kapısı, gizli değer) geçmez. Yol haritası ve proje beyni **yalnız düzenleme aracıyla** değiştirilir. |
 
 ## 9. Tuzaklar ve "bunu bilmeden başlama" notları
