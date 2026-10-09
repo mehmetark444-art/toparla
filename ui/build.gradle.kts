@@ -1,3 +1,5 @@
+import java.time.Duration
+
 // Bir test görevinin en uzun süresi (dakika).
 val testTimeoutMinutes = 10L
 
@@ -43,7 +45,7 @@ android {
                     "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
                 )
                 // Takılan test (ör. hiç durulmayan animasyon) koşuyu 30 dk bekletmesin.
-                it.timeout.set(java.time.Duration.ofMinutes(testTimeoutMinutes))
+                it.timeout.set(Duration.ofMinutes(testTimeoutMinutes))
                 // CI günlüğünde hata yığını tam görünsün (rapor dosyası her ortamdan indirilemiyor).
                 it.testLogging {
                     exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
