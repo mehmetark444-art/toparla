@@ -37,12 +37,19 @@ private const val PREVIEW_RING_FRACTION = 0.6f
 private const val PREVIEW_UNDO_LEFT = 7
 private const val PREVIEW_UNDO_TOTAL = 10
 
-/** Eylem bileşenleri: düğmeler, chip'ler, halka, geri al şeridi. Önizleme ve ekran görüntüsü testi çizer. */
+/**
+ * Eylem bileşenleri: düğmeler, chip'ler, halka, geri al şeridi. Önizleme ve ekran görüntüsü testi çizer.
+ *
+ * @param showEndless Bitmeyen animasyonlu öğeler (yükleniyor çubuğu). Ekran görüntüsü testinde kapalı:
+ *   Compose hiç durulmaz ve çekim sonsuza dek bekler.
+ */
 @Composable
-fun ActionGallery() {
+fun ActionGallery(showEndless: Boolean = true) {
     GalleryColumn {
         PrimaryButton(text = stringResource(R.string.preview_start), onClick = {})
-        PrimaryButton(text = stringResource(R.string.preview_start), onClick = {}, loading = true)
+        if (showEndless) {
+            PrimaryButton(text = stringResource(R.string.preview_start), onClick = {}, loading = true)
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             TextAction(text = stringResource(R.string.preview_snooze), onClick = {}, modifier = Modifier.weight(1f))
             TextAction(text = stringResource(R.string.preview_change), onClick = {}, modifier = Modifier.weight(1f))

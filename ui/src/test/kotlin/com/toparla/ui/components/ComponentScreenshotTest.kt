@@ -25,17 +25,17 @@ import org.robolectric.annotation.GraphicsMode
 @Config(sdk = [36], qualifiers = "w412dp-h2000dp-xhdpi")
 class ComponentScreenshotTest {
 
-    @Test fun eylemler_koyu_normal() = capture("eylemler", ThemeMode.DARK, NORMAL) { ActionGallery() }
+    @Test fun eylemler_koyu_normal() = capture("eylemler", ThemeMode.DARK, NORMAL) { ActionGallery(showEndless = false) }
 
-    @Test fun eylemler_acik_normal() = capture("eylemler", ThemeMode.LIGHT, NORMAL) { ActionGallery() }
+    @Test fun eylemler_acik_normal() = capture("eylemler", ThemeMode.LIGHT, NORMAL) { ActionGallery(showEndless = false) }
 
-    @Test fun eylemler_amoled_normal() = capture("eylemler", ThemeMode.AMOLED, NORMAL) { ActionGallery() }
+    @Test fun eylemler_amoled_normal() = capture("eylemler", ThemeMode.AMOLED, NORMAL) { ActionGallery(showEndless = false) }
 
-    @Test fun eylemler_koyu_iki_kat() = capture("eylemler", ThemeMode.DARK, DOUBLE) { ActionGallery() }
+    @Test fun eylemler_koyu_iki_kat() = capture("eylemler", ThemeMode.DARK, DOUBLE) { ActionGallery(showEndless = false) }
 
-    @Test fun eylemler_acik_iki_kat() = capture("eylemler", ThemeMode.LIGHT, DOUBLE) { ActionGallery() }
+    @Test fun eylemler_acik_iki_kat() = capture("eylemler", ThemeMode.LIGHT, DOUBLE) { ActionGallery(showEndless = false) }
 
-    @Test fun eylemler_amoled_iki_kat() = capture("eylemler", ThemeMode.AMOLED, DOUBLE) { ActionGallery() }
+    @Test fun eylemler_amoled_iki_kat() = capture("eylemler", ThemeMode.AMOLED, DOUBLE) { ActionGallery(showEndless = false) }
 
     @Test fun satirlar_koyu_normal() = capture("satirlar", ThemeMode.DARK, NORMAL) { RowGallery() }
 
