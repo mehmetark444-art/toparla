@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,8 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.toparla.ui.R
+import com.toparla.ui.components.ActionRow
 import com.toparla.ui.components.CalmDialogContent
 import com.toparla.ui.components.Chip
+import com.toparla.ui.components.ChipRow
 import com.toparla.ui.components.EmptyShape
 import com.toparla.ui.components.EmptyState
 import com.toparla.ui.components.PermissionRow
@@ -50,18 +51,18 @@ fun ActionGallery(showEndless: Boolean = true) {
         if (showEndless) {
             PrimaryButton(text = stringResource(R.string.preview_start), onClick = {}, loading = true)
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+        ActionRow {
             TextAction(text = stringResource(R.string.preview_snooze), onClick = {}, modifier = Modifier.weight(1f))
             TextAction(text = stringResource(R.string.preview_change), onClick = {}, modifier = Modifier.weight(1f))
             TextAction(text = stringResource(R.string.preview_finish), onClick = {}, modifier = Modifier.weight(1f))
         }
         SecondaryButton(text = stringResource(R.string.preview_later_10), onClick = {}, modifier = Modifier.fillMaxWidth())
-        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+        ChipRow {
             Chip(label = stringResource(R.string.preview_chip_15), selected = true, onClick = {})
             Chip(label = stringResource(R.string.preview_chip_today_later), selected = false, onClick = {})
             Chip(label = stringResource(R.string.preview_chip_tomorrow), selected = false, onClick = {})
+            Chip(label = stringResource(R.string.preview_chip_someday), selected = false, onClick = {})
         }
-        Chip(label = stringResource(R.string.preview_chip_someday), selected = false, onClick = {})
         ProgressRing(remainingFraction = PREVIEW_RING_FRACTION, centerText = stringResource(R.string.preview_ring_text))
         UndoBar(
             message = stringResource(R.string.preview_undo_message),

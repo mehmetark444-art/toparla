@@ -44,6 +44,7 @@ object Sizes {
     val avatarLarge = 72.dp
     val statusDot = 10.dp
     val ringStroke = 4.dp
+    val progressRing = 96.dp
     val undoRing = 28.dp
     val undoRingStroke = 2.dp
 }

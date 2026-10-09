@@ -1,5 +1,6 @@
 package com.toparla.ui.theme
 
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -67,6 +68,9 @@ fun ToparlaTheme(
         LocalToparlaHaptics provides rememberViewHaptics(hapticsEnabled),
         LocalDensity provides density,
     ) {
-        MaterialTheme(colorScheme = colorScheme, typography = ToparlaTypeScale.toTypography(), content = content)
+        MaterialTheme(colorScheme = colorScheme, typography = ToparlaTypeScale.toTypography()) {
+            // Yüzey (Surface) dışındaki metin de temanın rengini alsın; yoksa koyu temada siyah kalır (F2.23 görüntüleri).
+            CompositionLocalProvider(LocalContentColor provides colorScheme.onBackground, content = content)
+        }
     }
 }

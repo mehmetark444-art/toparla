@@ -3,9 +3,11 @@ package com.toparla.ui.components
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +28,8 @@ private const val START_AT_TOP = -90f
 
 /**
  * Azalan dolgu halkası, ortada kalan süre (blueprint C7). Durumsuzdur: kalan oran ve metin çağırandan gelir
- * (zaman UI'da okunmaz). Halka titremez, yanıp sönmez (C5).
+ * (zaman UI'da okunmaz). Halka titremez, yanıp sönmez (C5). Ortadaki metin halkaya sığmazsa (büyük yazı ölçeği)
+ * küçülür; taşmaz.
  *
  * @param announcement TalkBack'in canlı bölgede okuyacağı metin; çağıran dakikada bir değiştirir.
  *   `null`: halka TalkBack'ten gizlenir (ör. `UndoBar`, kendi metnini zaten okutur).
@@ -36,7 +39,7 @@ fun ProgressRing(
     remainingFraction: Float,
     centerText: String,
     modifier: Modifier = Modifier,
-    size: Dp = Sizes.avatarLarge,
+    size: Dp = Sizes.progressRing,
     strokeWidth: Dp = Sizes.ringStroke,
     announcement: String? = centerText,
     textStyle: TextStyle = ToparlaTheme.type.title,
@@ -61,6 +64,12 @@ fun ProgressRing(
             drawArc(color = track, startAngle = 0f, sweepAngle = FULL_SWEEP, useCenter = false, topLeft = topLeft, size = arcSize, style = stroke)
             drawArc(color = fill, startAngle = START_AT_TOP, sweepAngle = FULL_SWEEP * fraction, useCenter = false, topLeft = topLeft, size = arcSize, style = stroke)
         }
-        Text(text = centerText, style = textStyle, color = MaterialTheme.colorScheme.onSurface)
+        BasicText(
+            text = centerText,
+            modifier = Modifier.padding(strokeWidth * 2),
+            style = textStyle.copy(color = MaterialTheme.colorScheme.onSurface),
+            maxLines = 1,
+            autoSize = TextAutoSize.StepBased(maxFontSize = textStyle.fontSize),
+        )
     }
 }
