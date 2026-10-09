@@ -181,6 +181,9 @@ class ReminderEngineTest {
         engine.onAlarmFired(ReminderPlanner.ladderKey(key, 1), at("2026-10-08T10:02"))
         engine.onAlarmFired(ReminderPlanner.ladderKey(key, 2), at("2026-10-08T10:05"))
 
+        // Aynı basamak iki kez ateşlenirse (çift yayın) ikinci kez gösterilmez.
+        engine.onAlarmFired(ReminderPlanner.ladderKey(key, 2), at("2026-10-08T10:05:03"))
+
         assertEquals(listOf(LadderAction.NOTIFY, LadderAction.VIBRATE_REPEAT, LadderAction.FULL_SCREEN), notifier.shown.map { it.action })
         assertEquals(3, repo.occurrences.getValue(key).ladderStepsDone)
         assertTrue(ReminderPlanner.ladderKey(key, 3) in scheduler.armed)
@@ -255,6 +258,18 @@ class ReminderEngineTest {
     }
 
     @Test
+    fun `gece yarisindan sonra yarin denirse ayni gunun sabahina tasinir`() = runBlocking {
+        repo.add(def("r", ReminderClass.IMPORTANT, "2026-10-09T01:00"))
+        engine.replan(at("2026-10-09T00:30"))
+        val key = mainKey("r", "2026-10-09T01:00")
+        engine.onAlarmFired(key, at("2026-10-09T01:00"))
+
+        engine.onAction(key, ReminderAction.TOMORROW, at("2026-10-09T01:05"))
+
+        assertEquals(at("2026-10-09T07:30"), scheduler.armed.getValue(SnoozePolicy.snoozedKey(key, 1)).fireAt)
+    }
+
+    @Test
     fun `bugun olmayacak israrli olmayan isi atlar israrli isi yarin sabaha tasir`() = runBlocking {
         repo.add(def("n", ReminderClass.NORMAL, "2026-10-08T15:00"))
         repo.add(def("p", ReminderClass.NORMAL, "2026-10-08T15:00"), persistent = true)
@@ -277,11 +292,13 @@ class ReminderEngineTest {
     fun `israrli is yaptim denene dek yarim saatte bir sorulur ve tek birlesik bildirimde listelenir`() = runBlocking {
         repo.add(def("a", ReminderClass.NORMAL, "2026-10-08T10:00"), title = "Fatura", persistent = true)
         repo.add(def("b", ReminderClass.NORMAL, "2026-10-08T10:10"), title = "E-posta", persistent = true)
+        repo.add(def("c", ReminderClass.NORMAL, "2026-10-08T10:05"), title = "Israrsız iş")
         engine.replan(at("2026-10-08T09:00"))
         val a = mainKey("a", "2026-10-08T10:00")
         val b = mainKey("b", "2026-10-08T10:10")
 
         engine.onAlarmFired(a, at("2026-10-08T10:00"))
+        engine.onAlarmFired(mainKey("c", "2026-10-08T10:05"), at("2026-10-08T10:05"))
         engine.onAlarmFired(b, at("2026-10-08T10:10"))
         assertEquals(at("2026-10-08T10:30"), scheduler.armed.getValue(ReminderPlanner.followUpKey(a, 0)).fireAt)
 
@@ -291,11 +308,14 @@ class ReminderEngineTest {
         assertEquals(1, repo.occurrences.getValue(a).asksDone)
         assertEquals(at("2026-10-08T11:00"), scheduler.armed.getValue(ReminderPlanner.followUpKey(a, 1)).fireAt)
         // İlk teslimler tek tek gösterildi; takip sorusu ayrı bir tekil bildirim açmadı.
-        assertEquals(2, notifier.shown.size)
+        assertEquals(3, notifier.shown.size)
+        // Israrlı iş, yanıtsız kalsa da "süresi doldu" olmaz.
+        engine.replan(at("2026-10-08T20:00"))
+        assertEquals(OccurrenceState.DELIVERED, repo.occurrences.getValue(b).state)
 
         engine.onAction(a, ReminderAction.DONE, at("2026-10-08T10:31"))
         assertEquals(listOf("E-posta"), notifier.persistent.map { it.reminder.title })
-        assertFalse(ReminderPlanner.followUpKey(a, 1) in scheduler.armed)
+        assertTrue(repo.alarms.keys.none { it.startsWith("$a#f") })
     }
 
     @Test
@@ -309,6 +329,8 @@ class ReminderEngineTest {
         val notice = notifier.shown.single()
         assertEquals(Duration.ofMinutes(20), notice.lateBy)
         assertTrue(repo.logs.any { it.second == ReminderEngine.EVENT_MISSED_DETECTED })
+        // Geç teslimin merdiveni teslim anından işler: sıradaki basamak aynı planlamada kurulur.
+        assertEquals(at("2026-10-08T10:22"), scheduler.armed.getValue(ReminderPlanner.ladderKey(mainKey("r", "2026-10-08T10:00"), 1)).fireAt)
         assertEquals(OccurrenceState.DELIVERED, repo.occurrences.getValue(mainKey("r", "2026-10-08T10:00")).state)
         // Aynı açılış ikinci kez işlenirse yeniden gösterilmez.
         engine.replan(at("2026-10-08T10:21"), rearm = true)
@@ -343,6 +365,21 @@ class ReminderEngineTest {
         engine.replan(at("2026-10-08T11:31"))
 
         assertEquals(OccurrenceState.EXPIRED, repo.occurrences.getValue(key).state)
+    }
+
+    @Test
+    fun `israrli kritik is merdiveni bitse de suresi doldu olmaz`() = runBlocking {
+        repo.add(def("r", ReminderClass.CRITICAL, "2026-10-08T10:00"), persistent = true)
+        engine.replan(at("2026-10-08T09:00"))
+        val key = mainKey("r", "2026-10-08T10:00")
+        engine.onAlarmFired(key, at("2026-10-08T10:00"))
+        listOf(1 to "10:02", 2 to "10:05", 3 to "10:10").forEach { (step, time) ->
+            engine.onAlarmFired(ReminderPlanner.ladderKey(key, step), at("2026-10-08T$time"))
+        }
+
+        engine.replan(at("2026-10-08T14:00"))
+
+        assertEquals(OccurrenceState.DELIVERED, repo.occurrences.getValue(key).state)
     }
 
     @Test

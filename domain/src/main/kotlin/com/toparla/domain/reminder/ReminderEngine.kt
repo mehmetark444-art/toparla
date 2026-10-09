@@ -112,9 +112,8 @@ class ReminderEngine(
 
     /** @return bir şey gösterildiyse ya da durum değiştiyse true */
     private suspend fun deliver(key: String, now: Instant, plannedFire: Instant?): Boolean {
-        val first = repo.recordFired(key, now)
-        repo.removeScheduled(key)
-        if (!first) return false
+        // Alarm kaydını burada silmeye gerek yok: ateşlenmiş kaydı bir sonraki planlama turu temizler.
+        if (!repo.recordFired(key, now)) return false
         val parsed = AlarmKey.parse(key)
         val info = repo.info(parsed.reminderId) ?: return false
         return when (parsed.kind) {
@@ -181,12 +180,14 @@ class ReminderEngine(
     /** Merdiveni bitmiş, yanıtsız kalmış ısrarsız iş bir süre sonra "süresi doldu" olur (gün kapanışında Taşınan). */
     private suspend fun expireStale(now: Instant, config: FollowUpConfig) {
         for (occurrence in repo.openOccurrences()) {
-            val info = repo.info(occurrence.reminderId) ?: continue
-            if (info.persistent) continue
-            val ladderDone = occurrence.ladderStepsDone >= Ladder.stepsFor(info.klass, config.trustedContactEnabled).size
-            val lastAsked = occurrence.lastAskedAt ?: continue
-            if (ladderDone && !lastAsked.plus(EXPIRY).isAfter(now)) {
-                transition(occurrence, OccurrenceEvent.LADDER_EXHAUSTED, now, resolves = false)
+            // Israrlı iş süresi dolmaz: "Yaptım" ya da "Bugün olmayacak" denene kadar açıktır (karar 0003).
+            val info = repo.info(occurrence.reminderId)?.takeUnless { it.persistent }
+            val lastAsked = occurrence.lastAskedAt
+            if (info != null && lastAsked != null) {
+                val ladderDone = occurrence.ladderStepsDone >= Ladder.stepsFor(info.klass, config.trustedContactEnabled).size
+                if (ladderDone && !lastAsked.plus(EXPIRY).isAfter(now)) {
+                    transition(occurrence, OccurrenceEvent.LADDER_EXHAUSTED, now, resolves = false)
+                }
             }
         }
     }
