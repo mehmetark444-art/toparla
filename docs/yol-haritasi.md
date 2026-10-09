@@ -181,16 +181,17 @@ Karar 0015: bu başlıktan itibaren Kullanıcı'nın göreceği her yüzey `mobi
 - ☑ F2.24 Uygulama ikonu (adaptif + monokrom), tek Activity, gezinme iskeleti, edge-to-edge, predictive back — Kullanıcı onayı 9 Ekim (ikon A, iskelet taslaktaki gibi; `docs/tasarim/2026-10-09-ikon-iskelet/README.md`); 5 sekmeli tür güvenli gezinme, görünüm ayarları DataStore'dan temaya; işlevi olmayan eylemler (yakalama, Ben, Güneş yazışması) fazlarına dek gizli; 4 iskelet ekran görüntüsü gözle denetlendi ve temel görüntü oldu (CI koşu 18 yeşil) — `8c5ca0f`, `51748a6`, `4890bcb`. Telefonda deneme F2-D cihaz testleriyle
 
 ### F2-D Hatırlatma motoru Android tarafı (`:reminders`, M6)
-- ☐ F2.25 `ReminderScheduler` uygulaması: üç alarm yolu, idempotent `PendingIntent`
-- ☐ F2.26 Bildirim kanalları (G5: 8 kanal) ve `Notifier`
-- ☐ F2.27 `AlarmReceiver` → `ReminderService` (FGS) teslim hattı; çift teslim engeli; ateşlenen alarmın `ScheduledAlarm` kaydı teslimde silinir (planlayıcı vakti geçmiş kayda dokunmaz, kalan kayıt denetçinin kanıtıdır — proje beyni H28)
-- ☐ F2.28 Bildirim eylemleri uygulama açılmadan: Yaptım · 10 dk sonra · Yarın · Bugün olmayacak
-- ☐ F2.29 Merdiven yürütme; `ReminderFullScreenActivity` (kilit ekranı üstü)
-- ☐ F2.30 Israrlı takip yürütme: 30 dk tekrar, birleşik bildirim, değişen metin, susturan durumlar
-- ☐ F2.31 Yeniden planlama alıcıları: boot, locked boot, paket güncelleme, saat, saat dilimi, izin/DND
-- ☐ F2.32 Direct Boot kopyası (cihaz korumalı depolama)
-- ☐ F2.33 Güvenlik ağları: `DailyMaintenanceWorker`, `CriticalWatchdogWorker`, teslim denetçisi, `HeartbeatWorker`, 12 sa bakım alarmı
-- ☐ F2.34 DND aşımı (izinliyse), alarm ses akışı
+**Çekirdek (9 Ekim):** teslim hattının mantığı `:domain/ReminderEngine`'dedir (sahte depo, alarm ve bildirimle 19 test; kasıtlı bozma 17/17 — `6ca9275`, `fbe6942`); `:reminders` yalnız Android'e bağlar. Cihaz denemeleri: `platform-bulgulari.md` § F2-D: hatırlatma motoru telefonda.
+- ☑ F2.25 `ReminderScheduler` uygulaması: üç alarm yolu, idempotent `PendingIntent` — `AlarmManagerScheduler` (`3802e02`); cihazda `setAlarmClock` ve `setExactAndAllowWhileIdle` yolları planlanan saniyede ateşlendi, iptal sistemden de siliyor; esnek yol cihazda kullanılmadı
+- ☑ F2.26 Bildirim kanalları (G5: 8 kanal) ve `Notifier` — `AndroidReminderNotifier` (`3802e02`); cihazda kritik (alarm sesi) ve normal kanal görüldü
+- ☑ F2.27 (`3802e02`; cihazda teslim planlanan saniyede, `FIRED` → `POSTED` kayıtları; çift teslim ve kayıt temizliği birim testli) `AlarmReceiver` → `ReminderService` (FGS) teslim hattı; çift teslim engeli; ateşlenen alarmın `ScheduledAlarm` kaydı teslimde silinir (planlayıcı vakti geçmiş kayda dokunmaz, kalan kayıt denetçinin kanıtıdır — proje beyni H28)
+- ◐ F2.28 Bildirim eylemleri uygulama açılmadan: Yaptım · 10 dk sonra · Yarın · Bugün olmayacak — `NotificationActionReceiver`; cihazda Yaptım, 10 dk sonra ve Bugün olmayacak ☑ (Kullanıcı bastı, kayıttan doğrulandı); **Yarın** cihazda denenmedi ☐ (birim testli). Android en çok 3 eylem gösterdiği için sınıfa göre üçü seçiliyor
+- ☑ F2.29 Merdiven yürütme; `ReminderFullScreenActivity` (kilit ekranı üstü) — cihazda +2 / +5 dk basamakları saniyesinde; tam ekran kart ekran kapalı ve kilitliyken açıldı (Kullanıcı gördü, `1df5756`). Bulgu: ekran açıkken şerit gelir; tam ekran niyeti yalnız yeni eklenen bildirimde başlar
+- ◐ F2.30 Israrlı takip yürütme: 30 dk tekrar, birleşik bildirim, değişen metin, susturan durumlar — birleşik bildirim, değişen metin, Yaptım / Bugün olmayacak cihazda ☑ (soru simüle edildi); uyku penceresi birim testli ☑; odak, Bunaldım/kriz sonrası ve "Bugün sessiz" kaynakları henüz yok ☐ (F3.21–F3.23, F4.2'de bağlanır); 30 dk'lık gerçek aralık cihazda beklenmedi ☐
+- ◐ F2.31 Yeniden planlama alıcıları: boot, locked boot, paket güncelleme, saat, saat dilimi, izin/DND — `RescheduleReceiver` yazıldı; paket güncellemede çalıştığı görüldü (kurulum sonrası yetim teslim kapandı) ☑; yeniden başlatma, kilitli yeniden başlatma, saat ve saat dilimi cihazda denenmedi ☐; izin/DND değişimi dinlenmiyor ☐
+- ◐ F2.32 Direct Boot kopyası (cihaz korumalı depolama) — `BootMirror` (anahtar, an, alarm yolu) ve kilitliyken içeriksiz bildirim yazıldı; **başlık kopyada yok** (blueprint ister) ☐; cihazda kilitli yeniden başlatma denenmedi ☐
+- ◐ F2.33 Güvenlik ağları: `DailyMaintenanceWorker`, `CriticalWatchdogWorker`, teslim denetçisi, `HeartbeatWorker`, 12 sa bakım alarmı — bekçi, günlük bakım, denetçi (motor içinde, birim testli) ve bakım alarmı (cihazda kurulu görüldü) ☑; `HeartbeatWorker` F2.35 ile ☐; işlerin cihazda koştuğu görülmedi ☐
+- ◐ F2.34 DND aşımı (izinliyse), alarm ses akışı — kritik kanal alarm ses akışı ☑ (Kullanıcı duydu) ve `setBypassDnd`; asıl uygulamada Rahatsız Etme açıkken deneme ☐
 - ☐ F2.46 Zorunlu senaryoların Android tarafı (F2.9'un devamı): DND açık · bildirim izni kapalı · tam ekran izni kapalı · ağ yok · depolama dolu · çift doz denemesi (sonuncusu F2.39 ile)
 
 ### F2-E Hatırlatma Sağlığı (D23)

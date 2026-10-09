@@ -178,9 +178,9 @@ class ReminderEngine(
         return true
     }
 
-    /** Tanımı silinmiş hatırlatmanın yanıt bekleyen teslimi kapanır ve bildirimi kaldırılır. */
+    /** Tanımı silinmiş hatırlatmanın yanıt bekleyen ve ertelenmiş teslimleri kapanır; bildirimi kaldırılır. */
     private suspend fun closeOrphans(now: Instant) {
-        val orphans = repo.openOccurrences().filter { repo.info(it.reminderId) == null }
+        val orphans = (repo.openOccurrences() + repo.pendingSnoozes()).filter { repo.info(it.reminderId) == null }
         orphans.forEach { transition(it, OccurrenceEvent.DEFINITION_CHANGED, now, resolves = true) }
         if (orphans.isNotEmpty()) refreshPersistent(now)
     }

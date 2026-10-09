@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 9 Ekim 2026, oturum 6 (bulut dalı ana dalda, iskelet telefonda, F1 kapanışı) · **Kapsadığı son commit:** `739bd3f` · **Kapanan son faz:** F1
+**Son güncelleme:** 9 Ekim 2026, oturum 6 (F1 kapanışı; F2-D hatırlatma motoru telefonda) · **Kapsadığı son commit:** `1df5756` · **Kapanan son faz:** F1
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -274,6 +274,12 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 34. **Bulut dalı ana dalda, iskelet telefonda; F1 kapandı (9 Ekim gece).** `claude/faz-2-tasarim-yweqr9` ana
     dala alındı, yerelde derlendi, iki sürüm telefona kuruldu, `release` açıldı (`739bd3f`). Gürültüde ses
     tanıma ölçüldü; F1'in yarım maddeleri "ölçülen kısım ☑, kalan → karar 0014" biçiminde kapatıldı; K1, K2, K3.
+35. **F2-D: hatırlatma motoru telefonda (9 Ekim gece).** Teslim hattının mantığı `:domain/ReminderEngine`'de
+    (planlama, teslim, merdiven, ısrarlı takip, eylemler, geç teslim, bekçi; sahte depoyla 19 test). `:reminders`:
+    `AlarmManagerScheduler` + `BootMirror`, `AndroidReminderNotifier` (8 kanal), alıcılar, `ReminderService`,
+    güvenlik ağı işleri. `:app`: `ReminderFullScreenActivity`, açılışta yeniden planlama, debug tetikleyici.
+    Cihazda uçtan uca: kritik teslim saniyesinde, merdiven, Yaptım, erteleme, ısrarlı takip, tam ekran kart.
+    Üç kusur denemede bulundu ve düzeltildi (H34, H35; silinen hatırlatmanın bildirimi). (`3802e02` … `1df5756`)
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -289,6 +295,11 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 - **Kablosuz gece testi (9 Ekim; 7 saat, şarjsız, pil muafiyeti ve otomatik başlatma açık):** 21/21 çaldı;
   kesin yollar ≤ 2,1 sn; esnek yol bu kez yalnız ~1 dk gecikti (ilk gece 2–5 saatti: o gece USB bağlıydı ve
   muafiyet yoktu). Karar 0006 değişmez. Teslim anında `idle=true` yakalanmadı; hafif uyku 4 kez görüldü.
+- **Hatırlatma motoru cihazda (9 Ekim gece, debug sürümü, tek denemeler):** kritik teslim planlanan saniyede;
+  merdiven +2 / +5 dk saniyesinde; bildirim düğmeleri uygulama açılmadan çalışıyor. **Tam ekran kart yalnız
+  ekran kapalıyken açılır** (ekran açıksa, kilit ekranında bile, şerit gelir) ve **yalnız yeni eklenen
+  bildirimde** başlar (güncellemede başlamaz). Yeniden başlatma, Rahatsız Etme ve arka plan işleri asıl
+  uygulamada henüz denenmedi.
 - **Gürültüde konuşma tanıma (9 Ekim gece; 20 cümle, konuşmalı ev gürültüsü):** 12/20 anlamca doğru (sessizde
   21/30). Yeni risk: tanıyıcı **ortamdaki başka konuşmayı da yazıyor** (4 cümlede cümle başına yabancı söz
   eklendi). Sayı ve saatler gürültüde de doğru. Yakalanan metin her zaman gösterilip düzeltilebilir olmalı.
@@ -422,6 +433,9 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 | H31 | Ekran görüntüsü testleri önce Robolectric'in iç hatasıyla düştü, sonra 14+ dk takıldı, sonra derleme betiği bir yazım hatasıyla kırıldı (CI koşu 5–7) | (1) Robolectric'in JDK 17+ `--add-opens` gereksinimi okunmadan kuruldu; (2) galeride bitmeyen animasyon (yükleniyor çubuğu) vardı, Compose hiç durulmadı ve çekim sonsuza dek bekledi; (3) `build.gradle.kts`'te `java.time` adı Android'in `java {}` uzantısıyla çakıştı. Üçü de bulut oturumunda yerel derleme olmadığı için ancak CI'da görüldü | Robolectric kurulumunda resmi `--add-opens` listesi baştan eklenir. Ekran görüntüsü testine bitmeyen animasyon girmez; test görevine süre sınırı konur (10 dk). Gradle betiğinde JDK sınıfları tam adla değil `import` ile kullanılır. |
 | H32 | Güneş sekme ikonu düzeltmesi ktlint hatasıyla commit'lendi; CI koşu 17 kırmızı | ktlint ile commit aynı komutta `;` ile zincirlenmişti; ktlint düşse de commit atıldı | Denetim ile commit'i `&&` ile bağla ya da çıkış kodunu okumadan commit atma. |
 | H33 | Gece kontrolünde iki erişilebilirlik kusuru bulundu: (1) "Geri al" şeridindeki metin eylemi açık temada 4,19–4,30:1 (sınır 4,5); (2) durum çubuğu simgeleri telefonun temasına göre çiziliyordu, uygulama varsayılan koyu açıldığı için açık temalı telefonda saat ve pil görünmez olurdu | (1) Kontrast testi yalnız jeton çiftlerini ölçüyordu; bileşenin gerçekten çizdiği çift (yarı saydam zemin bindirilmiş hâlde, `surfaceVariant` üstünde) testte yoktu. Ekran görüntüsünde gözle fark edilmedi. (2) `enableEdgeToEdge()` varsayılanının neye göre karar verdiği okunmadı | Kontrast testi **bileşenin çizdiği** çifti ölçer: saydam renk bindirilmiş hâliyle. Yeni bileşen yazılınca metin/zemin çiftleri `ContrastTest`'e eklenir. Uygulama kendi temasını seçiyorsa sistem çubuğu stili de açıkça ondan verilir. |
+| H34 | Tam ekran kart kilit ekranında açılmadı, iki denemede şerit geldi | İki ayrı neden üst üste: (1) aynı kimlikli bildirimi tam ekran niyetiyle **güncelliyordum**; sistem niyeti yalnız bildirim ilk eklenirken başlatır. (2) Kullanıcı telefona bakıyordu; ekran açıkken sistem zaten şerit gösterir. F1 spike'ında bildirim her seferinde yeniydi ve ekran kapalıydı, bu yüzden fark edilmemişti | Spike'ta ölçülen yüzey, üründe **aynı çağrı sırasıyla** kullanılmıyorsa yeniden ölçülür. Nedeni tahmin etmek yerine Kullanıcı'yı durdurup sistem kaydından okumak (üçüncü denemede yapıldı) ilk denemede yapılmalıydı. |
+| H35 | Cihazda ilk hatırlatma "kritik" yerine "normal" kuruldu; Kullanıcı yanlış sesi duydu | `adb shell am broadcast … --es body "Yola çıkma vakti."`: boşluklu değer uzak kabukta bölündü, sonraki `--es klass` okunmadı. Komutun sonucu doğrulanmadan Kullanıcı'ya "kritik gelecek" dendi (H24 ailesi) | `adb shell`'e boşluklu değer verirken komutun tamamını tek tırnak içinde gönder (`adb shell "am … --es body 'iki kelime'"`). Kullanıcı'dan gözlem istemeden önce kurulan şeyi kayıttan oku. |
+| H36 | Kullanıcı'ya merdivenin 2. ve 5. dakikası beklettirildi; Kullanıcı açıkça "bir daha asla" dedi | Önceki "15–20 sn" uyarısı yalnız başlangıç gecikmesine uygulanmıştı; ürünün kendi dakikalık adımları için beklemesiz yol hazırlanmamıştı | Kullanıcı'lı denemede süre saniyeyle. Dakikalık ürün davranışı debug tetikleyicisinin `advance` komutuyla simüle edilir; gerçek zamanlama Kullanıcı'sız, kayıttan ölçülür. |
 | H15 | Yol haritası birkaç kez `sed`/`awk` ile değiştirildi | Alışkanlık; o sırada kanca yoktu | Kabuk komutuyla yapılan değişiklik düzenleme kancalarından (faz kapısı, gizli değer) geçmez. Yol haritası ve proje beyni **yalnız düzenleme aracıyla** değiştirilir. |
 
 ## 9. Tuzaklar ve "bunu bilmeden başlama" notları

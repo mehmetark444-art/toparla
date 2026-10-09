@@ -350,6 +350,16 @@ class ReminderEngineTest {
 
         assertTrue(scheduler.armed.keys.none { it.startsWith(key) && it != key })
         assertEquals(1, notifier.shown.size)
+        // Silinen hatırlatmanın ertelenmiş teslimi de kapanır (bekleyen kayıt kalmaz).
+        repo.add(def("e", ReminderClass.NORMAL, "2026-10-08T10:03"))
+        engine.replan(at("2026-10-08T10:02:30"))
+        val eKey = mainKey("e", "2026-10-08T10:03")
+        engine.onAlarmFired(eKey, at("2026-10-08T10:03"))
+        engine.onAction(eKey, ReminderAction.SNOOZE, at("2026-10-08T10:03:10"))
+        assertEquals(1, repo.pendingSnoozes().size)
+        repo.defs.remove("e")
+        engine.replan(at("2026-10-08T10:04"))
+        assertTrue(repo.pendingSnoozes().isEmpty())
         // Silinen hatırlatmanın ekrandaki bildirimi de kalkar; teslim kapanır.
         assertTrue(key in notifier.cancelled)
         assertEquals(OccurrenceState.CANCELLED, repo.occurrences.getValue(key).state)

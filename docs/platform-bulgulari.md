@@ -979,3 +979,34 @@ geri alınabilir olmalı (F3.6, F3.7); yakalama ekransızken (kilitli kutucuk) m
 
 **Sınırlar:** tek tur, 20 cümle, konuşmalı ev gürültüsü; sokak/iş yeri uğultusu, kulaklık mikrofonu ve 2–3
 dakikalık kesintisiz konuşma ölçülmedi (karar 0014 ile F3.6'ya devredildi).
+
+### 9 Ekim 2026 (gece) — F2-D: hatırlatma motoru telefonda (ilk uçtan uca denemeler)
+
+Kurulum: `com.toparla.app.dev` (debug), bildirim izni Kullanıcı tarafından verildi; hatırlatmalar yalnız debug
+sürümünde bulunan adb tetikleyicisiyle kuruldu (`DebugReminderReceiver`; `--es advance next` sıradaki alarmı
+vakti gelmiş gibi ateşler). Durum her denemeden sonra uygulama veritabanından okundu. Her satır tek deneme.
+
+| Deneme | Sonuç |
+|---|---|
+| Kritik hatırlatma, 20 sn sonraya (`setAlarmClock`), uygulama arka planda | Planlanan saniyede çaldı (21:47:46); alarm sesi (Kullanıcı duydu); **Yaptım** ve **10 dk sonra** düğmeleri göründü |
+| Merdiven, gerçek zamanla | +2 dk (21:49:46) ve +5 dk (21:52:46) basamakları tam saniyesinde ateşlendi; sıradaki (+10 dk) kuruldu |
+| **Yaptım** (bildirimden, uygulama açılmadan) | 3 sn içinde `DONE`; bildirim kalktı; bekleyen basamak sistemden ve tablodan silindi |
+| Israrlı takip: iki iş, sıradaki soru simüle edildi | "Üstlendiğin işler · 2 iş seni bekliyor" özeti altında iki bildirim; havuzdan cümle; **Yaptım** → `DONE`; **Bugün olmayacak** → ertesi sabah 07:30'a taşındı (`#s1`, kesin yol) |
+| Tam ekran adımı, ekran açık (kilit ekranında, Kullanıcı bakarken), 2 deneme | **Şerit** geldi, tam ekran açılmadı |
+| Tam ekran adımı, ekran kapalı ve kilitli | Tam ekran kart açıldı (`ReminderFullScreenActivity` odakta); saat, başlık, gövde, iki düğme; **10 dk sonra** → +10 dk'ya `setAlarmClock` |
+| Hatırlatmayı silme | Bekleyen ertelemeler sistemden iptal oldu; tek kalan alarm bakım alarmı |
+
+**Bulgular**
+1. **Tam ekran niyeti yalnız bildirim ilk eklenirken başlıyor.** Aynı kimlikli bildirim güncellenince sistem tam
+   ekranı başlatmıyor. Çözüm: tam ekran basamağı ayrı etiketle **yeni** bildirim olarak ekleniyor, önceki kaldırılıyor.
+2. **Ekran açıksa (kilit ekranında bile) sistem şerit gösteriyor; tam ekran yalnız ekran kapalıyken.** F1'deki
+   "ekran açık ve kilitsizken şerit" bulgusunun genişlemesi. Ürün: şeritte eylem düğmeleri zaten var.
+3. Silinen hatırlatmanın açık bildirimi ekranda kalıyordu → motor artık tanımı silinen teslimi (ertelenmişi dahil)
+   kapatıyor ve bildirimi kaldırıyor.
+4. Sistem kritik bildirimi kaydında `flags=SILENT` gösterdi ama alarm sesi çaldı (Kullanıcı): bu bayrak sesin
+   kısıldığı anlamına gelmiyor.
+
+**Sınırlar:** yalnız debug sürümü; yeniden başlatma, kilitli yeniden başlatma, saat değişimi, Rahatsız Etme,
+bildirim izni kapalıyken davranış, güvenlik ağı işleri (WorkManager) ve **Yarın** düğmesi cihazda denenmedi
+(birim testleri var). Israrlı takibin 30 dakikalık gerçek aralığı beklenmedi (simüle edildi); alarm zamanlaması
+aynı yolu kullanan merdiven basamaklarında ölçüldü.
