@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bildirim kanalları (blueprint G5) -->
+    <string name="channel_critical">Kritik</string>
+    <string name="channel_critical_desc">Randevu, çıkış gibi kaçmaması gereken hatırlatmalar. Alarm sesiyle çalar.</string>
+    <string name="channel_important">Önemli</string>
+    <string name="channel_important_desc">Fatura, son tarih gibi önemli hatırlatmalar.</string>
+    <string name="channel_normal">Rutin ve alışkanlık</string>
+    <string name="channel_normal_desc">Rutin, alışkanlık ve üstlendiğin işlerin hatırlatmaları.</string>
+    <string name="channel_gunes">Güneş</string>
+    <string name="channel_gunes_desc">Güneş\'in önerileri ve notları.</string>
+    <string name="channel_flow">Akış</string>
+    <string name="channel_flow_desc">Takip ettiğin konuların özeti.</string>
+    <string name="channel_flow_event">Akış uyarıları</string>
+    <string name="channel_flow_event_desc">Beklediğin bir gelişme olduğunda.</string>
+    <string name="channel_ongoing">Sürekli</string>
+    <string name="channel_ongoing_desc">Zamanlayıcı ve teslim sırasında kısa süre görünen bildirim.</string>
+    <string name="channel_system">Sistem</string>
+    <string name="channel_system_desc">Hatırlatmaların sağlığıyla ilgili uyarılar.</string>
+
+    <!-- Bildirim eylemleri (blueprint D25, karar 0003) -->
+    <string name="action_done">Yaptım</string>
+    <string name="action_snooze">10 dk sonra</string>
+    <string name="action_tomorrow">Yarın</string>
+    <string name="action_not_today">Bugün olmayacak</string>
+    <string name="action_skip">Atla</string>
+    <string name="action_carry_tomorrow">Yarına taşı</string>
+
+    <!-- Bildirim metinleri: suçlayan ifade yok; geciken iş "geç" değil, "şimdi" diye sunulur. -->
+    <string name="late_delivery_text">Bunu biraz geç iletiyorum; şimdi bakabilirsin.</string>
+    <string name="carry_or_skip_text">Üç kez erteledik. Yarına taşıyayım mı, atlayayım mı?</string>
+    <string name="persistent_summary_title">Üstlendiğin işler</string>
+    <plurals name="persistent_summary_text">
+        <item quantity="one">%d iş seni bekliyor.</item>
+        <item quantity="other">%d iş seni bekliyor.</item>
+    </plurals>
+    <!-- Israrlı takip metin havuzu: her soruda sıradaki cümle (aynı cümle art arda gelmez). -->
+    <string-array name="persistent_ask_pool">
+        <item>Şimdi uygun mu?</item>
+        <item>Küçük bir adımla başlayabilirsin.</item>
+        <item>Hâlâ listende. Bakalım mı?</item>
+        <item>Bitirdiysen “Yaptım” demen yeter.</item>
+        <item>Bugün olmayacaksa söyle, yarına alayım.</item>
+    </string-array>
+
+    <string name="delivering_title">Hatırlatma iletiliyor</string>
+    <string name="locked_boot_title">Hatırlatman var</string>
+    <string name="locked_boot_text">Kilidi açınca ayrıntısını göstereceğim.</string>
+</resources>

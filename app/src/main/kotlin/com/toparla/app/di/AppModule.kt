@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import com.toparla.app.reminder.AppReminderIntents
 import com.toparla.data.core.DefaultDispatcherProvider
 import com.toparla.data.core.SecureRandomSource
 import com.toparla.data.core.SystemClock
@@ -18,6 +19,7 @@ import com.toparla.domain.core.Clock
 import com.toparla.domain.core.DispatcherProvider
 import com.toparla.domain.core.IdGenerator
 import com.toparla.domain.core.RandomSource
+import com.toparla.reminders.ReminderIntents
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -58,6 +60,10 @@ object AppModule {
 
     @Provides @Singleton
     fun settingsStore(dataStore: DataStore<Preferences>): SettingsStore = SettingsStore(dataStore)
+
+    /** Bildirimlerin açtığı ekranlar bu modüldedir; `:reminders` yalnız arayüzü bilir. */
+    @Provides @Singleton
+    fun reminderIntents(@ApplicationContext context: Context): ReminderIntents = AppReminderIntents(context)
 
     /** Gizli değerler yedeğe girmeyen klasörde durur (`noBackupFilesDir`). */
     @Provides @Singleton

@@ -1,10 +1,14 @@
 package com.toparla.app
 
 import android.app.Application
+import android.os.UserManager
 import android.util.Log
 import com.toparla.domain.core.Clock
 import com.toparla.domain.core.RotatingLogFile
+import com.toparla.reminders.ReminderEntryPoint
+import com.toparla.reminders.ReminderSafetyNets
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 import java.util.concurrent.Executors
@@ -18,6 +22,19 @@ class ToparlaApp : Application() {
         super.onCreate()
         Timber.plant(FileLogTree(RotatingLogFile(File(filesDir, LOG_DIR), LOG_FILE_BYTES, LOG_FILE_COUNT), clock))
         DevTools.install(this)
+        startReminders()
+    }
+
+    /**
+     * Uygulama her açıldığında pencere yeniden doldurulur ve güvenlik ağları kurulur: zorla durdurma ya da
+     * güncelleme sistem alarmlarını silmiş olabilir (F1 bulgusu). Kilit açılmadan (Direct Boot) veritabanı
+     * kapalıdır; o durumda alarmlar alıcıdaki kopyadan kurulur ve bu adım atlanır.
+     */
+    private fun startReminders() {
+        if (!getSystemService(UserManager::class.java).isUserUnlocked) return
+        val entry = ReminderEntryPoint.of(this)
+        entry.scope().launch { entry.engine().replan(clock.now(), rearm = true) }
+        ReminderSafetyNets.ensureScheduled(this)
     }
 
     private companion object {

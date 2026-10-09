@@ -16,4 +16,8 @@
     <string name="empty_plan">Bugün için plan yok.</string>
     <string name="empty_flow">Henüz takip ettiğin bir konu yok.</string>
     <string name="empty_gunes">Güneş henüz hazırlanıyor.</string>
+
+    <!-- Kritik hatırlatma kartı (blueprint D25). -->
+    <string name="reminder_done">Yaptım</string>
+    <string name="reminder_snooze">10 dk sonra</string>
 </resources>

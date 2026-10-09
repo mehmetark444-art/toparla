@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- İzinler ait oldukları maddede eklenir (F2-D hatırlatma bileşenleri). -->
+    <!-- Hatırlatma izinleri ve alıcıları `:reminders` manifestinden birleşir. -->
     <application
         android:name=".ToparlaApp"
         android:allowBackup="false"
@@ -21,6 +21,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Kritik hatırlatma kartı: kilit ekranının üstünde açılır, yalnız o teslimi gösterir (blueprint B6, G1). -->
+        <activity
+            android:name=".reminder.ReminderFullScreenActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:showWhenLocked="true"
+            android:taskAffinity=""
+            android:turnScreenOn="true" />
     </application>
 
 </manifest>

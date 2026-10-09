@@ -27,6 +27,9 @@ object Defaults {
     /** Merdiveni biten yanıtsız iş bu kadar dakika sonra "süresi doldu" sayılır (blueprint Bölüm I: +60 dk). */
     const val UNANSWERED_EXPIRY_MIN = 60L
 
+    /** Kritik bekçinin çalışma aralığı, dakika (v3 §10.6; WorkManager'ın en kısa periyodu da 15 dk). */
+    const val CRITICAL_WATCHDOG_PERIOD_MIN = 15L
+
     /** Kritik bekçinin ileriye baktığı süre, dakika (v3 §10.6). */
     const val CRITICAL_WATCHDOG_LOOKAHEAD_MIN = 20L
 

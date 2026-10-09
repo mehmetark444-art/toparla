@@ -77,6 +77,9 @@ dependencies {
     implementation(libs.activity.compose)
     implementation(libs.navigation.compose)
     implementation(libs.serialization.json)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
+    implementation(libs.coroutines.android)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

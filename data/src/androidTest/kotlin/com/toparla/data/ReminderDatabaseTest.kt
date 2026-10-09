@@ -133,11 +133,12 @@ class ReminderDatabaseTest {
         assertTrue(store.recordFired(key, Instant.ofEpochMilli(10)))
         assertFalse(store.recordFired(key, Instant.ofEpochMilli(20)))
         // Tekil olması gerekmeyen olaylar serbestçe yazılır.
-        store.log(key, Instant.ofEpochMilli(30), DeliveryEvent.TAPPED)
-        store.log(key, Instant.ofEpochMilli(40), DeliveryEvent.TAPPED)
+        store.log(key, Instant.ofEpochMilli(30), DeliveryEvent.TAPPED.name, null)
+        store.log(key, Instant.ofEpochMilli(40), "BILINMEYEN_OLAY", "ayrinti")
 
         val events = db.deliveryLog().forKey(key).map { it.event }
-        assertEquals(listOf(DeliveryEvent.FIRED, DeliveryEvent.TAPPED, DeliveryEvent.TAPPED), events)
+        assertEquals(listOf(DeliveryEvent.FIRED, DeliveryEvent.TAPPED, DeliveryEvent.ACTION), events)
+        assertEquals("BILINMEYEN_OLAY: ayrinti", db.deliveryLog().forKey(key).last().detail)
         assertEquals(listOf(key), db.deliveryLog().keysWithEvent(listOf(key, "baska"), DeliveryEvent.FIRED))
     }
 
@@ -152,11 +153,13 @@ class ReminderDatabaseTest {
         )
         db.occurrences().upsert(ReminderOccurrenceEntity("r1@2", "r1", 200, OccurrenceState.DONE, deliveredAt = 200))
         db.occurrences().upsert(ReminderOccurrenceEntity("r1@3", "r1", 300, OccurrenceState.PLANNED))
+        db.occurrences().upsert(ReminderOccurrenceEntity("r1@1#s1", "r1", 400, OccurrenceState.PLANNED, snoozeCount = 1))
 
-        val flight = store.inFlight().single()
+        val flight = store.openOccurrences().single()
 
         assertEquals("r1@1", flight.key)
-        assertTrue(flight.persistent)
+        assertTrue(store.info("r1")?.persistent == true)
+        assertEquals(1, store.pendingSnoozes().size)
         assertEquals(Instant.ofEpochMilli(500), flight.lastAskedAt)
         assertEquals(2, flight.asksDone)
     }
