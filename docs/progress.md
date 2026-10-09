@@ -69,3 +69,6 @@ kapanış ölçümleri (servis yolları, süreç ölümü ve otomatik başlatma,
 denetimi (1 mantık hatası, 1 gizlilik eksiği düzeltildi; kayıt `gece-kontrolleri.md`). 114 JVM + 15 cihaz testi.
 
 **Sıradaki:** F1 kapanışı (gece testi, gürültü, K1–K3) → F2-C tasarım sistemi.
+
+### 9 Ekim 2026 — Oturum 3
+**Hedef:** F1.14 gürültüde ses tanıma ölçümü (bugün iş yerinde yapılması planlanıyordu); ardından F1 K1 + K3 ile fazı kapatmak.
