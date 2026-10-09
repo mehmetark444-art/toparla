@@ -178,7 +178,7 @@ Karar 0015: bu başlıktan itibaren Kullanıcı'nın göreceği her yüzey `mobi
 - ☑ F2.21 Tipografi, boşluk, şekil, hareket jetonları; "Animasyonları azalt" — `ToparlaTextStyles.kt`, `Dimens.kt`, `Motion.kt`, `ToparlaTheme.kt` (`3aaf5d4`); ayar değerlerinin DataStore'dan temaya bağlanması F2.24'te
 - ☑ F2.22 Ortak bileşenler (ilk parti): `PrimaryButton`, `SecondaryButton`, `TextAction`, `Chip`, `UndoBar`, `EmptyState`, `CalmDialog`, `SettingRow`, `PermissionRow`, `SectionHeader`, `ProgressRing` — `ui/…/components/` (+ `ToparlaCard`, `ChipRow`, `ActionRow`); CI yeşil, 12 ekran görüntüsü gözle denetlendi (koşu 12, `22337d4`). Göz kontrolünde bulunup düzeltilenler: koyu temada yüzey dışı metin siyahtı, %200'de chip ve eylem kelimeleri bölünüyordu, halka metni taşıyordu
 - ☑ F2.23 Roborazzi ekran görüntüsü testi düzeni (3 tema × 2 yazı ölçeği) — `ComponentScreenshotTest` 12 görüntü; temel görüntüler `ui/src/test/screenshots/`'a alındı, CI `verifyRoborazziDebug` ile karşılaştırıyor; karşılaştırmalı ilk koşu yeşil (koşu 13, `57ec7c1`). Ders: bitmeyen animasyon (yükleniyor çubuğu) Robolectric çekimini kilitliyor; galeride testte kapalı
-- ☐ F2.24 Uygulama ikonu (adaptif + monokrom), tek Activity, gezinme iskeleti, edge-to-edge, predictive back
+- ◐ F2.24 Uygulama ikonu (adaptif + monokrom), tek Activity, gezinme iskeleti, edge-to-edge, predictive back — taslak hazır, Kullanıcı onayı bekliyor (ikon 3 seçenek, iskelet 4 sekme): `docs/tasarim/2026-10-09-ikon-iskelet/README.md`
 
 ### F2-D Hatırlatma motoru Android tarafı (`:reminders`, M6)
 - ☐ F2.25 `ReminderScheduler` uygulaması: üç alarm yolu, idempotent `PendingIntent`

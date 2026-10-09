@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Uygulama ikonu</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:#47705F}a:hover{color:#2F4A3F}
+</style>
+</helmet>
+<div style="width: 1888px; height: 860px; box-sizing: border-box; padding: 40px 48px; background: #ECEAE6; color: #2B2825; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px;">
+<sc-for list="{{options}}" as="o" hint-placeholder-count="3">
+<section style="display: flex; flex-direction: column; gap: 24px;">
+<div style="display: flex; flex-direction: column; gap: 4px;">
+<strong style="font-size: 20px; font-weight: 600;">Seçenek {{o.key}} · {{o.name}}</strong>
+<span style="font-size: 15px; line-height: 22px; color: #5A544C;">{{o.desc}}</span>
+</div>
+
+<div style="display: flex; gap: 24px; align-items: center;">
+<div style="width: 192px; height: 192px; border-radius: 50%; overflow: hidden; box-shadow: 0 10px 28px rgba(40,30,20,0.25);">
+<svg width="192" height="192" viewBox="0 0 108 108" role="img" aria-label="Toparla ikonu, seçenek {{o.key}}">
+<rect width="108" height="108" fill="#1B1917"></rect>
+<sc-if value="{{o.isA}}" hint-placeholder-val="{{true}}">
+<circle cx="52" cy="57" r="17" fill="none" stroke="#8DBBA9" stroke-width="7"></circle>
+<path d="M 30 80 Q 36 70 41 66" fill="none" stroke="#8DBBA9" stroke-width="7" stroke-linecap="round"></path>
+</sc-if>
+<sc-if value="{{o.isB}}" hint-placeholder-val="{{false}}">
+<path d="M 54 58 a 4 4 0 1 1 5 4 a 10 10 0 1 1 -12 -9 a 17 17 0 1 1 17 18" fill="none" stroke="#8DBBA9" stroke-width="5.5" stroke-linecap="round"></path>
+</sc-if>
+<sc-if value="{{o.isC}}" hint-placeholder-val="{{false}}">
+<circle cx="54" cy="56" r="18" fill="none" stroke="#8DBBA9" stroke-width="9"></circle>
+</sc-if>
+<circle cx="{{o.sunX}}" cy="{{o.sunY}}" r="6" fill="#F2B661"></circle>
+</svg>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<span style="font-size: 13px; color: #5A544C;">Temalı simge (Android tek renk katmanı)</span>
+<div style="width: 96px; height: 96px; border-radius: 50%; overflow: hidden;">
+<svg width="96" height="96" viewBox="0 0 108 108" role="img" aria-label="Tek renkli sürüm, seçenek {{o.key}}">
+<rect width="108" height="108" fill="#2F4A3F"></rect>
+<sc-if value="{{o.isA}}" hint-placeholder-val="{{true}}">
+<circle cx="52" cy="57" r="17" fill="none" stroke="#D7E8E0" stroke-width="7"></circle>
+<path d="M 30 80 Q 36 70 41 66" fill="none" stroke="#D7E8E0" stroke-width="7" stroke-linecap="round"></path>
+</sc-if>
+<sc-if value="{{o.isB}}" hint-placeholder-val="{{false}}">
+<path d="M 54 58 a 4 4 0 1 1 5 4 a 10 10 0 1 1 -12 -9 a 17 17 0 1 1 17 18" fill="none" stroke="#D7E8E0" stroke-width="5.5" stroke-linecap="round"></path>
+</sc-if>
+<sc-if value="{{o.isC}}" hint-placeholder-val="{{false}}">
+<circle cx="54" cy="56" r="18" fill="none" stroke="#D7E8E0" stroke-width="9"></circle>
+</sc-if>
+<circle cx="{{o.sunX}}" cy="{{o.sunY}}" r="6" fill="#D7E8E0"></circle>
+</svg>
+</div>
+</div>
+</div>
+
+<sc-for list="{{wallpapers}}" as="w" hint-placeholder-count="2">
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="font-size: 13px; color: #5A544C;">{{w.label}}</span>
+<div style="display: flex; justify-content: space-between; padding: 20px 20px 16px 20px; border-radius: 24px; background: {{w.bg}};">
+<sc-for list="{{others}}" as="x" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; width: 76px;">
+<span style="display: block; width: 60px; height: 60px; border-radius: 50%; background: {{w.dummy}};"></span>
+<span style="font-size: 12px; color: {{w.text}};">{{x}}</span>
+</div>
+</sc-for>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; width: 76px;">
+<svg width="60" height="60" viewBox="0 0 108 108" style="border-radius: 50%;">
+<rect width="108" height="108" fill="#1B1917"></rect>
+<sc-if value="{{o.isA}}" hint-placeholder-val="{{true}}">
+<circle cx="52" cy="57" r="17" fill="none" stroke="#8DBBA9" stroke-width="7"></circle>
+<path d="M 30 80 Q 36 70 41 66" fill="none" stroke="#8DBBA9" stroke-width="7" stroke-linecap="round"></path>
+</sc-if>
+<sc-if value="{{o.isB}}" hint-placeholder-val="{{false}}">
+<path d="M 54 58 a 4 4 0 1 1 5 4 a 10 10 0 1 1 -12 -9 a 17 17 0 1 1 17 18" fill="none" stroke="#8DBBA9" stroke-width="5.5" stroke-linecap="round"></path>
+</sc-if>
+<sc-if value="{{o.isC}}" hint-placeholder-val="{{false}}">
+<circle cx="54" cy="56" r="18" fill="none" stroke="#8DBBA9" stroke-width="9"></circle>
+</sc-if>
+<circle cx="{{o.sunX}}" cy="{{o.sunY}}" r="6" fill="#F2B661"></circle>
+</svg>
+<span style="font-size: 12px; color: {{w.text}};">Toparla</span>
+</div>
+</div>
+</div>
+</sc-for>
+</section>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1888,"height":860}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      options: [
+        {key: 'A', name: 'Toparlanmış ip', desc: 'Blueprint C6’daki fikir: ucu dışarıda kalan bir halka (toparlanmış ip) ve sağ üstte güneş noktası.', isA: true, isB: false, isC: false, sunX: 76, sunY: 33},
+        {key: 'B', name: 'Toplanan sarmal', desc: 'Dışarıdan içe toplanan ip: dağınıklıktan toparlanmaya. Daha hareketli, küçük boyda daha az net.', isA: false, isB: true, isC: false, sunX: 78, sunY: 30},
+        {key: 'C', name: 'Sade halka', desc: 'Tek kalın halka, güneş noktası halkaya değiyor. En sakin ve en okunaklı; ip fikri daha az belli.', isA: false, isB: false, isC: true, sunX: 70, sunY: 40}
+      ],
+      wallpapers: [
+        {label: 'Koyu duvar kâğıdında', bg: '#2A2F35', dummy: '#4A4F55', text: '#ECE7DF'},
+        {label: 'Açık duvar kâğıdında', bg: '#E2DCD1', dummy: '#C4BDB2', text: '#2B2825'}
+      ],
+      others: ['Saat', 'Takvim', 'Notlar']
+    };
+  }
+}
+</script>
+</body>
+</html>

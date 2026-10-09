@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Gezinme iskeleti</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:#47705F}a:hover{color:#2F4A3F}
+button,input{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 1888px; height: 1035px; box-sizing: border-box; padding: 32px; background: #ECEAE6; display: flex; gap: 40px; align-items: flex-start; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;">
+<sc-for list="{{phones}}" as="v" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 16px;">
+<div style="height: 40px; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; color: #2B2825;">
+<strong style="font-size: 16px; font-weight: 600;">{{v.title}} sekmesi</strong>
+<span style="font-size: 13px; color: #5A544C;">{{v.theme}} tema · {{v.note}}</span>
+</div>
+<div style="position: relative; width: 412px; height: 915px; border-radius: 40px; overflow: hidden; background: {{v.bg}}; color: {{v.on}}; box-shadow: 0 0 0 1px rgba(0,0,0,0.14), 0 24px 60px rgba(40,30,20,0.18);">
+
+<header style="display: flex; align-items: center; gap: 4px; min-height: 56px; padding: 24px 12px 0 24px;">
+<h1 style="flex: 1; margin: 0; font-size: 20px; line-height: 28px; font-weight: 600;">{{v.title}}</h1>
+<sc-if value="{{v.showAvatar}}" hint-placeholder-val="{{true}}">
+<button aria-label="Güneş" style="width: 48px; height: 48px; border: none; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+<span style="display: block; width: 34px; height: 34px; border-radius: 50%; background: {{v.tc}}; box-shadow: 0 0 0 2px {{v.sun}}, {{v.glow}};"></span>
+</button>
+</sc-if>
+<button aria-label="Ben ve Ayarlar" style="width: 48px; height: 48px; border: none; background: transparent; color: {{v.onv}}; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c1.6-3.6 4.6-5 8-5s6.4 1.4 8 5"></path></svg>
+</button>
+</header>
+
+<sc-if value="{{v.isGunes}}" hint-placeholder-val="{{false}}">
+<div style="padding: 24px; display: flex; flex-direction: column; gap: 12px;">
+<div style="display: flex; gap: 12px; align-items: flex-start;">
+<span style="flex: none; width: 24px; height: 24px; border-radius: 50%; background: {{v.tc}}; box-shadow: 0 0 0 1.5px {{v.sun}};"></span>
+<p style="margin: 0; padding: 16px; border-radius: 20px; background: {{v.tc}}; color: {{v.on}}; font-size: 16px; line-height: 24px;">Merhaba. Aklındakini buraya yazabilir ya da söyleyebilirsin.</p>
+</div>
+</div>
+<div style="position: absolute; left: 0; right: 0; bottom: 80px; padding: 12px 16px; display: flex; gap: 8px; align-items: center; background: {{v.bg}};">
+<label style="flex: 1; display: flex; align-items: center; min-height: 48px; padding: 0 16px; border-radius: 24px; background: {{v.sv}}; color: {{v.onv}}; font-size: 16px;">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden;">Güneş'e mesaj</span>
+<input placeholder="Güneş'e yaz…" style="flex: 1; border: none; background: transparent; color: {{v.on}}; font-size: 16px; outline: none;">
+</label>
+<button aria-label="Konuş" style="width: 56px; height: 56px; border-radius: 50%; border: none; background: {{v.primary}}; color: {{v.onPrimary}}; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0"></path><path d="M12 18v3"></path></svg>
+</button>
+</div>
+</sc-if>
+
+<sc-if value="{{v.isEmpty}}" hint-placeholder-val="{{true}}">
+<div style="position: absolute; left: 24px; right: 24px; top: 300px; display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center;">
+<svg width="72" height="72" viewBox="0 0 72 72" fill="none" stroke="{{v.onv}}" stroke-width="3.6" stroke-linecap="round">
+<sc-if value="{{v.shapeRing}}" hint-placeholder-val="{{true}}"><circle cx="36" cy="36" r="30"></circle><circle cx="36" cy="36" r="3.6" fill="{{v.onv}}" stroke="none"></circle></sc-if>
+<sc-if value="{{v.shapeWave}}" hint-placeholder-val="{{false}}"><path d="M7 27 C 24 14, 48 40, 65 27"></path><path d="M7 45 C 24 32, 48 58, 65 45"></path></sc-if>
+<sc-if value="{{v.shapeLeaf}}" hint-placeholder-val="{{false}}"><path d="M7 65 Q 7 7 65 7 Q 65 65 7 65 L 48 24"></path></sc-if>
+</svg>
+<p style="margin: 0; font-size: 16px; line-height: 24px; max-width: 300px;">{{v.message}}</p>
+<button style="min-height: 48px; padding: 0 20px; border: none; border-radius: 16px; background: {{v.sv}}; color: {{v.on}}; font-size: 16px; font-weight: 600; cursor: pointer;">{{v.action}}</button>
+</div>
+</sc-if>
+
+<sc-if value="{{v.showFab}}" hint-placeholder-val="{{true}}">
+<button aria-label="Yakala: dokun ses, uzun bas yazı" style="position: absolute; right: 16px; bottom: 96px; width: 64px; height: 64px; border-radius: 50%; border: none; background: {{v.pc}}; color: {{v.onPc}}; box-shadow: {{v.fabShadow}}; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0"></path><path d="M12 18v3"></path></svg>
+<span style="position: absolute; left: -4px; bottom: -4px; width: 24px; height: 24px; border-radius: 50%; background: {{v.surface}}; border: 1px solid {{v.outline}}; color: {{v.onv}}; display: flex; align-items: center; justify-content: center;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M7 14h10"></path></svg>
+</span>
+</button>
+</sc-if>
+
+<nav aria-label="Ana gezinme" style="position: absolute; left: 0; right: 0; bottom: 0; height: 80px; background: {{v.dim}}; display: flex; align-items: center; padding: 0 8px;">
+<sc-for list="{{v.tabs}}" as="t" hint-placeholder-count="5">
+<a href="#" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: {{t.color}}; font-size: 13px; font-weight: {{t.weight}};">
+<span style="position: relative; width: 56px; height: 32px; border-radius: 16px; background: {{t.pill}}; color: {{t.iconColor}}; display: flex; align-items: center; justify-content: center;">
+<sc-if value="{{t.isNow}}" hint-placeholder-val="{{true}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 3v2M12 19v2M3 12h2M19 12h2"></path></svg></sc-if>
+<sc-if value="{{t.isInbox}}" hint-placeholder-val="{{false}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"><path d="M3 13l3-8h12l3 8v6H3z"></path><path d="M3 13h5l1 2h6l1-2h5"></path></svg></sc-if>
+<sc-if value="{{t.isPlan}}" hint-placeholder-val="{{false}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10h16M9 3v4M15 3v4"></path></svg></sc-if>
+<sc-if value="{{t.isFlow}}" hint-placeholder-val="{{false}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M3 9c3-3 6 3 9 0s6 3 9 0"></path><path d="M3 15c3-3 6 3 9 0s6 3 9 0"></path></svg></sc-if>
+<sc-if value="{{t.isGunes}}" hint-placeholder-val="{{false}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="8.5" stroke-dasharray="2 3"></circle></svg></sc-if>
+</span>{{t.label}}</a>
+</sc-for>
+</nav>
+</div>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1888,"height":1035}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var D = {bg:'#1B1917',surface:'#242220',sv:'#2E2B28',dim:'#151311',on:'#ECE7DF',onv:'#AFA79B',outline:'#4A453F',primary:'#8DBBA9',onPrimary:'#12261E',pc:'#2F4A3F',onPc:'#D7E8E0',tc:'#3B3756',sun:'#F2B661',glow:'0 0 22px rgba(242,182,97,0.30)',fabShadow:'0 8px 20px rgba(6,4,2,0.5)'};
+    var L = {bg:'#FAF7F2',surface:'#FFFFFF',sv:'#F1ECE4',dim:'#E9E3D9',on:'#2B2825',onv:'#625B52',outline:'#D8D0C4',primary:'#47705F',onPrimary:'#FFFFFF',pc:'#D7E8E0',onPc:'#1F3B31',tc:'#E6E2F3',sun:'#E8A23A',glow:'0 0 22px rgba(232,162,58,0.32)',fabShadow:'0 8px 20px rgba(92,64,30,0.18)'};
+    var A = Object.assign({}, D, {bg:'#000000',surface:'#0C0C0C',sv:'#171615',dim:'#000000',outline:'#2F2C29',fabShadow:'none'});
+    var names = [['now','Şimdi'],['inbox','Gelen'],['plan','Plan'],['flow','Akış'],['gunes','Güneş']];
+    var tabs = function (c, sel) {
+      return names.map(function (n) {
+        var s = n[0] === sel;
+        return {label: n[1], isNow: n[0] === 'now', isInbox: n[0] === 'inbox', isPlan: n[0] === 'plan', isFlow: n[0] === 'flow', isGunes: n[0] === 'gunes',
+          color: s ? c.on : c.onv, weight: s ? '600' : '400', pill: s ? c.pc : 'transparent', iconColor: s ? c.onPc : c.onv};
+      });
+    };
+    var phone = function (c, theme, sel, title, extra) {
+      return Object.assign({theme: theme, title: title, tabs: tabs(c, sel), showFab: sel !== 'gunes', showAvatar: sel !== 'gunes', isGunes: sel === 'gunes', isEmpty: sel !== 'gunes',
+        shapeRing: false, shapeWave: false, shapeLeaf: false}, c, extra);
+    };
+    return { phones: [
+      phone(D, 'Koyu', 'now', 'Şimdi', {note: 'boş gün', shapeRing: true, message: 'Şimdilik bir şey yok. İstersen gelen kutusuna bakalım ya da dinlen.', action: 'Gelen kutusuna bak'}),
+      phone(L, 'Açık', 'inbox', 'Gelen', {note: 'boş', shapeLeaf: true, message: 'Gelen kutusu boş. Aklına geleni sağ alttaki düğmeyle yakala.', action: 'Yakalamayı dene'}),
+      phone(A, 'AMOLED', 'flow', 'Akış', {note: 'boş', shapeWave: true, message: 'Henüz takip ettiğin bir konu yok.', action: 'Konu ekle'}),
+      phone(D, 'Koyu', 'gunes', 'Güneş', {note: 'yakalama düğmesi gizli, yerine yazı/ses çubuğu'})
+    ] };
+  }
+}
+</script>
+</body>
+</html>
