@@ -80,3 +80,10 @@ denetimi (1 mantık hatası, 1 gizlilik eksiği düzeltildi; kayıt `gece-kontro
 **Biten:** taslak tuvalde ve `docs/tasarim/2026-10-09-gorsel-dil/`. Kontrast hesabı: blueprint açık paletinde 5 çift 4,5:1 altında.
 
 **Açık:** Kullanıcı seçimi (A / B / karışık). B seçilirse açık palet blueprint'ten sapar → karar kaydı.
+
+### 9 Ekim 2026 — Oturum 4 (devam, bulut)
+**Biten:** Kullanıcı B'yi seçti → karar 0016. F2.19–F2.23 kodu yazıldı (`:ui` Compose teması, 11 bileşen + `ToparlaCard`,
+kontrast testi, Roborazzi). Bulutta Google Maven kapalı: yalnız saf kısım (renk + kontrast) burada derlenip test edildi;
+ktlint ve detekt temiz. Compose derlemesi ve ekran görüntüleri için CI bu dalda da koşacak şekilde ayarlandı.
+
+**Açık:** CI sonucu; ekran görüntülerinin taslakla karşılaştırılması.

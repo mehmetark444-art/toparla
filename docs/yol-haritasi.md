@@ -173,11 +173,11 @@ F1'de kapanıştan önce kalan iki ölçüm: kablosuz gece testinin okunması (F
 Karar 0015: bu başlıktan itibaren Kullanıcı'nın göreceği her yüzey `mobile-app-ui-design` yeteneğiyle tasarlanır;
 önce taslak (`docs/tasarim/`), Kullanıcı onayı, sonra Compose. Kurallar: `.claude/rules/tasarim.md`.
 - ☑ F2.47 Görsel dil taslağı: Şimdi ekranı + bir hatırlatma kartı + Hatırlatma Sağlığı satırları, koyu ve açık temada; blueprint C paleti ile yeteneğin önerdiği seçenek yan yana. **Kullanıcı onayı** olmadan F2.19–F2.24 kodlanmaz — Kullanıcı **B**'yi seçti (9 Ekim): karar 0016, `docs/tasarim/2026-10-09-gorsel-dil/README.md`, `6fabe9f`. Bulgu: blueprint'in açık paletinde 5 renk çifti 4,5:1'in altındaydı (en düşük 2,1 "Taşınan")
-- ☐ F2.19 Renk jetonları: Koyu / Açık / AMOLED + 6 vurgu; `ExtendedColors`
-- ☐ F2.20 Otomatik kontrast testi (her tema × vurgu × metin/zemin ≥ 4,5:1)
-- ☐ F2.21 Tipografi, boşluk, şekil, hareket jetonları; "Animasyonları azalt"
-- ☐ F2.22 Ortak bileşenler (ilk parti): `PrimaryButton`, `SecondaryButton`, `TextAction`, `Chip`, `UndoBar`, `EmptyState`, `CalmDialog`, `SettingRow`, `PermissionRow`, `SectionHeader`, `ProgressRing`
-- ☐ F2.23 Roborazzi ekran görüntüsü testi düzeni (3 tema × 2 yazı ölçeği)
+- ◐ F2.19 Renk jetonları: Koyu / Açık / AMOLED + 6 vurgu; `ExtendedColors` — `ui/…/theme/Palette.kt`, `ExtendedColors.kt` (karar 0016). Bulut oturumunda yazıldı; Android derlemesi GitHub Actions'ta bekleniyor
+- ◐ F2.20 Otomatik kontrast testi (her tema × vurgu × metin/zemin ≥ 4,5:1) — `ContrastTest`: 3 tema × 6 vurgu × 26 çift; JVM'de geçti (3/3), kasıtlı bozma (eski açık adaçayı) yakalandı. CI'da koşusu bekleniyor
+- ◐ F2.21 Tipografi, boşluk, şekil, hareket jetonları; "Animasyonları azalt" — `ToparlaTextStyles.kt`, `Dimens.kt`, `Motion.kt`, `ToparlaTheme.kt`; ayar değerlerini DataStore'dan bağlamak F2.24'te
+- ◐ F2.22 Ortak bileşenler (ilk parti): `PrimaryButton`, `SecondaryButton`, `TextAction`, `Chip`, `UndoBar`, `EmptyState`, `CalmDialog`, `SettingRow`, `PermissionRow`, `SectionHeader`, `ProgressRing` — `ui/…/components/` (+ `ToparlaCard`); ktlint ve detekt temiz; Compose derlemesi CI'da bekleniyor
+- ◐ F2.23 Roborazzi ekran görüntüsü testi düzeni (3 tema × 2 yazı ölçeği) — `ComponentScreenshotTest` (12 görüntü); CI kaydeder ve "ekran-goruntuleri" olarak saklar. Kalan: görüntülerin taslakla karşılaştırılması ve temel görüntülerin depoya alınması (sonra `verifyRoborazziDebug`)
 - ☐ F2.24 Uygulama ikonu (adaptif + monokrom), tek Activity, gezinme iskeleti, edge-to-edge, predictive back
 
 ### F2-D Hatırlatma motoru Android tarafı (`:reminders`, M6)

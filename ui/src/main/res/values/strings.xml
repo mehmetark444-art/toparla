@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ortak bileşenlerin varsayılan metinleri (blueprint C7). Dil: "Şimdi, Sonra, Bir gün, Taşınan"; suçlayan ifade yok. -->
+<resources>
+    <string name="undo_action">Geri al</string>
+    <string name="permission_fix">Düzelt</string>
+    <string name="permission_status_granted">Verildi</string>
+    <string name="permission_status_required">Gerekli</string>
+    <string name="permission_status_off">Kapalı</string>
+</resources>

@@ -19,6 +19,11 @@ ktlintGradle = "14.2.0"
 androidxTestRunner = "1.7.0"
 androidxTestJunit = "1.3.0"
 litertlm = "0.18.0"      # Cihaz içi LLM çalışma zamanı; şimdilik yalnız :spike
+# Doğrulama: 9 Ekim 2026 — developer.android.com BOM eşleme sayfası (en yeni BOM: material3 1.4.0, ui 1.12.1),
+# Maven Central (Robolectric, Roborazzi, Compose derleyici eklentisi = Kotlin sürümü), Gradle Plugin Portal.
+composeBom = "2026.09.00"
+robolectric = "4.17"     # SDK 36 desteği 4.16'dan beri; SDK 36 testleri JDK 21 ister
+roborazzi = "1.76.0"
 
 [libraries]
 room-runtime = { module = "androidx.room3:room3-runtime", version.ref = "room" }
@@ -40,6 +45,15 @@ junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher
 junit4 = { module = "junit:junit", version.ref = "junit4" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" }
 androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "androidxTestJunit" }
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -47,5 +61,7 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintGradle" }

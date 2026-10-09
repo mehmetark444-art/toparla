@@ -16,6 +16,11 @@ paletinde beş metin/zemin çifti kendi 4,5:1 kuralının (C2, C8) altında kal�
    `onCarriedContainer` ile çizilir: açık `#7C5B12`, koyu `#E0BC6A`.
 2. Vurgu ailesinin açık tondaki ana rengi otomatik kontrast testini geçecek kadar koyulaştırılır (F2.19);
    blueprint'teki vurgu tonları başlangıçtır, test geçmezse ton koyulaşır.
+   **Ek (aynı gün, F2.19 yazılırken):** taslakta görünmeyen üç açık ton da aynı kuralla koyulaştırıldı:
+   `info #506B88` (5,53), `urge #845D7E` (5,46), `secondary #876148`. Altı vurgunun açık ana tonları:
+   Adaçayı `#47705F` · Gökyüzü `#466D8E` · Kil `#876148` · Lavanta `#6B6393` · Gül kurusu `#895C6A` ·
+   Kum `#776846`. Türevler (`container`, `on`) önceden hesaplanıp sabit yazıldı (`ui/…/theme/Palette.kt`);
+   `ContrastTest` 3 tema × 6 vurgu × 26 çifti sınar.
 3. **Kart:** 1 dp `outline` sınır yerine sıcak tonlu, çok hafif yumuşak gölge + neredeyse görünmez sınır
    (koyu: beyazın %5'i; açık: adaçayının %7'si). Derin ya da gri gölge yok.
 4. **Yazı:** bir ekranda en çok dört boyut ve iki ağırlık: 32 (Şimdi kartı başlığı, büyük sayı) · 20 (ekran ve

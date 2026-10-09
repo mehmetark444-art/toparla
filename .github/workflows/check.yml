@@ -5,7 +5,8 @@ name: check
 
 on:
   push:
-    branches: [main]
+    # claude/**: bulut oturumunda Android derlenemiyor; oradaki işin makine kontrolü buradadır.
+    branches: [main, 'claude/**']
   pull_request:
 
 permissions:
@@ -35,6 +36,14 @@ jobs:
         run: ./gradlew --console=plain ktlintCheck detekt
       - name: Android Lint ve derleme
         run: ./gradlew --console=plain :app:lintDebug :app:assembleDebug
+      - name: Arayüz testleri (kontrast + ekran görüntüleri)
+        run: ./gradlew --console=plain :ui:recordRoborazziDebug
+      - name: Ekran görüntüleri
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ekran-goruntuleri
+          path: ui/src/test/screenshots/
       - name: Depo tutarlılığı
         run: node .claude/skills/dogrula/kontrol.mjs
       - name: Raporlar

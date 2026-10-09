@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Yalnız debug: önizleme ve ekran görüntüsü testindeki uydurma örnek metinler. Gerçek kişisel veri yok. -->
+<resources>
+    <string name="preview_start">Başla</string>
+    <string name="preview_done">Yaptım</string>
+    <string name="preview_snooze">Ertele</string>
+    <string name="preview_change">Değiştir</string>
+    <string name="preview_finish">Bitti</string>
+    <string name="preview_later_10">10 dk sonra</string>
+    <string name="preview_chip_15">15 dk</string>
+    <string name="preview_chip_today_later">Bugün sonra</string>
+    <string name="preview_chip_tomorrow">Yarın</string>
+    <string name="preview_chip_someday">Bir gün</string>
+    <string name="preview_section">Bugünün 3 önceliği</string>
+    <string name="preview_section_action">Tümü</string>
+    <string name="preview_ring_text">18 dk</string>
+    <string name="preview_undo_message">Görev Bir gün\'e taşındı</string>
+    <string name="preview_setting_title">Titreşim</string>
+    <string name="preview_setting_desc">Dokunuşlarda kısa titreşim</string>
+    <string name="preview_perm_notifications">Bildirim izni</string>
+    <string name="preview_perm_notifications_why">Hatırlatmaları gösterebilmek için</string>
+    <string name="preview_perm_battery">Pil kısıtı</string>
+    <string name="preview_perm_battery_why">Gece hatırlatmaları gecikmesin diye</string>
+    <string name="preview_perm_dnd">Rahatsız Etme erişimi</string>
+    <string name="preview_perm_dnd_why">Kritik ses sessiz kipte de çalsın diye</string>
+    <string name="preview_empty">Şimdilik bir şey yok. İstersen dinlen.</string>
+    <string name="preview_empty_action">Gelen kutusuna bak</string>
+    <string name="preview_dialog_title">Kayıt silinsin mi?</string>
+    <string name="preview_dialog_message">Bu kaydı silersen geri getiremem.</string>
+    <string name="preview_dialog_left">Sil</string>
+    <string name="preview_dialog_right">Vazgeç</string>
+</resources>

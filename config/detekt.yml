@@ -34,6 +34,8 @@ complexity:
 naming:
   FunctionNaming:
     excludes: ['**/test/**', '**/androidTest/**']
+    # Compose işlevleri ad kuralı gereği büyük harfle başlar (PrimaryButton).
+    ignoreAnnotated: ['Composable']
 
 exceptions:
   TooGenericExceptionCaught:
