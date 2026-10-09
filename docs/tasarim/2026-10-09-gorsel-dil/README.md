@@ -1,6 +1,6 @@
 # Görsel dil taslağı (F2.47) — 9 Ekim 2026
 
-**Durum:** Kullanıcı onayı bekliyor. Onay gelmeden F2.19–F2.24 kodlanmaz (karar 0015).
+**Durum:** Onaylandı — Seçenek B (9 Ekim 2026; karar 0016).
 **Görüntüle:** https://claude.ai/artifact/NWvorVLq9amKHye9LXwWvu (tuval; bu klasördeki dosyalar onun kopyasıdır).
 **Yöntem:** `mobile-app-ui-design` yeteneğinin 5 adımı + `.claude/rules/tasarim.md` sınırları. Örnek içerik uydurmadır.
 
@@ -32,6 +32,7 @@ Bu taslak yalnız **görsel dili** (renk, yazı, boşluk, kart, düğme) seçmek
 hata, çevrimdışı, AI kapalı ve izin yok durumları her ekranın kendi taslağında (F2.35–F2.38 ve sonrası) çizilir.
 
 ## Onay
-- Seçilen: _(bekliyor)_
-- Onay tarihi: _(bekliyor)_
-- İstenen değişiklikler: _(bekliyor)_
+- Seçilen: **B · Yetenek önerisi** (Kullanıcı: "B'yi beğendim")
+- Onay tarihi: 9 Ekim 2026
+- İstenen değişiklikler: yok
+- Kayıt: karar 0016

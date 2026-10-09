@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 9 Ekim 2026, oturum 3 (F1 K2 Kullanıcı onayı; kablosuz gece testi okundu; GitHub Actions ilk koşusu yeşil) · **Kapsadığı son commit:** `2cf4623` · **Kapanan son faz:** F0
+**Son güncelleme:** 9 Ekim 2026, oturum 4 (F2.47 görsel dil taslağı; Seçenek B onayı, karar 0016) · **Kapsadığı son commit:** `6fabe9f` · **Kapanan son faz:** F0
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -144,6 +144,7 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 | 0003 | Bildirim bütçesi **10** (aralık 10–20); **ısrarlı takip**: Kullanıcı'nın üstlendiği iş "Yaptım" denene dek 30 dk'da bir sorulur | Kullanıcı: "en az 10 olsun… peşimi bırakmasın" | Blueprint'in bildirim yorgunluğu kaygısının tersine. Sınırlar Kullanıcı onaylı: uyku/sessiz saat, kriz/Bunaldım sonrası 3 sa, odak oturumu ve "Bugün sessiz"de susar, sabah sürer. Bütçeden muaf. |
 | 0004 | İlk odak alışkanlıklar: **Sigara (tam bırakma) + Uyku Ritmi** | Kullanıcı seçimi bana bıraktı; sigara en net hedef, uyku diğer her şeyin temeli | Diğer dört alışkanlık "izleniyor"; dürtme almaz. |
 | 0015 | Kullanıcı'nın göreceği her tasarım **`mobile-app-ui-design` yeteneğiyle** yapılır: önce görsel taslak → Kullanıcı onayı → Compose → telefonda karşılaştırma. Yetenek `.claude/skills/` altına eklendi (üçüncü taraf; eklenmeden önce tamamı okundu) | Kullanıcı: "benim göreceğim tüm UI/UX tasarımlar bu skill ile yapılacaktır… tüm tasarım çok iyi olmalıdır" | Ekran işlerine onay adımı eklenir. Yeteneğin seri, kırmızı, parlak kutlama, düşük kontrast, 44 pt gibi önerileri Toparla kurallarıyla çelişir: çizelge `.claude/rules/tasarim.md`, çelişkide Toparla kuralı kazanır. Görsel ayrıntılar (palet, yazı) Kullanıcı seçimiyle blueprint C'den sapabilir. Google Stitch bağlayıcısı bu ortamda yok. |
+| 0016 | Görsel dil **Seçenek B**: açık palet koyulaştırıldı (`primary #47705F`, Taşınan yazısı `#7C5B12` vb.), kartta sınır yerine sıcak yumuşak gölge, ekranda 4 yazı boyutu (32/20/16/13) ve 2 ağırlık, kenar ve kart içi 24 dp, ikincil düğmeler hafif zeminli | Taslakta kontrast hesaplandı: blueprint'in açık paletinde 5 çift 4,5:1'in altında (en düşük 2,06). Kullanıcı taslağı görüp "B'yi beğendim" dedi | Koyu ve AMOLED renkleri değişmedi. Blueprint C'nin görsel ayrıntılarından sapma; DEHB ve erişilebilirlik kuralları aynen. Gerçek görünüm telefonda henüz karşılaştırılmadı. |
 | 0014 | F1'de ölçülemeyen maddeler ilgili fazlara **devredildi** (konum ve Mi Band → F7 ön koşulu; kısıtlı kova ve küçük açık koşullar → F2; model kalanları → F6; liste karar kaydında) | Kullanıcı evden çıkamıyor, Mi Band siparişte, bir ölçüm günler istiyor; F1 açık kalırsa F2-D başlayamıyor. Kullanıcı: "onaylıyorum devret" | Blueprint'in "tüm `[DOĞRULA]` kapandı" ölçütünden sapma: bazı varsayımlar kod yazılırken ölçülmemiş olacak. Devredilen ölçüm yapılmadan o faz kapanmaz. |
 | 0013 | Konuşma tanıma: Android cihaz içi tanıyıcı (`tr-TR`); Whisper eklenmez | Ölçüm: 30 cümlede gerçek sözcük hatası ~%6, 21/30 anlamca tam doğru; Türkçe paket kurulu | Sayılar rakamla ve biçimli gelir: `TrDateParser` buna göre yazılır. Gürültü, kulaklık, uzun konuşma ölçülmedi. Özel adlar zayıf. |
 | 0012 | **Çıraklık dönemi** (3 hafta): Yeşil her AI işi önce Gemini'ye; yanıtlar bilgi kartı ve örnek olarak saklanır, gece gölge koşuyla karşılaştırılır, ≥ 30 koşuda ≥ %90 uyumlu görev yerel modele devredilir. Kişisel veri cihazda kalır (seçenek A). Yerel "yok" derse Yeşil soru Gemini'ye gider ve karta dönüşür | Kullanıcı istedi: yerel model zamanla Gemini'den öğrensin | Blueprint'te olmayan mekanizma; F6–F7'ye iş ekler. İlk haftalar internete bağlı ve daha maliyetli. "Örnek" kanalının etkisi ölçülmedi (F1.25). |
@@ -246,6 +247,10 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 30. **F1 K2 alındı; GitHub Actions ilk koşusu yeşil (9 Ekim).** Kullanıcı onayı: "hepsini gördüm" (alarm
     bildirimleri, kilit ekranında tam ekran kart, müdahale ekranı). GitHub Actions push sonrası koştu ve yeşil
     çıktı (Kullanıcı gözlemi). (`2cf4623`)
+31. **F2-C başladı: görsel dil taslağı ve onayı (9 Ekim, bulut oturumu).** Kullanıcı telefondan, bulut
+    oturumundan çalıştı (bilgisayar ve telefon bağlı değil). Şimdi, kritik hatırlatma ve Hatırlatma Sağlığı
+    A/B olarak tuvalde çizildi; B onaylandı (karar 0016). Bulut ortamında Google'ın indirme sunucusu
+    (`dl.google.com`) kapalı: Android derlemesi orada yapılamıyor, doğrulama GitHub Actions'a bırakıldı. (`6fabe9f`)
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 

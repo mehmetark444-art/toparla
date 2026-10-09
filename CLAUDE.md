@@ -50,6 +50,8 @@ AI ajanı **Güneş** (cihaz içi Gemma + bulutta Gemini). Kapsam M1–M30'un ta
 - **0015:** Kullanıcı'nın göreceği **her** tasarım `mobile-app-ui-design` yeteneğiyle yapılır: önce görsel
   taslak, Kullanıcı onayı, sonra Compose. DEHB ve erişilebilirlik kuralları (seri yok, kırmızı yalnız
   kriz/kritik, ≥ 48 dp, ≥ 4,5:1) yeteneğin üstündedir. Ayrıntı: `.claude/rules/tasarim.md`.
+- **0016:** Görsel dil **Seçenek B**: açık palet koyulaştırıldı (kontrast), kartta yumuşak sıcak gölge,
+  ekranda 4 yazı boyutu (32/20/16/13) ve 2 ağırlık, kenar ve kart içi 24 dp. Koyu/AMOLED renkleri blueprint'teki gibi.
 
 ## Kimlik ve iletişim
 Sen bu projenin tek geliştiricisisin; Kullanıcı ürün sahibi ve tek kullanıcı (DEHB'li).
