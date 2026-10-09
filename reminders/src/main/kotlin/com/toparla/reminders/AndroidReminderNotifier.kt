@@ -40,16 +40,26 @@ class AndroidReminderNotifier(
             .setWhen(notice.plannedAt.toEpochMilli())
             .setShowWhen(true)
             .setGroup(notice.groupKey)
+        actionsFor(reminder).forEach { (label, kind) -> builder.addAction(action(notice.occurrenceKey, label, kind)) }
+        val id = idOf(notice.occurrenceKey)
         if (notice.action == LadderAction.FULL_SCREEN) {
             // Kilitliyken kilit ekranı üstünde tam ekran; ekran açık ve kilitsizken sistem şerit gösterir (F1 ölçümü).
+            // Sistem tam ekran niyetini yalnız bildirim **ilk kez eklenirken** başlatır, güncellemede başlatmaz
+            // (9 Ekim cihaz denemesi: aynı kimliği güncelleyince yalnız şerit geldi). Bu yüzden basamak ayrı
+            // etiketle yeni bildirim olarak eklenir ve önceki kaldırılır.
             builder.setFullScreenIntent(intents.fullScreen(notice.occurrenceKey), true)
+            manager.cancel(id)
+            manager.cancel(TAG_FULL_SCREEN, id)
+            manager.notify(TAG_FULL_SCREEN, id, builder.build())
+        } else {
+            manager.cancel(TAG_FULL_SCREEN, id)
+            manager.notify(id, builder.build())
         }
-        actionsFor(reminder).forEach { (label, kind) -> builder.addAction(action(notice.occurrenceKey, label, kind)) }
-        manager.notify(idOf(notice.occurrenceKey), builder.build())
     }
 
     override fun cancel(occurrenceKey: String) {
         manager.cancel(idOf(occurrenceKey))
+        manager.cancel(TAG_FULL_SCREEN, idOf(occurrenceKey))
     }
 
     override fun showPersistent(items: List<PersistentItem>, askedAt: Instant) {
@@ -138,6 +148,7 @@ class AndroidReminderNotifier(
         const val CHANNEL_SYSTEM = "system"
         const val EXTRA_OCCURRENCE_KEY = "toparla.occurrenceKey"
         private const val PERSISTENT_GROUP = "persistent"
+        private const val TAG_FULL_SCREEN = "tam-ekran"
         private const val PERSISTENT_SUMMARY_ID = 1
 
         fun idOf(occurrenceKey: String): Int = occurrenceKey.hashCode()
