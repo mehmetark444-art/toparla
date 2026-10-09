@@ -36,19 +36,21 @@ jobs:
         run: ./gradlew --console=plain ktlintCheck detekt
       - name: Android Lint ve derleme
         run: ./gradlew --console=plain :app:lintDebug :app:assembleDebug
-      - name: Arayüz testleri (kontrast + ekran görüntüleri)
-        run: ./gradlew --console=plain :ui:recordRoborazziDebug
-      - name: Ekran görüntüleri
-        if: always()
+      # Görüntüler depodaki temel görüntülerle (ui/src/test/screenshots/) karşılaştırılır; görünüm istemeden
+      # değişirse kırmızı. Bilinçli değişiklikte temel görüntüler recordRoborazziDebug ile yenilenir.
+      - name: Arayüz testleri (kontrast + ekran görüntüsü karşılaştırma)
+        run: ./gradlew --console=plain :ui:verifyRoborazziDebug
+      - name: Ekran görüntüsü farkları
+        if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: ekran-goruntuleri
-          path: ui/src/test/screenshots/
+          name: ekran-goruntusu-farklari
+          path: ui/build/outputs/roborazzi/
       # Bulut oturumu Actions dosya deposuna erişemiyor; görüntüleri günlükten okuyabilsin diye metin olarak da yazılır.
-      - name: Ekran görüntüleri (günlüğe, yalnız claude/** dalları)
-        if: always() && startsWith(github.ref, 'refs/heads/claude/')
+      - name: Ekran görüntüsü farkları (günlüğe, yalnız claude/** dalları)
+        if: failure() && startsWith(github.ref, 'refs/heads/claude/')
         run: |
-          for f in ui/src/test/screenshots/*.png; do
+          for f in ui/build/outputs/roborazzi/*.png; do
             [ -e "$f" ] || continue
             echo "@@PNG-BASLA $(basename "$f")"
             base64 -w 0 "$f"; echo
