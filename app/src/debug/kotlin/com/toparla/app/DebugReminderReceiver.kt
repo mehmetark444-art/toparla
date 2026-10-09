@@ -42,6 +42,12 @@ class DebugReminderReceiver : BroadcastReceiver() {
                 val now = entry.clock().now()
                 if (intent.hasExtra("clear")) {
                     access.store().activeDefinitions().forEach { access.store().deleteReminder(it.id, now) }
+                } else if (intent.hasExtra("advance")) {
+                    // Beklemeden deneme: sıradaki alarm (merdiven basamağı, ısrarlı takip sorusu) vakti gelmiş gibi ateşlenir.
+                    // Gerçek zamanlama ayrıca, Kullanıcı beklemeden kayıttan ölçülür.
+                    val next = access.store().scheduled().minByOrNull { it.fireAt }
+                    Timber.i("Sıradaki alarm hemen ateşleniyor: %s", next?.key)
+                    if (next != null) entry.engine().onAlarmFired(next.key, now)
                 } else {
                     val start = LocalDateTime.ofInstant(now.plusSeconds(intent.getIntExtra("delaySec", DEFAULT_DELAY_SEC).toLong()), entry.clock().zone())
                     val id = access.ids().newId()
