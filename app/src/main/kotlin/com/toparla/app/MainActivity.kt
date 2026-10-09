@@ -1,5 +1,7 @@
 package com.toparla.app
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.provider.Settings
@@ -7,6 +9,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -39,6 +42,7 @@ class MainActivity : ComponentActivity() {
         val initial = SystemBarStyle.dark(Color.TRANSPARENT)
         enableEdgeToEdge(statusBarStyle = initial, navigationBarStyle = initial)
         super.onCreate(savedInstanceState)
+        askNotificationPermission()
         setContent {
             val choices by appearance.choices.collectAsState()
             val darkBars = choices.mode != ThemeMode.LIGHT
@@ -59,6 +63,16 @@ class MainActivity : ComponentActivity() {
             ) {
                 ToparlaRoot()
             }
+        }
+    }
+
+    /**
+     * Bildirim izni olmadan hiçbir hatırlatma görünmez; ilk açılışta sorulur (blueprint B5). Reddedilirse sistem
+     * bir daha sormaz: durum ve düzeltme yolu Hatırlatma Sağlığı ekranındadır (F2.35).
+     */
+    private fun askNotificationPermission() {
+        if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) {}.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 
