@@ -73,6 +73,7 @@ class ReminderEngine(
 
     private suspend fun replanLocked(now: Instant, rearm: Boolean) {
         val config = followUpConfig()
+        closeOrphans(now)
         for (pass in 0 until MAX_PASSES) {
             expireStale(now, config)
             val definitions = repo.activeDefinitions()
@@ -175,6 +176,13 @@ class ReminderEngine(
             OccurrenceRecord(SnoozePolicy.snoozedKey(rootKey, index), occurrence.reminderId, until, OccurrenceState.PLANNED, snoozeCount = index),
         )
         return true
+    }
+
+    /** Tanımı silinmiş hatırlatmanın yanıt bekleyen teslimi kapanır ve bildirimi kaldırılır. */
+    private suspend fun closeOrphans(now: Instant) {
+        val orphans = repo.openOccurrences().filter { repo.info(it.reminderId) == null }
+        orphans.forEach { transition(it, OccurrenceEvent.DEFINITION_CHANGED, now, resolves = true) }
+        if (orphans.isNotEmpty()) refreshPersistent(now)
     }
 
     /** Merdiveni bitmiş, yanıtsız kalmış ısrarsız iş bir süre sonra "süresi doldu" olur (gün kapanışında Taşınan). */

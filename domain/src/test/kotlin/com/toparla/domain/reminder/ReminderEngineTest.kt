@@ -350,6 +350,9 @@ class ReminderEngineTest {
 
         assertTrue(scheduler.armed.keys.none { it.startsWith(key) && it != key })
         assertEquals(1, notifier.shown.size)
+        // Silinen hatırlatmanın ekrandaki bildirimi de kalkar; teslim kapanır.
+        assertTrue(key in notifier.cancelled)
+        assertEquals(OccurrenceState.CANCELLED, repo.occurrences.getValue(key).state)
     }
 
     @Test

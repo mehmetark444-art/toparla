@@ -63,12 +63,15 @@ object OccurrenceStateMachine {
             OccurrenceEvent.SNOOZE to OccurrenceState.SNOOZED,
             OccurrenceEvent.SKIP to OccurrenceState.SKIPPED,
             OccurrenceEvent.LADDER_EXHAUSTED to OccurrenceState.EXPIRED,
+            // Tanım silinirse yanıt bekleyen teslim de kapanır; bildirimi kaldırılır.
+            OccurrenceEvent.DEFINITION_CHANGED to OccurrenceState.CANCELLED,
         ),
         OccurrenceState.SEEN to mapOf(
             OccurrenceEvent.MARKED_DONE to OccurrenceState.DONE,
             OccurrenceEvent.SNOOZE to OccurrenceState.SNOOZED,
             OccurrenceEvent.SKIP to OccurrenceState.SKIPPED,
             OccurrenceEvent.LADDER_EXHAUSTED to OccurrenceState.EXPIRED,
+            OccurrenceEvent.DEFINITION_CHANGED to OccurrenceState.CANCELLED,
         ),
         // Süresi dolan iş geç de olsa tamamlanabilir ya da taşınır.
         OccurrenceState.EXPIRED to mapOf(
