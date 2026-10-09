@@ -93,11 +93,24 @@ class BootMirror(context: Context) {
         prefs.edit().remove(key).apply()
     }
 
-    fun all(): List<Entry> = prefs.all.mapNotNull { (key, value) ->
+    fun all(): List<Entry> = prefs.all.filterKeys { it != LOCKED_FIRED }.mapNotNull { (key, value) ->
         val parts = (value as? String)?.split(SEPARATOR) ?: return@mapNotNull null
         val fireAt = parts.getOrNull(0)?.toLongOrNull() ?: return@mapNotNull null
         val api = AlarmApi.entries.firstOrNull { it.name == parts.getOrNull(1) } ?: return@mapNotNull null
         Entry(key, fireAt, api)
+    }
+
+    /** Kilit açılmadan çalan teslim: ayrıntısı kilit açılınca gösterilmek üzere not edilir. */
+    fun markFiredWhileLocked(key: String) {
+        val current = prefs.getStringSet(LOCKED_FIRED, emptySet()).orEmpty()
+        prefs.edit().putStringSet(LOCKED_FIRED, current + key).apply()
+    }
+
+    /** Kilitliyken çalmış teslimleri verir ve listeyi boşaltır. */
+    fun takeFiredWhileLocked(): Set<String> {
+        val keys = prefs.getStringSet(LOCKED_FIRED, emptySet()).orEmpty().toSet()
+        if (keys.isNotEmpty()) prefs.edit().remove(LOCKED_FIRED).apply()
+        return keys
     }
 
     /** Vakti geçmiş kayıtları atar; kopya sınırsız büyümesin. */
@@ -110,6 +123,7 @@ class BootMirror(context: Context) {
     private companion object {
         const val FILE = "alarm_mirror"
         const val SEPARATOR = "|"
+        const val LOCKED_FIRED = "__kilitliyken_calanlar"
     }
 }
 

@@ -62,7 +62,10 @@ class AlarmReceiver : BroadcastReceiver() {
         val key = intent.getStringExtra(AlarmManagerScheduler.EXTRA_KEY) ?: return
         val critical = intent.getBooleanExtra(AlarmManagerScheduler.EXTRA_CRITICAL, false)
         if (!context.isUserUnlocked()) {
-            if (key != AlarmManagerScheduler.MAINTENANCE_KEY) showLocked(context, key, critical)
+            if (key != AlarmManagerScheduler.MAINTENANCE_KEY) {
+                showLocked(context, key, critical)
+                BootMirror(context).markFiredWhileLocked(key)
+            }
             return
         }
         if (critical && startService(context, key)) return
@@ -126,6 +129,19 @@ class RescheduleReceiver : BroadcastReceiver() {
             Timber.i("Kilitli açılış: alarmlar kopyadan kuruldu; vakti geçmiş %d", overdue.size)
             return
         }
-        runAsync(context) { entry -> entry.engine().replan(entry.clock().now(), rearm = true) }
+        runAsync(context) { entry -> ReminderStartup.recover(context, entry) }
+    }
+}
+
+/** Kilit açıldıktan sonraki toparlanma: açılış yayını ve uygulama açılışı aynı yolu kullanır. */
+object ReminderStartup {
+    /**
+     * Önce kilitliyken çalmış teslimler ayrıntısıyla gösterilir (gecikme toleransı beklenmez), sonra pencere
+     * yeniden doldurulur ve sistem alarmları yeniden kurulur.
+     */
+    suspend fun recover(context: Context, entry: ReminderEntryPoint) {
+        val now = entry.clock().now()
+        BootMirror(context).takeFiredWhileLocked().forEach { entry.engine().onAlarmFired(it, now) }
+        entry.engine().replan(now, rearm = true)
     }
 }

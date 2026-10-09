@@ -108,7 +108,12 @@ class ReminderEngine(
             // Teslim yeni basamak ya da soru doğurabilir; onları da kurmak için bir tur daha.
             if (!delivered) break
         }
-        scheduler.scheduleMaintenance(MaintenancePolicy.nextMaintenanceAt(now))
+        // Vakti yeni geçmiş, henüz ateşlenmemiş kayıt varsa (tolerans içinde: sistem teslim ediyor olabilir)
+        // bir sonraki bakım 12 saat sonraya bırakılmaz; tolerans dolunca yeniden bakılır. Aksi hâlde kilitli
+        // açılıştan hemen sonra çalmış bir hatırlatma saatlerce bekler (9 Ekim cihaz denemesi).
+        val stillWaiting = repo.scheduled().any { !it.fireAt.isAfter(now) }
+        val next = if (stillWaiting) now.plus(DeliveryGrouping.LATE_TOLERANCE).plus(RECHECK_MARGIN) else MaintenancePolicy.nextMaintenanceAt(now)
+        scheduler.scheduleMaintenance(next)
     }
 
     /** @return bir şey gösterildiyse ya da durum değiştiyse true */
@@ -236,6 +241,9 @@ class ReminderEngine(
 
         val EXPIRY: Duration = Duration.ofMinutes(Defaults.UNANSWERED_EXPIRY_MIN)
         private const val MAX_PASSES = 3
+
+        /** Tolerans dolduktan sonra yeniden bakmadan önce bırakılan pay. */
+        val RECHECK_MARGIN: Duration = Duration.ofSeconds(5)
         private val OPEN_STATES = setOf(OccurrenceState.DELIVERED, OccurrenceState.SEEN)
         private val SNOOZE_TAIL = Regex("""#s\d+$""")
     }

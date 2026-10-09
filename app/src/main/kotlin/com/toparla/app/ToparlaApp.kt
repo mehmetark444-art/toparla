@@ -7,6 +7,7 @@ import com.toparla.domain.core.Clock
 import com.toparla.domain.core.RotatingLogFile
 import com.toparla.reminders.ReminderEntryPoint
 import com.toparla.reminders.ReminderSafetyNets
+import com.toparla.reminders.ReminderStartup
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -33,7 +34,7 @@ class ToparlaApp : Application() {
     private fun startReminders() {
         if (!getSystemService(UserManager::class.java).isUserUnlocked) return
         val entry = ReminderEntryPoint.of(this)
-        entry.scope().launch { entry.engine().replan(clock.now(), rearm = true) }
+        entry.scope().launch { ReminderStartup.recover(this@ToparlaApp, entry) }
         ReminderSafetyNets.ensureScheduled(this)
     }
 

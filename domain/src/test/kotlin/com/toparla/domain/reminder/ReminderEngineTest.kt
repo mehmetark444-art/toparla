@@ -338,6 +338,23 @@ class ReminderEngineTest {
     }
 
     @Test
+    fun `vakti yeni gecmis teslim tolerans icindeyse motor bir dakika sonra kendiliginden yeniden bakar`() = runBlocking {
+        repo.add(def("r", ReminderClass.IMPORTANT, "2026-10-08T10:00"), title = "Fatura")
+        engine.replan(at("2026-10-08T09:00"))
+        scheduler.armed.clear()
+
+        // Kilit 59 saniye sonra açıldı: teslim tolerans içinde, henüz "çalmamış" sayılmaz…
+        engine.replan(at("2026-10-08T10:00:59"), rearm = true)
+        assertTrue(notifier.shown.isEmpty())
+        // …ama bakım 12 saat sonraya değil, tolerans dolduktan hemen sonraya kurulur.
+        assertEquals(at("2026-10-08T10:02:04"), scheduler.maintenanceAt)
+
+        engine.replan(at("2026-10-08T10:02:04"))
+        assertEquals("Fatura", notifier.shown.single().reminder.title)
+        assertEquals(at("2026-10-08T22:02:04"), scheduler.maintenanceAt)
+    }
+
+    @Test
     fun `tanimi silinen isin bekleyen basamagi iptal edilir ve gec gelen alarmi gosterilmez`() = runBlocking {
         repo.add(def("r", ReminderClass.CRITICAL, "2026-10-08T10:00"))
         engine.replan(at("2026-10-08T09:00"))
