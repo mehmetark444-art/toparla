@@ -21,6 +21,7 @@ object ToparlaIcons {
     val Inbox: ImageVector = icon("Inbox", STROKE, "M3,13 l3,-8 h12 l3,8 v6 H3 z", "M3,13 h5 l1,2 h6 l1,-2 h5")
     val Plan: ImageVector = icon("Plan", STROKE, "M6,5 h12 a2,2 0 0,1 2,2 v11 a2,2 0 0,1 -2,2 H6 a2,2 0 0,1 -2,-2 V7 a2,2 0 0,1 2,-2 z", "M4,10 h16 M9,3 v4 M15,3 v4")
     val Flow: ImageVector = icon("Flow", STROKE, "M3,9 c3,-3 6,3 9,0 s6,3 9,0", "M3,15 c3,-3 6,3 9,0 s6,3 9,0")
+
     // Güneş: iç içe iki halka (avatarın yüzsüz dairesi + ışık halkası). Şimdi'nin ışınlı güneşinden ayrılsın diye ışınsız.
     val Gunes: ImageVector = icon("Gunes", STROKE, "M8,12 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0", "M3.5,12 a8.5,8.5 0 1,0 17,0 a8.5,8.5 0 1,0 -17,0")
     val Mic: ImageVector = icon("Mic", STROKE_BOLD, "M12,3 a3,3 0 0,1 3,3 v5 a3,3 0 0,1 -6,0 V6 a3,3 0 0,1 3,-3 z", "M5,11 a7,7 0 0,0 14,0 M12,18 v3")
