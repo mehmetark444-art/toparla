@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Toparla</string>
+
+    <!-- Alt çubuk sekmeleri (blueprint C9). -->
+    <string name="tab_now">Şimdi</string>
+    <string name="tab_inbox">Gelen</string>
+    <string name="tab_plan">Plan</string>
+    <string name="tab_flow">Akış</string>
+    <string name="tab_gunes">Güneş</string>
+
+    <!-- Sekmelerin boş durumları (iskelet; asıl ekranlar ait oldukları fazda gelir). Suçlayan ifade yok. -->
+    <string name="empty_now">Şimdilik bir şey yok. İstersen gelen kutusuna bakalım ya da dinlen.</string>
+    <string name="empty_now_action">Gelen kutusuna bak</string>
+    <string name="empty_inbox">Gelen kutusu boş.</string>
+    <string name="empty_plan">Bugün için plan yok.</string>
+    <string name="empty_flow">Henüz takip ettiğin bir konu yok.</string>
+    <string name="empty_gunes">Güneş henüz hazırlanıyor.</string>
 </resources>

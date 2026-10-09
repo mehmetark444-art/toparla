@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose dışı yüzeyler (ikon zemini, açılış ve pencere zemini). Değerler ui/…/theme/Palette.kt koyu temasıyla aynı. -->
+<resources>
+    <color name="ic_launcher_background">#1B1917</color>
+    <color name="window_background">#1B1917</color>
+</resources>

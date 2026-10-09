@@ -6,4 +6,12 @@
     <string name="permission_status_granted">Verildi</string>
     <string name="permission_status_required">Gerekli</string>
     <string name="permission_status_off">Kapalı</string>
+    <string name="cd_gunes">Güneş</string>
+    <string name="cd_profile">Ben ve Ayarlar</string>
+    <string name="cd_capture">Yakala. Dokun: sesle. Basılı tut: yazıyla.</string>
+    <string name="cd_new_items">Yeni var</string>
+    <string name="cd_speak">Konuş</string>
+    <string name="cd_send">Gönder</string>
+    <string name="cd_message_field">Güneş\'e mesaj</string>
+    <string name="gunes_input_hint">Güneş\'e yaz…</string>
 </resources>

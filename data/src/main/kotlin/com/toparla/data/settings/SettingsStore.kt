@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.toparla.domain.Defaults
 import com.toparla.domain.FeatureFlag
 import com.toparla.domain.SettingsRules
@@ -21,6 +22,18 @@ data class UserSettings(
 )
 
 /**
+ * Görünüm ayarlarının ham hâli (Ayarlar → Görünüm). Enum adları olarak saklanır; geçerliliği arayüz katmanı
+ * (`AppearanceChoices.parse`) denetler, çünkü tema türleri orada tanımlıdır.
+ */
+data class AppearanceSettings(
+    val themeMode: String?,
+    val accent: String?,
+    val textSize: String?,
+    val reduceMotion: Boolean,
+    val haptics: Boolean,
+)
+
+/**
  * Ayarlar ve özellik anahtarları (DataStore Preferences). Ham değer her okumada [SettingsRules]'tan geçer;
  * bozuk ya da aralık dışı değer sessizce varsayılana döner.
  */
@@ -31,6 +44,16 @@ class SettingsStore(private val dataStore: DataStore<Preferences>) {
             persistentIntervalMin = SettingsRules.persistentIntervalMin(p[PERSISTENT_INTERVAL_MIN]),
             sleepStart = SettingsRules.timeOfDay(p[SLEEP_START], Defaults.SLEEP_START_MINUTE_OF_DAY),
             sleepEnd = SettingsRules.timeOfDay(p[SLEEP_END], Defaults.SLEEP_END_MINUTE_OF_DAY),
+        )
+    }
+
+    val appearance: Flow<AppearanceSettings> = dataStore.data.map { p ->
+        AppearanceSettings(
+            themeMode = p[THEME_MODE],
+            accent = p[ACCENT],
+            textSize = p[TEXT_SIZE],
+            reduceMotion = p[REDUCE_MOTION] ?: false,
+            haptics = p[HAPTICS] ?: true,
         )
     }
 
@@ -61,6 +84,11 @@ class SettingsStore(private val dataStore: DataStore<Preferences>) {
         val PERSISTENT_INTERVAL_MIN = intPreferencesKey("persistent_interval_min")
         val SLEEP_START = intPreferencesKey("sleep_start_minute")
         val SLEEP_END = intPreferencesKey("sleep_end_minute")
+        val THEME_MODE = stringPreferencesKey("theme_mode")
+        val ACCENT = stringPreferencesKey("accent")
+        val TEXT_SIZE = stringPreferencesKey("text_size")
+        val REDUCE_MOTION = booleanPreferencesKey("reduce_motion")
+        val HAPTICS = booleanPreferencesKey("haptics")
 
         fun flagKey(flag: FeatureFlag) = booleanPreferencesKey("flag_${flag.name.lowercase()}")
     }

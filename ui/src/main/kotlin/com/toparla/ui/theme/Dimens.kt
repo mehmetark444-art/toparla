@@ -39,6 +39,9 @@ object Sizes {
     val chipVisual = 36.dp
     val emptyShape = 72.dp
     val captureFab = 64.dp
+    val fabIcon = 28.dp
+    val badgeIcon = 14.dp
+    val topBar = 56.dp
     val avatarSmall = 24.dp
     val avatarMedium = 40.dp
     val avatarLarge = 72.dp
@@ -51,6 +54,7 @@ object Sizes {
 
 /** Kart yüksekliği: yumuşak, sıcak tonlu gölge + neredeyse görünmez sınır (karar 0016). */
 object Elevation {
+    val none = 0.dp
     val card = 12.dp
     val small = 6.dp
     val border = 1.dp

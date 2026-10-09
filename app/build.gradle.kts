@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 // İmza bilgisi depoya girmez (blueprint B7). Dosya yoksa release imzasız derlenir ve telefona kurulamaz.
@@ -52,6 +54,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    buildFeatures {
+        compose = true
+    }
+
     lint {
         warningsAsErrors = false
         abortOnError = true
@@ -66,6 +72,11 @@ dependencies {
     implementation(project(":ai"))
     implementation(project(":sensors"))
     implementation(project(":ui"))
+
+    implementation(platform(libs.compose.bom))
+    implementation(libs.activity.compose)
+    implementation(libs.navigation.compose)
+    implementation(libs.serialization.json)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

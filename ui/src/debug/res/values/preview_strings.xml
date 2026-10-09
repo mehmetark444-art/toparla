@@ -29,4 +29,10 @@
     <string name="preview_dialog_message">Bu kaydı silersen geri getiremem.</string>
     <string name="preview_dialog_left">Sil</string>
     <string name="preview_dialog_right">Vazgeç</string>
+    <string name="preview_tab_now">Şimdi</string>
+    <string name="preview_tab_inbox">Gelen</string>
+    <string name="preview_tab_plan">Plan</string>
+    <string name="preview_tab_flow">Akış</string>
+    <string name="preview_tab_gunes">Güneş</string>
+    <string name="preview_gunes_hello">Merhaba. Aklındakini buraya yazabilir ya da söyleyebilirsin.</string>
 </resources>

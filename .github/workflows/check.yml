@@ -39,7 +39,17 @@ jobs:
       # Görüntüler depodaki temel görüntülerle (ui/src/test/screenshots/) karşılaştırılır; görünüm istemeden
       # değişirse kırmızı. Bilinçli değişiklikte temel görüntüler recordRoborazziDebug ile yenilenir.
       - name: Arayüz testleri (kontrast + ekran görüntüsü karşılaştırma)
-        run: ./gradlew --console=plain :ui:verifyRoborazziDebug
+        # GECICI (F2.24): yeni iskelet görüntülerinin ilk kaydı; göz kontrolünden sonra verifyRoborazziDebug'a döner.
+        run: ./gradlew --console=plain :ui:recordRoborazziDebug
+      - name: Yeni iskelet görüntüleri (günlüğe, geçici)
+        if: always() && startsWith(github.ref, 'refs/heads/claude/')
+        run: |
+          for f in ui/src/test/screenshots/iskelet_*.png; do
+            [ -e "$f" ] || continue
+            echo "@@PNG-BASLA $(basename "$f")"
+            base64 -w 0 "$f"; echo
+            echo "@@PNG-BITTI"
+          done
       - name: Ekran görüntüsü farkları
         if: failure()
         uses: actions/upload-artifact@v7
