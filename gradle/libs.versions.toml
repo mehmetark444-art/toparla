@@ -19,9 +19,11 @@ ktlintGradle = "14.2.0"
 androidxTestRunner = "1.7.0"
 androidxTestJunit = "1.3.0"
 litertlm = "0.18.0"      # Cihaz içi LLM çalışma zamanı; şimdilik yalnız :spike
-# Doğrulama: 9 Ekim 2026 — developer.android.com BOM eşleme sayfası (en yeni BOM: material3 1.4.0, ui 1.12.1),
-# Maven Central (Robolectric, Roborazzi, Compose derleyici eklentisi = Kotlin sürümü), Gradle Plugin Portal.
-composeBom = "2026.09.00"
+# Doğrulama: 9 Ekim 2026 — developer.android.com BOM eşleme sayfası, Maven Central (Robolectric, Roborazzi,
+# Compose derleyici eklentisi = Kotlin sürümü), Gradle Plugin Portal.
+# Compose 1.12 (BOM 2026.08+) compileSdk 37 istiyor (CI, checkDebugAarMetadata); proje 36'da kaldığı için
+# 1.11.x'in son BOM'u: ui 1.11.4, material3 1.4.0.
+composeBom = "2026.06.01"
 robolectric = "4.17"     # SDK 36 desteği 4.16'dan beri; SDK 36 testleri JDK 21 ister
 roborazzi = "1.76.0"
 
