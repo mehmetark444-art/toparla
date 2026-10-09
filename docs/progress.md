@@ -87,3 +87,7 @@ kontrast testi, Roborazzi). Bulutta Google Maven kapalı: yalnız saf kısım (r
 ktlint ve detekt temiz. Compose derlemesi ve ekran görüntüleri için CI bu dalda da koşacak şekilde ayarlandı.
 
 **Açık:** CI sonucu; ekran görüntülerinin taslakla karşılaştırılması.
+
+**Kapanış (oturum 4):** F2.19–F2.23 ☑ (CI koşu 13 yeşil, `57ec7c1`). Göz kontrolünde 3 kusur bulunup düzeltildi.
+**Sıradaki:** F2.24 (uygulama ikonu, gezinme iskeleti) için önce görsel taslak ve Kullanıcı onayı; telefon gerektiren
+işler (F1 kalanları, F2-D cihaz testleri) bilgisayar/telefon bağlanınca. Gece kontrolü bu gün için yapılmadı.

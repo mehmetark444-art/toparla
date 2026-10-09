@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 9 Ekim 2026, oturum 4 (F2.47 görsel dil taslağı; Seçenek B onayı, karar 0016) · **Kapsadığı son commit:** `6fabe9f` · **Kapanan son faz:** F0
+**Son güncelleme:** 9 Ekim 2026, oturum 4 (F2.47 Seçenek B onayı, karar 0016; F2.19–F2.23 bitti, bulut oturumu) · **Kapsadığı son commit:** `57ec7c1` · **Kapanan son faz:** F0
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -251,6 +251,11 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     oturumundan çalıştı (bilgisayar ve telefon bağlı değil). Şimdi, kritik hatırlatma ve Hatırlatma Sağlığı
     A/B olarak tuvalde çizildi; B onaylandı (karar 0016). Bulut ortamında Google'ın indirme sunucusu
     (`dl.google.com`) kapalı: Android derlemesi orada yapılamıyor, doğrulama GitHub Actions'a bırakıldı. (`6fabe9f`)
+32. **F2.19–F2.23 bitti (9 Ekim, bulut oturumu).** `:ui` Compose teması (karar 0016 paleti, 3 tema × 6 vurgu,
+    yazı/boşluk/hareket jetonları), 11 ortak bileşen + `ToparlaCard`, `ChipRow`, `ActionRow`; kontrast testi; Roborazzi
+    ile 12 ekran görüntüsü, temel görüntüler depoda ve CI'da karşılaştırılıyor. CI `claude/**` dallarında da koşuyor;
+    bulut oturumu görüntüleri günlükten okuyor. Göz kontrolü 3 gerçek kusur buldu (koyu temada siyah metin, %200'de
+    bölünen kelimeler, taşan halka metni); hepsi düzeltildi. 13 CI koşusu; yanlışlar H30–H31. (`57ec7c1`)
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
