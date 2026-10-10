@@ -32,7 +32,7 @@ class ReminderService : Service() {
         val entry = ReminderEntryPoint.of(this)
         entry.scope().launch {
             try {
-                if (key != null) entry.engine().onAlarmFired(key, entry.clock().now())
+                if (key != null) deliverSafely(this@ReminderService, key, critical = true) { entry.engine().onAlarmFired(key, entry.clock().now()) }
             } finally {
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf(startId)
@@ -57,4 +57,6 @@ class LauncherIntents(private val context: Context) : ReminderIntents {
     }
 
     override fun fullScreen(occurrenceKey: String): PendingIntent = openApp()
+
+    override fun openHealth(): PendingIntent = openApp()
 }

@@ -46,4 +46,9 @@
     <string name="delivering_title">Hatırlatma iletiliyor</string>
     <string name="locked_boot_title">Hatırlatman var</string>
     <string name="locked_boot_text">Kilidi açınca ayrıntısını göstereceğim.</string>
+    <string name="storage_fallback_text">Ayrıntısını şu an açamadım; hatırlatman bu.</string>
+
+    <!-- Nabız uyarısı (Sistem kanalı): sakin, suçlamayan, tek eylemli. -->
+    <string name="heartbeat_title">Hatırlatmalarına birlikte bakalım</string>
+    <string name="heartbeat_text">Telefonda bir ayar değişmiş; hatırlatmalar zamanında gelmeyebilir. Dokun, hangisi olduğunu göstereyim.</string>
 </resources>

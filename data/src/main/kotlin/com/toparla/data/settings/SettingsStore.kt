@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.toparla.domain.Defaults
 import com.toparla.domain.FeatureFlag
 import com.toparla.domain.SettingsRules
@@ -58,8 +59,8 @@ class SettingsStore(private val dataStore: DataStore<Preferences>) {
     }
 
     /**
-     * HyperOS otomatik başlatma izni uygulama içinden okunamaz (F1 bulgusu). Kullanıcı sihirbazda "açtım" dediğinde
-     * ya da kendi kendini sınama geçtiğinde true olur.
+     * HyperOS otomatik başlatma izni uygulama içinden okunamaz (F1 bulgusu). Yalnız Kullanıcı sihirbazda "açtım"
+     * dediğinde true olur (sınamanın geçmesi kanıt sayılmaz; proje beyni H38).
      */
     val autoStartConfirmed: Flow<Boolean> = dataStore.data.map { it[AUTO_START_CONFIRMED] ?: false }
 
@@ -72,6 +73,13 @@ class SettingsStore(private val dataStore: DataStore<Preferences>) {
 
     suspend fun setSelfTestKey(value: String?) {
         dataStore.edit { if (value == null) it.remove(SELF_TEST_KEY) else it[SELF_TEST_KEY] = value }
+    }
+
+    /** Nabzın en son uyardığı eksikler (`HealthCheck` adları): aynı eksik için yeniden uyarılmaz. */
+    val heartbeatWarned: Flow<Set<String>> = dataStore.data.map { it[HEARTBEAT_WARNED].orEmpty() }
+
+    suspend fun setHeartbeatWarned(value: Set<String>) {
+        dataStore.edit { it[HEARTBEAT_WARNED] = value }
     }
 
     fun flag(flag: FeatureFlag): Flow<Boolean> = dataStore.data.map { it[flagKey(flag)] ?: flag.defaultOn }
@@ -108,6 +116,7 @@ class SettingsStore(private val dataStore: DataStore<Preferences>) {
         val HAPTICS = booleanPreferencesKey("haptics")
         val AUTO_START_CONFIRMED = booleanPreferencesKey("auto_start_confirmed")
         val SELF_TEST_KEY = stringPreferencesKey("self_test_key")
+        val HEARTBEAT_WARNED = stringSetPreferencesKey("heartbeat_warned")
 
         fun flagKey(flag: FeatureFlag) = booleanPreferencesKey("flag_${flag.name.lowercase()}")
     }

@@ -1,6 +1,7 @@
 package com.toparla.app
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
@@ -14,6 +15,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.toparla.app.nav.ToparlaRoot
@@ -37,11 +39,16 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     private val appearance: AppearanceViewModel by viewModels()
 
+    /** Nabız uyarısına dokunularak gelindiyse Hatırlatma Sağlığı açılır; açılınca istek tüketilir. */
+    private val openHealth = mutableStateOf(false)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // İlk kare pencere zemini gibi koyu (themes.xml); ayar okununca aşağıda temaya göre yeniden kurulur.
         val initial = SystemBarStyle.dark(Color.TRANSPARENT)
         enableEdgeToEdge(statusBarStyle = initial, navigationBarStyle = initial)
         super.onCreate(savedInstanceState)
+        // Yeniden oluşturmada (ör. tema değişimi) eski niyet yeniden işlenmez.
+        if (savedInstanceState == null) openHealth.value = intent?.action == ACTION_OPEN_HEALTH
         askNotificationPermission()
         setContent {
             val choices by appearance.choices.collectAsState()
@@ -61,9 +68,14 @@ class MainActivity : ComponentActivity() {
                 reduceMotion = choices.reduceMotion || systemAnimationsOff(),
                 hapticsEnabled = choices.haptics,
             ) {
-                ToparlaRoot()
+                ToparlaRoot(openHealth = openHealth.value, onHealthOpened = { openHealth.value = false })
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (intent.action == ACTION_OPEN_HEALTH) openHealth.value = true
     }
 
     /**
@@ -79,9 +91,10 @@ class MainActivity : ComponentActivity() {
     private fun systemAnimationsOff(): Boolean =
         Settings.Global.getFloat(contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, ANIMATIONS_ON) == ANIMATIONS_OFF
 
-    private companion object {
-        const val ANIMATIONS_ON = 1f
-        const val ANIMATIONS_OFF = 0f
+    companion object {
+        const val ACTION_OPEN_HEALTH = "com.toparla.app.OPEN_HEALTH"
+        private const val ANIMATIONS_ON = 1f
+        private const val ANIMATIONS_OFF = 0f
     }
 }
 

@@ -14,6 +14,10 @@ data class AlarmKey(val occurrenceKey: String, val reminderId: String, val kind:
     companion object {
         private val TAIL = Regex("""#([lfs])(\d+)$""")
 
+        /** Ana teslim anahtarı planlanan anı taşır (`id@ms`). */
+        fun plannedAtOf(key: String): Instant? =
+            key.substringAfter('@', "").substringBefore('#').toLongOrNull()?.let(Instant::ofEpochMilli)
+
         fun parse(key: String): AlarmKey {
             val reminderId = key.substringBefore('@')
             val match = TAIL.find(key) ?: return AlarmKey(key, reminderId, AlarmKeyKind.MAIN, 0)
@@ -93,7 +97,8 @@ interface ReminderRepository {
 
 /** Sistem alarmları. Aynı anahtarla yeniden kurmak aynı sonucu verir (idempotans). */
 interface ReminderScheduler {
-    fun schedule(alarm: PlannedAlarm)
+    /** @param title kilit açılmadan çalarsa gösterilecek başlık (Direct Boot kopyasına yazılır; blueprint G1) */
+    fun schedule(alarm: PlannedAlarm, title: String? = null)
 
     fun cancel(key: String)
 
@@ -104,6 +109,9 @@ interface ReminderScheduler {
 /** Bildirim yüzeyi. */
 interface ReminderNotifier {
     fun show(notice: DeliveryNotice)
+
+    /** Bu sınıfın bildirimi şu an gösterilemiyor mu (bildirim izni ya da kanalı kapalı)? */
+    fun isBlocked(klass: ReminderClass): Boolean
 
     fun cancel(occurrenceKey: String)
 

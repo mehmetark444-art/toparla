@@ -1,7 +1,5 @@
 package com.toparla.reminders
 
-import android.app.Notification
-import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -31,16 +29,18 @@ interface ReminderEntryPoint {
 
     fun scheduler(): AlarmManagerScheduler
 
+    fun healthWatch(): HealthWatch
+
     companion object {
         fun of(context: Context): ReminderEntryPoint =
             EntryPointAccessors.fromApplication(context.applicationContext, ReminderEntryPoint::class.java)
     }
 }
 
-private fun Context.isUserUnlocked(): Boolean = getSystemService(UserManager::class.java).isUserUnlocked
+internal fun Context.isUserUnlocked(): Boolean = getSystemService(UserManager::class.java).isUserUnlocked
 
 /** Alıcının 10 saniyelik süresi içinde işi arka plan kapsamında bitirir. */
-private fun BroadcastReceiver.runAsync(context: Context, block: suspend (ReminderEntryPoint) -> Unit) {
+internal fun BroadcastReceiver.runAsync(context: Context, block: suspend (ReminderEntryPoint) -> Unit) {
     val pending = goAsync()
     val entry = ReminderEntryPoint.of(context)
     entry.scope().launch {
@@ -55,7 +55,8 @@ private fun BroadcastReceiver.runAsync(context: Context, block: suspend (Reminde
 /**
  * Sistem alarmı ateşlendi. Kritik teslim foreground service'e devredilir (blueprint G1, F1 ölçümü: 29–35 ms);
  * servis başlatılamazsa ve diğer sınıflarda iş alıcının kendi süresinde yapılır.
- * Kilit açılmadan çalarsa veritabanına erişilemez: içeriksiz bir bildirim gösterilir, ayrıntı kilit açılınca gelir.
+ * Kilit açılmadan çalarsa veritabanına erişilemez: bildirim cihaz korumalı kopyadaki başlıkla gösterilir
+ * ([FallbackNotice]), ayrıntı kilit açılınca gelir. Kayıt yazılamazsa da aynı yola düşülür ([deliverSafely]).
  */
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -63,17 +64,19 @@ class AlarmReceiver : BroadcastReceiver() {
         val critical = intent.getBooleanExtra(AlarmManagerScheduler.EXTRA_CRITICAL, false)
         if (!context.isUserUnlocked()) {
             if (key != AlarmManagerScheduler.MAINTENANCE_KEY) {
-                showLocked(context, key, critical)
-                BootMirror(context).markFiredWhileLocked(key)
+                FallbackNotice.show(context, key, critical, R.string.locked_boot_text)
+                BootMirror(context).markAwaitingDetail(key)
             }
             return
         }
         if (critical && startService(context, key)) return
         runAsync(context) { entry ->
-            if (key == AlarmManagerScheduler.MAINTENANCE_KEY) {
-                entry.engine().replan(entry.clock().now())
-            } else {
-                entry.engine().onAlarmFired(key, entry.clock().now())
+            deliverSafely(context, key, critical) {
+                if (key == AlarmManagerScheduler.MAINTENANCE_KEY) {
+                    entry.engine().replan(entry.clock().now())
+                } else {
+                    entry.engine().onAlarmFired(key, entry.clock().now())
+                }
             }
         }
     }
@@ -85,19 +88,6 @@ class AlarmReceiver : BroadcastReceiver() {
         // ForegroundServiceStartNotAllowedException dahil: bildirim yoluna düşülür (blueprint G2).
         Timber.w(e, "Teslim servisi başlatılamadı; alıcıda devam ediliyor")
         false
-    }
-
-    private fun showLocked(context: Context, key: String, critical: Boolean) {
-        AndroidReminderNotifier.ensureChannels(context)
-        val channel = if (critical) AndroidReminderNotifier.CHANNEL_CRITICAL else AndroidReminderNotifier.CHANNEL_IMPORTANT
-        val notification = Notification.Builder(context, channel)
-            .setSmallIcon(R.drawable.ic_stat_toparla)
-            .setContentTitle(context.getString(R.string.locked_boot_title))
-            .setContentText(context.getString(R.string.locked_boot_text))
-            .setCategory(if (critical) Notification.CATEGORY_ALARM else Notification.CATEGORY_REMINDER)
-            .build()
-        // Kimlik teslimin kendi kimliği: kilit açılınca gelen asıl bildirim bunun yerini alır.
-        context.getSystemService(NotificationManager::class.java).notify(AndroidReminderNotifier.idOf(key), notification)
     }
 }
 
@@ -129,6 +119,7 @@ class RescheduleReceiver : BroadcastReceiver() {
             Timber.i("Kilitli açılış: alarmlar kopyadan kuruldu; vakti geçmiş %d", overdue.size)
             return
         }
+        Timber.i("Yeniden planlama tetiklendi: %s", intent.action)
         runAsync(context) { entry -> ReminderStartup.recover(context, entry) }
     }
 }
@@ -136,12 +127,13 @@ class RescheduleReceiver : BroadcastReceiver() {
 /** Kilit açıldıktan sonraki toparlanma: açılış yayını ve uygulama açılışı aynı yolu kullanır. */
 object ReminderStartup {
     /**
-     * Önce kilitliyken çalmış teslimler ayrıntısıyla gösterilir (gecikme toleransı beklenmez), sonra pencere
-     * yeniden doldurulur ve sistem alarmları yeniden kurulur.
+     * Önce veritabanına ulaşılamadan çalmış teslimler ayrıntısıyla gösterilir (gecikme toleransı beklenmez),
+     * sonra pencere yeniden doldurulur ve sistem alarmları yeniden kurulur. Son adım nabızdır.
      */
     suspend fun recover(context: Context, entry: ReminderEntryPoint) {
         val now = entry.clock().now()
-        BootMirror(context).takeFiredWhileLocked().forEach { entry.engine().onAlarmFired(it, now) }
+        BootMirror(context).takeAwaitingDetail().forEach { entry.engine().onAlarmFired(it, now) }
         entry.engine().replan(now, rearm = true)
+        entry.healthWatch().beat()
     }
 }

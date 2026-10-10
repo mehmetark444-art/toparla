@@ -84,6 +84,24 @@ data class HealthReport(val toFix: List<HealthCheck>, val ok: List<HealthCheck>,
     }
 }
 
+/** Nabız kararı: [problems] şu an açık olan eksikler; [warn] Kullanıcı'ya yeni bir uyarı gösterilsin mi. */
+data class HeartbeatDecision(val problems: Set<HealthCheck>, val warn: Boolean)
+
+/**
+ * Nabız (v3 §8.3, blueprint Bölüm I): günde bir ve uygulama açılışında motor sağlığına bakılır; hatırlatmanın
+ * kaçmasına yol açabilecek bir eksik varsa sakin tek bir uyarı gösterilir. Aynı eksik için yeniden uyarılmaz:
+ * uyarı yalnız **yeni** bir eksik çıkınca yinelenir, hepsi düzelince kalkar.
+ */
+object Heartbeat {
+    /** Otomatik başlatma okunamaz (sihirbazın işi); Rahatsız Etme erişimi isteğe bağlıdır: ikisi de uyarı doğurmaz. */
+    val WATCHED: Set<HealthCheck> = setOf(HealthCheck.NOTIFICATIONS, HealthCheck.EXACT_ALARMS, HealthCheck.FULL_SCREEN, HealthCheck.BATTERY)
+
+    fun decide(report: HealthReport, alreadyWarned: Set<HealthCheck>): HeartbeatDecision {
+        val problems = report.toFix.filterTo(LinkedHashSet()) { it in WATCHED }
+        return HeartbeatDecision(problems, warn = (problems - alreadyWarned).isNotEmpty())
+    }
+}
+
 sealed interface SelfTestResult {
     data object Waiting : SelfTestResult
 

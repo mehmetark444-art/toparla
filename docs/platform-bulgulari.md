@@ -1049,3 +1049,36 @@ Kullanıcı üç adımı yaptı ve "hepsi oldu" dedi; aşağıdakiler uygulaman�
 teslim"i kanıtlamıyor; yalnız sınama akışının çalıştığını gösteriyor. İlk sürüm sınama geçince otomatik başlatmayı
 "onaylı" işaretliyordu; kaldırıldı (H38). Telefondaki ayarda o işaret bu denemeden kalma olarak duruyor.
 Ek: 9 Ekim 22:19:31'de **Yarın** eylemi de günlükte (`ACTION TOMORROW`, ertesi gün 07:30'a teslim planlandı).
+
+### 10 Ekim 2026 — F2-D kalanları: güvenlik ağı işleri, nabız, izin/DND değişimi (debug sürümü)
+
+Yöntem: `com.toparla.app.dev`, USB bağlı, ekran açık. Uygulamanın dönen günlüğü (`files/logs`) ve veritabanı
+`run-as` ile okundu; sistem tarafı `dumpsys` ve `logcat` ile. Aksi yazılmadıkça her satır tek deneme.
+
+| Deneme | Yöntem | Sonuç |
+|---|---|---|
+| Güvenlik ağı işlerini zorla koşturma | `cmd jobscheduler run -f -n androidx.work.systemjobscheduler PKG İŞ` | İş başladı ama WorkManager **çalıştırmadı**: "Delaying execution … because it is being executed before schedule" (dönemli iş vaktinden önce koşturulamıyor). Ad alanı verilmezse komut işi bulamıyor |
+| Üç işin gerçekten koşması | debug tetikleyici `--es work run` (aynı işçi sınıfları, tek seferlik istek) | Günlükte "Kritik bekçi koştu", "Günlük bakım koştu", "Nabız işi koştu" (4 tur, her seferinde üçü de) |
+| Kritik bekçinin kendi döneminde koşması | hiçbir şey tetiklenmeden beklendi | 09:22:09'da "Kritik bekçi koştu" (önceki doğal koşu sistem kaydına göre ~09:07; aralık ~15 dk). **1 doğal koşu**; uygulama süreci o an ayaktaydı |
+| Nabız uyarısı | `appops set --uid PKG USE_FULL_SCREEN_INTENT ignore` → işler koşturuldu → `allow` → yeniden | "Nabız: eksik [FULL_SCREEN], yeni uyarı true"; sistem kaydında `id=3 channel=system` bildirimi; ikinci koşuda yinelenmedi; izin geri verilince "eksik []" ve bildirim kalktı |
+| Rahatsız Etme erişimi değişimi | `cmd notification disallow_dnd PKG`, sonra `allow_dnd PKG` | İki yönde de `NOTIFICATION_POLICY_ACCESS_GRANTED_CHANGED` manifest alıcısına (dışa kapalı) geldi; alıcı nabzı ve yeniden planlamayı koştu. Kritik kanal `mBypassDnd=true` kaldı |
+| Paket güncelleme | `adb install -r` (3 kurulum), ardından hiçbir şeye dokunmadan 12 sn | Sistem kaydı: `Unable to launch app … for broadcast MY_PACKAGE_REPLACED: process is not permitted to auto start`. **Yayın teslim edilmedi, süreç kalkmadı.** Kurulu sistem alarmı (bakım) güncellemeden sonra yerinde kaldı |
+| Bildirim iznini adb ile kapatma | `pm revoke PKG android.permission.POST_NOTIFICATIONS` | `SecurityException` (kabuğun bu telefonda yetkisi yok). Bildirim izni kapalıyken teslim **cihazda ölçülemedi** |
+| Ağ izni | `dumpsys package PKG` | `INTERNET` izni yok (yalnız WorkManager'dan gelen `ACCESS_NETWORK_STATE`): teslim hattı ağa bağlı olamaz |
+| Israrlı takip, gerçek aralık | 09:23:06'da ısrarlı deneme hatırlatması teslim edildi; ilk soru 09:53:06'ya kesin yolla kuruldu | **Sonuç bekleniyor** (Kullanıcı telefonu yanında götürdü; kayıt akşam okunacak). Önceki denemede Kullanıcı 6 sn sonra "10 dk sonra"ya bastığı için ölçüm yinelenmişti |
+
+**Bulgular**
+1. **Paket güncellemesinden sonra uygulama kendiliğinden ayağa kalkmıyor** (otomatik başlatma izni yokken):
+   `MY_PACKAGE_REPLACED` HyperOS tarafından engelleniyor. Alarmlar silinmediği için hatırlatma kaybolmuyor, ama
+   güncellemeyle gelen değişiklik (kanal, yeniden planlama) uygulama ilk açılana ya da ilk alarm çalana kadar
+   uygulanmıyor. 9 Ekim'de "paket güncellemede çalıştığı görüldü" diye yazılan gözlem büyük olasılıkla uygulama
+   açılışıydı (proje beyni H39). Otomatik başlatma açıkken davranış ölçülmedi (F2.45).
+2. WorkManager'ın dönemli işi `jobscheduler run -f` ile öne çekilemiyor; cihaz denemesinde işçi sınıfı tek seferlik
+   istekle koşturulur, dönemin kendisi ayrıca beklenerek görülür.
+3. `appops set PKG …` uid kipi `allow` iken etkisiz; uid düzeyinde verilmeli (`--uid`).
+4. Rahatsız Etme erişimi yayını manifest alıcısına geliyor (belgelerde "yalnız kayıtlı alıcılar" yazsa da).
+
+**Sınırlar:** debug sürümü, USB bağlı. Günlük bakım ve nabız işlerinin 24 saatlik kendi dönemlerinde koştuğu
+görülmedi (yalnız tetiklenerek). Saat / saat dilimi değişimi, Rahatsız Etme **açıkken** kritik teslim, bildirim izni
+kapalıyken teslim ve kilitli açılışta başlıklı bildirim cihazda denenmedi (dördü de Kullanıcı'nın telefonda bir ayara
+dokunmasını ister). Telefon ölçüm sonunda eski durumuna döndürüldü (tam ekran izni `allow`, Rahatsız Etme erişimi açık).

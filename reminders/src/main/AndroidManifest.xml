@@ -37,6 +37,18 @@
             </intent-filter>
         </receiver>
 
+        <!-- Bildirim izni, kanal ya da Rahatsız Etme değişince sağlık yeniden denetlenir ve pencere yeniden kurulur. -->
+        <receiver
+            android:name=".HealthChangeReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.app.action.APP_BLOCK_STATE_CHANGED" />
+                <action android:name="android.app.action.NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED" />
+                <action android:name="android.app.action.NOTIFICATION_POLICY_ACCESS_GRANTED_CHANGED" />
+                <action android:name="android.app.action.INTERRUPTION_FILTER_CHANGED" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".ReminderService"
             android:exported="false"

@@ -65,10 +65,22 @@ class ReminderEngine(
         val missing = CriticalWatchdog.missing(now, repo.activeDefinitions(), repo.scheduled())
         if (missing.isEmpty()) return@withLock
         missing.forEach {
-            scheduler.schedule(it)
+            scheduler.schedule(it, repo.info(it.reminderId)?.title)
             repo.log(it.key, now, EVENT_WATCHDOG_REARMED)
         }
         repo.applyPlan(missing, emptyList())
+    }
+
+    /**
+     * Bildirimler yeniden açıldı (izin ya da kanal): kapalıyken gösterilemeyen, hâlâ yanıt bekleyen teslimler
+     * yeniden gösterilir. Sistem, izin kapanınca uygulamanın bildirimlerini siler ve açılınca geri getirmez.
+     */
+    suspend fun reshowOpen(now: Instant) = mutex.withLock {
+        for (occurrence in repo.openOccurrences()) {
+            val info = repo.info(occurrence.reminderId)?.takeUnless { it.persistent } ?: continue
+            notifier.show(notice(occurrence.key, info, LadderAction.NOTIFY, occurrence.plannedAt, Duration.ZERO))
+        }
+        refreshPersistent(now)
     }
 
     private suspend fun replanLocked(now: Instant, rearm: Boolean) {
@@ -90,7 +102,8 @@ class ReminderEngine(
             } else {
                 result.toSchedule
             }
-            toArm.forEach(scheduler::schedule)
+            // Başlık, kilit açılmadan çalarsa gösterilmek üzere alarmla birlikte verilir.
+            toArm.forEach { scheduler.schedule(it, repo.info(it.reminderId)?.title) }
             repo.applyPlan(result.toSchedule, result.toCancel)
 
             var delivered = false
@@ -123,7 +136,7 @@ class ReminderEngine(
         val parsed = AlarmKey.parse(key)
         val info = repo.info(parsed.reminderId) ?: return false
         return when (parsed.kind) {
-            AlarmKeyKind.MAIN, AlarmKeyKind.SNOOZE -> deliverOccurrence(parsed, info, now, plannedFire ?: plannedAtOf(key) ?: now)
+            AlarmKeyKind.MAIN, AlarmKeyKind.SNOOZE -> deliverOccurrence(parsed, info, now, plannedFire ?: AlarmKey.plannedAtOf(key) ?: now)
             AlarmKeyKind.LADDER -> deliverLadderStep(parsed, info, now)
             AlarmKeyKind.FOLLOW_UP -> deliverFollowUp(parsed, now)
         }
@@ -135,7 +148,8 @@ class ReminderEngine(
         val next = OccurrenceStateMachine.next(base.state, OccurrenceEvent.FIRED) ?: return false
         repo.saveOccurrence(base.copy(state = next, deliveredAt = now, ladderStepsDone = 1, lastAskedAt = now))
         notifier.show(notice(parsed.occurrenceKey, info, LadderAction.NOTIFY, base.plannedAt, DeliveryGrouping.lateBy(base.plannedAt, now)))
-        repo.log(parsed.occurrenceKey, now, EVENT_POSTED)
+        // Bildirim kapalıysa teslim "gösterildi" diye kaydedilmez; izin açılınca yeniden gösterilir ([reshowOpen]).
+        repo.log(parsed.occurrenceKey, now, if (notifier.isBlocked(info.klass)) EVENT_BLOCKED else EVENT_POSTED)
         return true
     }
 
@@ -229,14 +243,11 @@ class ReminderEngine(
     private fun notice(occurrenceKey: String, info: ReminderInfo, action: LadderAction, plannedAt: Instant, lateBy: Duration) =
         DeliveryNotice(occurrenceKey, info, action, plannedAt, lateBy, "g@${plannedAt.truncatedTo(ChronoUnit.MINUTES).toEpochMilli()}")
 
-    /** Ana teslim anahtarı planlanan anı taşır (`id@ms`). */
-    private fun plannedAtOf(key: String): Instant? =
-        key.substringAfter('@', "").substringBefore('#').toLongOrNull()?.let(Instant::ofEpochMilli)
-
     companion object {
         const val EVENT_MISSED_DETECTED = "MISSED_DETECTED"
         const val EVENT_WATCHDOG_REARMED = "WATCHDOG_REARMED"
         const val EVENT_POSTED = "POSTED"
+        const val EVENT_BLOCKED = "BLOCKED"
         const val EVENT_ACTION = "ACTION"
 
         val EXPIRY: Duration = Duration.ofMinutes(Defaults.UNANSWERED_EXPIRY_MIN)

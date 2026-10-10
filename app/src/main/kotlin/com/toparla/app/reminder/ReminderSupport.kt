@@ -1,30 +1,22 @@
 package com.toparla.app.reminder
 
-import android.app.AlarmManager
-import android.app.NotificationManager
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.PowerManager
 import android.provider.Settings
 import com.toparla.data.db.CreatedBy
 import com.toparla.data.db.OwnerType
 import com.toparla.data.db.ReminderEntity
 import com.toparla.data.db.ReminderStore
-import com.toparla.data.settings.SettingsStore
 import com.toparla.domain.core.Clock
 import com.toparla.domain.core.IdGenerator
 import com.toparla.domain.reminder.HealthCheck
-import com.toparla.domain.reminder.HealthReport
-import com.toparla.domain.reminder.HealthSnapshot
 import com.toparla.domain.reminder.ReminderClass
 import com.toparla.domain.reminder.ReminderDraft
 import com.toparla.domain.reminder.ReminderEngine
 import com.toparla.domain.reminder.ReminderPlanner
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.first
 import timber.log.Timber
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
@@ -64,31 +56,6 @@ class ReminderCreator @Inject constructor(
     suspend fun delete(reminderId: String) {
         store.deleteReminder(reminderId, clock.now())
         engine.replan(clock.now())
-    }
-}
-
-/** Telefonun o anki hatırlatma sağlığını okur (blueprint G3 "Hatırlatma Sağlığı kontrolleri"). */
-@Singleton
-class HealthProbe @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val store: ReminderStore,
-    private val settings: SettingsStore,
-) {
-    suspend fun report(): HealthReport {
-        val notifications = context.getSystemService(NotificationManager::class.java)
-        val stats = store.deliveryStats()
-        return HealthReport.of(
-            HealthSnapshot(
-                notifications = notifications.areNotificationsEnabled(),
-                exactAlarms = context.getSystemService(AlarmManager::class.java).canScheduleExactAlarms(),
-                fullScreen = notifications.canUseFullScreenIntent(),
-                batteryExempt = context.getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(context.packageName),
-                dndAccess = notifications.isNotificationPolicyAccessGranted,
-                autoStartConfirmed = settings.autoStartConfirmed.first(),
-                pendingAlarms = stats.pendingAlarms,
-                lastDeliveredAt = stats.lastDeliveredAt,
-            ),
-        )
     }
 }
 

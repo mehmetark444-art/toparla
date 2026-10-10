@@ -25,9 +25,9 @@ class AlarmManagerScheduler(
     private val alarmManager: AlarmManager get() = context.getSystemService(AlarmManager::class.java)
     private val mirror = BootMirror(context)
 
-    override fun schedule(alarm: PlannedAlarm) {
+    override fun schedule(alarm: PlannedAlarm, title: String?) {
         arm(alarm.key, alarm.fireAt.toEpochMilli(), alarm.api)
-        mirror.put(alarm.key, alarm.fireAt.toEpochMilli(), alarm.api)
+        mirror.put(alarm.key, alarm.fireAt.toEpochMilli(), alarm.api, title)
     }
 
     override fun cancel(key: String) {
@@ -78,38 +78,49 @@ class AlarmManagerScheduler(
     }
 }
 
-/** Kilitli açılışta alarm kurmaya yetecek en küçük kopya: anahtar, an, alarm yolu. Başlık ve içerik yok. */
+/**
+ * Kilitli açılışta alarm kurmaya ve çalanı adıyla göstermeye yetecek en küçük kopya (blueprint G1): anahtar, an,
+ * alarm yolu, başlık. Gövde metni ve başka hiçbir içerik buraya yazılmaz.
+ */
 class BootMirror(context: Context) {
-    data class Entry(val key: String, val fireAtMs: Long, val api: AlarmApi)
+    data class Entry(val key: String, val fireAtMs: Long, val api: AlarmApi, val title: String? = null)
 
     private val prefs: SharedPreferences =
         context.createDeviceProtectedStorageContext().getSharedPreferences(FILE, Context.MODE_PRIVATE)
 
-    fun put(key: String, fireAtMs: Long, api: AlarmApi) {
-        prefs.edit().putString(key, "$fireAtMs$SEPARATOR${api.name}").apply()
+    fun put(key: String, fireAtMs: Long, api: AlarmApi, title: String? = null) {
+        prefs.edit().putString(key, "$fireAtMs$SEPARATOR${api.name}$SEPARATOR${title.orEmpty()}").apply()
     }
+
+    fun find(key: String): Entry? = (prefs.getString(key, null))?.let { parse(key, it) }
 
     fun remove(key: String) {
         prefs.edit().remove(key).apply()
     }
 
-    fun all(): List<Entry> = prefs.all.filterKeys { it != LOCKED_FIRED }.mapNotNull { (key, value) ->
-        val parts = (value as? String)?.split(SEPARATOR) ?: return@mapNotNull null
-        val fireAt = parts.getOrNull(0)?.toLongOrNull() ?: return@mapNotNull null
-        val api = AlarmApi.entries.firstOrNull { it.name == parts.getOrNull(1) } ?: return@mapNotNull null
-        Entry(key, fireAt, api)
+    fun all(): List<Entry> = prefs.all.filterKeys { it != AWAITING_DETAIL }.mapNotNull { (key, value) -> (value as? String)?.let { parse(key, it) } }
+
+    /** Başlık ayırıcı içerebilir: yalnız ilk iki ayırıcı bölünür. Başlıksız eski kayıt da okunur. */
+    private fun parse(key: String, value: String): Entry? {
+        val parts = value.split(SEPARATOR, limit = FIELDS)
+        val fireAt = parts.getOrNull(0)?.toLongOrNull() ?: return null
+        val api = AlarmApi.entries.firstOrNull { it.name == parts.getOrNull(1) } ?: return null
+        return Entry(key, fireAt, api, parts.getOrNull(2)?.ifBlank { null })
     }
 
-    /** Kilit açılmadan çalan teslim: ayrıntısı kilit açılınca gösterilmek üzere not edilir. */
-    fun markFiredWhileLocked(key: String) {
-        val current = prefs.getStringSet(LOCKED_FIRED, emptySet()).orEmpty()
-        prefs.edit().putStringSet(LOCKED_FIRED, current + key).apply()
+    /**
+     * Veritabanına ulaşılamadan çalan teslim (kilit açılmamıştı ya da kayıt yazılamadı): ayrıntısı, veritabanı
+     * açılınca gösterilmek üzere not edilir.
+     */
+    fun markAwaitingDetail(key: String) {
+        val current = prefs.getStringSet(AWAITING_DETAIL, emptySet()).orEmpty()
+        prefs.edit().putStringSet(AWAITING_DETAIL, current + key).apply()
     }
 
-    /** Kilitliyken çalmış teslimleri verir ve listeyi boşaltır. */
-    fun takeFiredWhileLocked(): Set<String> {
-        val keys = prefs.getStringSet(LOCKED_FIRED, emptySet()).orEmpty().toSet()
-        if (keys.isNotEmpty()) prefs.edit().remove(LOCKED_FIRED).apply()
+    /** Ayrıntısı bekleyen teslimleri verir ve listeyi boşaltır. */
+    fun takeAwaitingDetail(): Set<String> {
+        val keys = prefs.getStringSet(AWAITING_DETAIL, emptySet()).orEmpty().toSet()
+        if (keys.isNotEmpty()) prefs.edit().remove(AWAITING_DETAIL).apply()
         return keys
     }
 
@@ -123,7 +134,10 @@ class BootMirror(context: Context) {
     private companion object {
         const val FILE = "alarm_mirror"
         const val SEPARATOR = "|"
-        const val LOCKED_FIRED = "__kilitliyken_calanlar"
+        const val FIELDS = 3
+
+        // Anahtarın adı ilk sürümden kalmadır; değiştirilirse güncelleme anında bekleyen kayıt okunamaz.
+        const val AWAITING_DETAIL = "__kilitliyken_calanlar"
     }
 }
 
@@ -134,4 +148,7 @@ interface ReminderIntents {
 
     /** Kilit ekranı üstünde kritik hatırlatma kartını açar. */
     fun fullScreen(occurrenceKey: String): PendingIntent
+
+    /** Hatırlatma Sağlığı ekranını açar (nabız uyarısı). */
+    fun openHealth(): PendingIntent
 }

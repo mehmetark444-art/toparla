@@ -21,9 +21,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
+import timber.log.Timber
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
@@ -37,8 +39,14 @@ annotation class ReminderScope
 @Module
 @InstallIn(SingletonComponent::class)
 object RemindersModule {
+    /**
+     * Arka plan işinde yakalanmamış hata uygulamayı düşürmez, günlüğe yazılır: hatırlatma uygulamasında çökme
+     * (ör. depolama doluyken açılışta), sıradaki alarmın alıcısını da geciktirir. Teslimin kendi hatası ayrıca
+     * [deliverSafely] ile ele alınır.
+     */
     @Provides @Singleton @ReminderScope
-    fun scope(dispatchers: DispatcherProvider): CoroutineScope = CoroutineScope(SupervisorJob() + dispatchers.io)
+    fun scope(dispatchers: DispatcherProvider): CoroutineScope =
+        CoroutineScope(SupervisorJob() + dispatchers.io + CoroutineExceptionHandler { _, e -> Timber.e(e, "Hatırlatma işi yarıda kaldı") })
 
     @Provides @Singleton
     fun alarmScheduler(@ApplicationContext context: Context, intents: ReminderIntents): AlarmManagerScheduler =
@@ -53,6 +61,10 @@ object RemindersModule {
 
     @Provides
     fun repository(store: ReminderStore): ReminderRepository = store
+
+    @Provides @Singleton
+    fun healthWatch(@ApplicationContext context: Context, probe: HealthProbe, settings: SettingsStore, intents: ReminderIntents): HealthWatch =
+        HealthWatch(context, settings, intents) { probe.report() }
 
     /**
      * Tek motor. Israrlı takip ayarı her planlamada ayarlardan yeniden okunur; saat dilimi telefonun o anki dilimidir.
@@ -80,6 +92,7 @@ object RemindersModule {
 object ReminderSafetyNets {
     private const val WATCHDOG = "kritik-bekci"
     private const val DAILY = "gunluk-bakim"
+    private const val HEARTBEAT = "nabiz"
 
     /** Aynı adla yeniden çağırmak mevcut işi korur (idempotans). */
     fun ensureScheduled(context: Context) {
@@ -94,6 +107,11 @@ object ReminderSafetyNets {
             ExistingPeriodicWorkPolicy.KEEP,
             PeriodicWorkRequestBuilder<DailyMaintenanceWorker>(1, TimeUnit.DAYS).build(),
         )
+        work.enqueueUniquePeriodicWork(
+            HEARTBEAT,
+            ExistingPeriodicWorkPolicy.KEEP,
+            PeriodicWorkRequestBuilder<HeartbeatWorker>(1, TimeUnit.DAYS).build(),
+        )
     }
 }
 
@@ -102,6 +120,7 @@ class CriticalWatchdogWorker(context: Context, params: WorkerParameters) : Corou
     override suspend fun doWork(): Result {
         val entry = ReminderEntryPoint.of(applicationContext)
         entry.engine().watchdog(entry.clock().now())
+        Timber.i("Kritik bekçi koştu")
         return Result.success()
     }
 }
@@ -113,6 +132,7 @@ class DailyMaintenanceWorker(context: Context, params: WorkerParameters) : Corou
         val now = entry.clock().now()
         entry.engine().replan(now)
         BootMirror(applicationContext).prune(now.toEpochMilli())
+        Timber.i("Günlük bakım koştu")
         return Result.success()
     }
 }

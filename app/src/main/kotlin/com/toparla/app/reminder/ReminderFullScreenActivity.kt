@@ -141,4 +141,18 @@ class AppReminderIntents(private val context: Context) : ReminderIntents {
             .putExtra(ReminderFullScreenActivity.EXTRA_OCCURRENCE_KEY, occurrenceKey),
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
+
+    override fun openHealth(): PendingIntent = PendingIntent.getActivity(
+        context,
+        HEALTH_REQUEST,
+        Intent(context, MainActivity::class.java)
+            .setAction(MainActivity.ACTION_OPEN_HEALTH)
+            // Uygulama açıksa yeni kopya açılmaz; var olan ekran sağlık sayfasına geçer.
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+    )
+
+    private companion object {
+        const val HEALTH_REQUEST = 1
+    }
 }

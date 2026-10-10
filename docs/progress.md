@@ -118,3 +118,12 @@ Kullanıcı onayı (karar 0015).
 telefona kurmak; kurallar `:domain`'de testli olacak.
 **Biten:** beş ekran + dört ViewModel + iki katlı gezinme; kalite kapısı temiz; debug telefonda açıldı.
 **Sıradaki:** Kullanıcı ile saniyeli cihaz denemesi.
+
+## 10 Ekim 2026 — oturum 8
+**Madde:** F2-D kalanları (F2.31–F2.34, F2.46). Hedef: nabız işi, izin/DND değişimi tetikleri, kopyada başlık ve
+Android'e bağlı zorunlu senaryolar testleriyle yazılsın; Kullanıcı gerektirmeyen her şey telefonda ölçülsün.
+**Biten:** F2.33 ☑, F2.46 ☑ (çift doz F2.39'da); F2.31, F2.32, F2.34 kod ve test tarafı tamam. `:reminders` artık
+Robolectric testli (19 test), CI'da koşuyor. Kalite kapısı temiz (145 + 19 JVM testi).
+**Açık (akşam):** ısrarlı takibin 30 dk'lık kaydı okunacak; Kullanıcı'lı dört deneme (saat dilimi, Rahatsız Etme,
+kilitli yeniden başlatmada başlık, bildirimleri kapat-aç); kasıtlı bozma koşusu (betik bu oturumda çalışmadı) ve
+gece kontrolü.

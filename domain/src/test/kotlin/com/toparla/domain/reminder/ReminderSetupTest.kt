@@ -78,4 +78,28 @@ class ReminderSetupTest {
             SelfTest.evaluate(planned, planned.plusSeconds(90), planned.plusSeconds(100)),
         )
     }
+
+    @Test
+    fun `nabiz yalniz hatirlatmayi kacirabilecek eksikler icin uyarir`() {
+        val report = HealthReport.of(healthy.copy(fullScreen = false, dndAccess = false, autoStartConfirmed = false))
+        val decision = Heartbeat.decide(report, alreadyWarned = emptySet())
+        // Rahatsız Etme erişimi ve otomatik başlatma uyarı doğurmaz; tam ekran doğurur.
+        assertEquals(setOf(HealthCheck.FULL_SCREEN), decision.problems)
+        assertTrue(decision.warn)
+    }
+
+    @Test
+    fun `nabiz ayni eksik icin yeniden uyarmaz yeni eksik cikinca uyarir hepsi duzelince susar`() {
+        val oneMissing = HealthReport.of(healthy.copy(batteryExempt = false))
+        assertFalse(Heartbeat.decide(oneMissing, alreadyWarned = setOf(HealthCheck.BATTERY)).warn)
+
+        val twoMissing = HealthReport.of(healthy.copy(batteryExempt = false, notifications = false))
+        val second = Heartbeat.decide(twoMissing, alreadyWarned = setOf(HealthCheck.BATTERY))
+        assertTrue(second.warn)
+        assertEquals(setOf(HealthCheck.NOTIFICATIONS, HealthCheck.BATTERY), second.problems)
+
+        val allGood = Heartbeat.decide(HealthReport.of(healthy), alreadyWarned = second.problems)
+        assertTrue(allGood.problems.isEmpty())
+        assertFalse(allGood.warn)
+    }
 }

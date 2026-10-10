@@ -3,12 +3,17 @@ package com.toparla.app
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.toparla.data.db.CreatedBy
 import com.toparla.data.db.OwnerType
 import com.toparla.data.db.ReminderEntity
 import com.toparla.data.db.ReminderStore
 import com.toparla.domain.core.IdGenerator
 import com.toparla.domain.reminder.ReminderClass
+import com.toparla.reminders.CriticalWatchdogWorker
+import com.toparla.reminders.DailyMaintenanceWorker
+import com.toparla.reminders.HeartbeatWorker
 import com.toparla.reminders.ReminderEntryPoint
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -22,7 +27,9 @@ import java.time.temporal.ChronoUnit
 /**
  * Yalnız `debug` sürümünde: cihaz testlerinde hatırlatma kurmak için adb tetikleyicisi (ekran gerektirmez).
  * `adb shell am broadcast -n com.toparla.app.dev/com.toparla.app.DebugReminderReceiver --es title Dişçi --es klass CRITICAL --ei delaySec 20 --ez persistent false`
- * `--es clear all` bütün hatırlatmaları siler (yalnız geliştirme sürümünün kendi verisi).
+ * `--es clear all` bütün hatırlatmaları siler (yalnız geliştirme sürümünün kendi verisi); `--es delete KİMLİK` yalnız
+ * birini siler (kimlik kurulurken günlüğe yazılır). `--es work run` üç güvenlik ağı işini beklemeden bir kez koşturur
+ * (WorkManager dönemli işi vaktinden önce zorlanınca çalıştırmıyor; 10 Ekim cihaz ölçümü).
  */
 class DebugReminderReceiver : BroadcastReceiver() {
     @EntryPoint
@@ -42,6 +49,16 @@ class DebugReminderReceiver : BroadcastReceiver() {
                 val now = entry.clock().now()
                 if (intent.hasExtra("clear")) {
                     access.store().activeDefinitions().forEach { access.store().deleteReminder(it.id, now) }
+                } else if (intent.hasExtra("delete")) {
+                    access.store().deleteReminder(intent.getStringExtra("delete").orEmpty(), now)
+                } else if (intent.hasExtra("work")) {
+                    WorkManager.getInstance(context).enqueue(
+                        listOf(
+                            OneTimeWorkRequestBuilder<CriticalWatchdogWorker>().build(),
+                            OneTimeWorkRequestBuilder<DailyMaintenanceWorker>().build(),
+                            OneTimeWorkRequestBuilder<HeartbeatWorker>().build(),
+                        ),
+                    )
                 } else if (intent.hasExtra("advance")) {
                     // Beklemeden deneme: sıradaki alarm (merdiven basamağı, ısrarlı takip sorusu) vakti gelmiş gibi ateşlenir.
                     // Gerçek zamanlama ayrıca, Kullanıcı beklemeden kayıttan ölçülür.

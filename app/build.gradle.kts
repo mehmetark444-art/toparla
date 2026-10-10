@@ -21,8 +21,8 @@ android {
         minSdk = libs.versions.sdk.get().toInt()
         targetSdk = libs.versions.sdk.get().toInt()
         // versionCode = yyMMddNN (blueprint B7): yıl, ay, gün, o günkü sıra. Her kurulan sürümde artar.
-        versionCode = 26100901
-        versionName = "0.0.3"
+        versionCode = 26101001
+        versionName = "0.0.4"
     }
 
     signingConfigs {
@@ -86,4 +86,6 @@ dependencies {
     implementation(libs.datastore.preferences)
     implementation(libs.timber)
     debugImplementation(libs.leakcanary)
+    // Yalnız debug tetikleyicisi için (güvenlik ağı işlerini beklemeden koşturma).
+    debugImplementation(libs.work.runtime)
 }

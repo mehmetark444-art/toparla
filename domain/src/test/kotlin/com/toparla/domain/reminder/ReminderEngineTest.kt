@@ -68,10 +68,12 @@ class ReminderEngineTest {
 
     private class FakeScheduler : ReminderScheduler {
         val armed = LinkedHashMap<String, PlannedAlarm>()
+        val titles = LinkedHashMap<String, String?>()
         var maintenanceAt: Instant? = null
 
-        override fun schedule(alarm: PlannedAlarm) {
+        override fun schedule(alarm: PlannedAlarm, title: String?) {
             armed[alarm.key] = alarm
+            titles[alarm.key] = title
         }
 
         override fun cancel(key: String) {
@@ -88,10 +90,13 @@ class ReminderEngineTest {
         val cancelled = ArrayList<String>()
         var persistent: List<PersistentItem> = emptyList()
         val asked = ArrayList<String>()
+        var blocked = false
 
         override fun show(notice: DeliveryNotice) {
             shown += notice
         }
+
+        override fun isBlocked(klass: ReminderClass) = blocked
 
         override fun cancel(occurrenceKey: String) {
             cancelled += occurrenceKey
@@ -445,5 +450,46 @@ class ReminderEngineTest {
 
         assertTrue(notifier.shown.isEmpty())
         assertNull(repo.occurrences["yok@1"])
+    }
+
+    @Test
+    fun `alarm kurulurken hatirlatmanin basligi kilitli acilis kopyasi icin iletilir`() = runBlocking {
+        repo.add(def("disci", ReminderClass.CRITICAL, "2026-10-12T15:00"), title = "Dişçi")
+        engine.replan(at("2026-10-12T10:00"))
+        assertEquals("Dişçi", scheduler.titles[mainKey("disci", "2026-10-12T15:00")])
+    }
+
+    @Test
+    fun `bildirimler kapaliyken teslim gosterildi diye degil engellendi diye kayda gecer`() = runBlocking {
+        repo.add(def("disci", ReminderClass.CRITICAL, "2026-10-12T15:00"))
+        val key = mainKey("disci", "2026-10-12T15:00")
+        engine.replan(at("2026-10-12T10:00"))
+        notifier.blocked = true
+        engine.onAlarmFired(key, at("2026-10-12T15:00"))
+        assertTrue(key to ReminderEngine.EVENT_BLOCKED in repo.logs)
+        assertFalse(key to ReminderEngine.EVENT_POSTED in repo.logs)
+        // İş kaybolmaz: teslim açık kalır, merdiven sürer.
+        assertEquals(OccurrenceState.DELIVERED, repo.occurrences.getValue(key).state)
+        assertTrue("$key#l1" in scheduler.armed)
+    }
+
+    @Test
+    fun `bildirimler yeniden acilinca yalniz yanit bekleyen teslimler yeniden gosterilir`() = runBlocking {
+        repo.add(def("disci", ReminderClass.CRITICAL, "2026-10-12T15:00"))
+        repo.add(def("fatura", ReminderClass.IMPORTANT, "2026-10-12T15:01"))
+        repo.add(def("rapor", ReminderClass.NORMAL, "2026-10-12T15:02"), persistent = true)
+        engine.replan(at("2026-10-12T10:00"))
+        engine.onAlarmFired(mainKey("disci", "2026-10-12T15:00"), at("2026-10-12T15:00"))
+        engine.onAlarmFired(mainKey("fatura", "2026-10-12T15:01"), at("2026-10-12T15:01"))
+        engine.onAlarmFired(mainKey("rapor", "2026-10-12T15:02"), at("2026-10-12T15:02"))
+        engine.onAction(mainKey("fatura", "2026-10-12T15:01"), ReminderAction.DONE, at("2026-10-12T15:03"))
+        notifier.shown.clear()
+        notifier.persistent = emptyList()
+
+        engine.reshowOpen(at("2026-10-12T15:04"))
+
+        // Israrsız açık iş kendi bildirimiyle, ısrarlı iş birleşik bildirimle döner; biten iş dönmez.
+        assertEquals(listOf(mainKey("disci", "2026-10-12T15:00")), notifier.shown.map { it.occurrenceKey })
+        assertEquals(listOf(mainKey("rapor", "2026-10-12T15:02")), notifier.persistent.map { it.occurrenceKey })
     }
 }

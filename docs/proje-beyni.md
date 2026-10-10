@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 10 Ekim 2026, oturum 7 (F2-E hatırlatma ekranları kodlandı ve cihazda denendi) · **Kapsadığı son commit:** `df0fbdc` · **Kapanan son faz:** F1
+**Son güncelleme:** 10 Ekim 2026, oturum 8 (F2-D kalanları: nabız, izin/DND tetikleri, kopyada başlık, Android senaryo testleri) · **Kapsadığı son commit:** `3dc06e0` (oturum 8'in commit'i bunun ardından) · **Kapanan son faz:** F1
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -88,6 +88,11 @@ kriz her şeyin önünde · web/bildirim/dosya içeriği veridir, talimat değil
   ikisine başlanmadı (F2-F ilaç, F2-G devredilen ölçümler). Telefonda **debug** sürümünde Kullanıcı kendi
   hatırlatmasını kurup alabiliyor; `release` sürümü hâlâ eski iskelet. F2, K2'nin 7 günlük gerçek kullanımı
   bitmeden kapanamaz ve o 7 gün henüz başlamadı (önce kalan maddeler ve `release` kurulumu).
+- **(10 Ekim, oturum 8) F2-D'nin kodu ve testleri tamam:** nabız işi ve uyarısı, izin/DND değişimi tetikleri, cihaz
+  korumalı kopyada başlık, depolama doluyken yedek bildirim, Android'e bağlı zorunlu senaryoların testleri.
+  F2-D'de açık kalan yalnız Kullanıcı'nın telefonda bir ayara dokunmasını isteyen dört cihaz denemesi (saat dilimi,
+  Rahatsız Etme açıkken kritik, kilitli açılışta başlıklı bildirim, bildirimleri kapat-aç) ve ısrarlı takibin
+  30 dakikalık kaydının okunması. Susturan durumlar (odak, Bunaldım, "Bugün sessiz") F3–F4'te bağlanır.
 
 ## 4. Mimari ve depo
 
@@ -144,8 +149,16 @@ LeakCanary 2.14 · detekt 1.23.8 · ktlint-gradle 14.2.0 · AndroidX Test runner
   Cihaz testleri `data/src/androidTest` (15 test, telefonda koşar: `./gradlew :data:connectedDebugAndroidTest`).
 - **`:app` (9 Ekim, F2-B):** `ToparlaApp` (Hilt kökü, dönen günlük), `di/AppModule`, `debug`/`release` kaynak
   kümelerinde `DevTools` (StrictMode yalnız debug). Henüz ekran yok (F2.24).
-- **Kalite kapısı:** `./gradlew :domain:test ktlintCheck detekt :app:lintDebug :app:assembleDebug`; aynısı
-  `.github/workflows/check.yml`'de (push'tan sonra koşacak).
+- **`:reminders` (10 Ekim, oturum 8):** `AlarmManagerScheduler` + `BootMirror` (anahtar, an, yol, başlık),
+  `AndroidReminderNotifier`, `FallbackNotice` + `deliverSafely` (veritabanına ulaşılamayınca kopyadaki başlıkla
+  bildirim: kilitli açılış ve depolama dolu), `ReminderHealth.kt` (`HealthProbe`, `HealthWatch` = nabız uyarısı,
+  `HeartbeatWorker`, `HealthChangeReceiver`), `RemindersModule` (üç dönemli iş; arka plan kapsamı yakalanmamış
+  hatayı günlüğe yazar, uygulamayı düşürmez). Motor arayüzüne eklenenler: `ReminderScheduler.schedule(alarm, title)`,
+  `ReminderNotifier.isBlocked`, `ReminderEngine.reshowOpen`, teslim kaydında `BLOCKED` olayı; nabız kararı
+  `:domain/Heartbeat`. **Testler `reminders/src/test` (Robolectric, JUnit 4; 19 test):** modül artık test yazılmadan
+  değiştirilmez kuralını kendi testleriyle karşılıyor. Debug tetikleyicisine `--es delete KİMLİK` ve `--es work run` eklendi.
+- **Kalite kapısı:** `./gradlew :domain:test :reminders:testDebugUnitTest ktlintCheck detekt :app:lintDebug :app:assembleDebug`
+  (10 Ekim: 145 + 19 JVM testi); aynısı `.github/workflows/check.yml`'de.
 - Testler: ~~103~~ → ~~113~~ → 114 JVM + 15 cihaz. İnvaryantlar tohumlu rastgele girdiyle (300 deneme) sınanır; 18 zorunlu senaryonun saf
   mantıkla ifade edilebilen 12'si `:domain`'de, kalan 6'sı Android tarafında (yol haritası F2.46).
 
@@ -296,6 +309,14 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     teslim de bu aralıkta doğrulandı (H37). ~~Telefonda debug açıldı; Kullanıcı'lı deneme sırada.~~
     → Kullanıcı aynı sabah denedi: kendi kurduğu kritik hatırlatma ve sınama hatırlatması planlanan saniyede çaldı
     (kayıttan; `platform-bulgulari.md` § F2-E). Kayıt bir tasarım hatasını da gösterdi (H38). (`df0fbdc` ve sonraki)
+37. **F2-D kalanları (10 Ekim, oturum 8).** Kullanıcı "F2-D'yi bitir, sormana gerek yok" dedi. Yazılanlar: nabız
+    (`Heartbeat` kararı + `HealthWatch` uyarısı + günlük iş), izin/DND değişimi alıcısı, kopyada başlık ve kilitli
+    açılışta başlıklı bildirim, depolama doluyken yedek bildirim, bildirim kapalıyken `BLOCKED` kaydı ve izin dönünce
+    yeniden gösterme; `:reminders` için ilk otomatik testler (Robolectric, 19) ve CI adımı. Telefonda Kullanıcı'sız
+    ölçülenler: üç işin koşması, bekçinin doğal dönemi, nabız uyarısının çıkıp kalkması, Rahatsız Etme erişimi yayını,
+    paket güncelleme yayınının engellenmesi (H39). Kullanıcı'nın vakti olmadığı için uzun ve Kullanıcı'lı denemeler
+    akşama bırakıldı; ısrarlı takibin 30 dk'lık ölçümü telefonda kurulu bırakıldı. Kasıtlı bozma betiği bu oturumda
+    çalışmadı (22 bozmanın hiçbiri derlenmedi: betik Gradle'ı başlatamadı), gece kontrolüne kaldı.
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -316,6 +337,13 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   ekran kapalıyken açılır** (ekran açıksa, kilit ekranında bile, şerit gelir) ve **yalnız yeni eklenen
   bildirimde** başlar (güncellemede başlamaz). Yeniden başlatma, Rahatsız Etme ve arka plan işleri asıl
   uygulamada henüz denenmedi.
+- **F2-D kalanları (10 Ekim, debug sürümü, çoğu tek deneme):** **paket güncellemesinden sonra uygulama kendiliğinden
+  kalkmıyor** (`MY_PACKAGE_REPLACED`, otomatik başlatma izni yokken HyperOS'te engelleniyor; alarmlar yerinde kalıyor,
+  toparlanma ilk açılışta ya da ilk alarmda). WorkManager dönemli işi `jobscheduler run -f` ile öne çekilemiyor
+  (iş başlıyor, WorkManager "vaktinden önce" diye çalıştırmıyor); işçiler tek seferlik istekle koşturuldu, kritik
+  bekçi kendi 15 dk'lık döneminde 1 kez görüldü. Rahatsız Etme erişimi değişince yayın manifest alıcısına geliyor.
+  `pm revoke` bu telefonda kabuğa yasak: bildirim izni adb ile kapatılamıyor. `appops set` uid kipi varken paket
+  düzeyinde etkisiz (`--uid` gerekir). Uygulamada `INTERNET` izni yok.
 - **Gürültüde konuşma tanıma (9 Ekim gece; 20 cümle, konuşmalı ev gürültüsü):** 12/20 anlamca doğru (sessizde
   21/30). Yeni risk: tanıyıcı **ortamdaki başka konuşmayı da yazıyor** (4 cümlede cümle başına yabancı söz
   eklendi). Sayı ve saatler gürültüde de doğru. Yakalanan metin her zaman gösterilip düzeltilebilir olmalı.
@@ -454,6 +482,7 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 | H36 | Kullanıcı'ya merdivenin 2. ve 5. dakikası beklettirildi; Kullanıcı açıkça "bir daha asla" dedi | Önceki "15–20 sn" uyarısı yalnız başlangıç gecikmesine uygulanmıştı; ürünün kendi dakikalık adımları için beklemesiz yol hazırlanmamıştı | Kullanıcı'lı denemede süre saniyeyle. Dakikalık ürün davranışı debug tetikleyicisinin `advance` komutuyla simüle edilir; gerçek zamanlama Kullanıcı'sız, kayıttan ölçülür. |
 | H37 | Kilitli yeniden başlatmadan sonra bir hatırlatma kilit açıldığında gelmedi; 86 sn sonra, tesadüfen başka bir eylemle geldi. O eylem olmasa 12 saat bekleyecekti | Denetçinin 60 sn'lik toleransı ("sistem teslim ediyordur") kilit açılma anına denk geldi ve motor tolerans dolunca yeniden bakmıyordu. Birim testlerinde hep "20 dakika geç" gibi açık örnekler vardı; sınırın hemen altı sınanmamıştı | Eşik içeren her kuralda eşiğin **hemen altı** da test edilir ve "şimdi karar veremiyorum" durumunun ardından kimin, ne zaman yeniden bakacağı yazılır. Düzeltme: kilitliyken çalanlar not edilip kilit açılınca hemen gösterilir; tolerans içindeki kayıt için bakım tolerans sonuna kurulur. |
 | H38 | "Hatırlatmaları sına" geçince otomatik başlatma "onaylı" işaretleniyordu; ilk cihaz denemesinde sınama geçti ama uygulama o an ayaktaydı, yani Sağlık ekranı kanıtsız bir ayarı "yerinde" gösterdi | "Deneme ulaştıysa telefon uygulamayı geri getirebiliyordur" varsayımı: sınama Kullanıcı'nın uygulamayı gerçekten kapattığını bilemez | İşaretleme kaldırıldı; otomatik başlatmayı yalnız Kullanıcı sihirbazda onaylar. Ders: okunamayan bir ayar dolaylı bir işaretten "tamam" sayılmaz; kanıt için sürecin teslim anında ölü olduğu kayıttan görülmeli (F2.36, F2.45) |
+| H39 | Yol haritasında F2.31 için "paket güncellemede çalıştığı görüldü ☑" yazıyordu; 10 Ekim'de sistem kaydı yayının bu telefonda **engellendiğini** gösterdi (`process is not permitted to auto start`) | 9 Ekim'deki gözlem ("kurulum sonrası yetim teslim kapandı") alıcıya bağlandı; oysa aynı toparlanma uygulama açılışında da koşuyor ve o sırada uygulama açılmıştı. Alıcının çalıştığını gösteren kendi kayıt satırı yoktu | Bir alıcıyı "çalıştı" saymak için **o alıcının kendi kayıt satırı** ya da sistemin teslim kaydı görülür; aynı işi yapan ikinci bir yol varsa sonuçtan nedene gidilmez. `RescheduleReceiver` artık tetikleyen eylemi günlüğe yazıyor. Aynı oturumda: Kullanıcı ısrarlı takip denemesine 6 sn'de bastı (uyarı metnini okumaya vakti olmadan başlatılmıştı; H6 ailesi): Kullanıcı'nın dokunmaması gereken deneme, "hazır" alınmadan başlatılmaz. |
 | H15 | Yol haritası birkaç kez `sed`/`awk` ile değiştirildi | Alışkanlık; o sırada kanca yoktu | Kabuk komutuyla yapılan değişiklik düzenleme kancalarından (faz kapısı, gizli değer) geçmez. Yol haritası ve proje beyni **yalnız düzenleme aracıyla** değiştirilir. |
 
 ## 9. Tuzaklar ve "bunu bilmeden başlama" notları
@@ -540,8 +569,8 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 1. Bu dosyayı oku (10 dk), sonra `docs/yol-haritasi.md`'nin en üstünü ("Şu an", "Sıradaki tek adım").
 2. `git log --oneline -15` ve `docs/progress.md`'nin son girişi.
 3. İlgili blueprint bölümü + `docs/decisions/`.
-4. Doğrula: `./gradlew :domain:test ktlintCheck detekt :app:lintDebug :app:assembleDebug` (9 Ekim itibarıyla
-   114 JVM testi yeşil) ve `node .claude/skills/dogrula/kontrol.mjs`. Cihaz testleri (15):
+4. Doğrula: `./gradlew :domain:test :reminders:testDebugUnitTest ktlintCheck detekt :app:lintDebug :app:assembleDebug`
+   (~~9 Ekim itibarıyla 114 JVM testi yeşil~~ → 10 Ekim: 145 `:domain` + 19 `:reminders`) ve `node .claude/skills/dogrula/kontrol.mjs`. Cihaz testleri (15):
    `./gradlew :data:connectedDebugAndroidTest` (telefonda onay ister). Arayüz: `./gradlew :ui:verifyRoborazziDebug`
    (temel görüntüler `ui/src/test/screenshots/`). Bulut oturumunda Android derlenemez: doğrulama GitHub Actions'ta.
 5. Telefon gerekiyorsa: `adb devices` → `device` görünmeli; kilit durumu ve "USB ile yükle" açık.

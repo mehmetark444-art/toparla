@@ -40,6 +40,7 @@ import com.toparla.domain.reminder.ReminderClass
 import com.toparla.domain.reminder.ReminderDraft
 import com.toparla.domain.reminder.SelfTest
 import com.toparla.domain.reminder.SelfTestResult
+import com.toparla.reminders.HealthProbe
 import com.toparla.ui.components.PermissionRow
 import com.toparla.ui.components.PermissionStatus
 import com.toparla.ui.components.PrimaryButton

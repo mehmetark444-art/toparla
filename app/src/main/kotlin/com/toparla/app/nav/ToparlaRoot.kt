@@ -82,7 +82,7 @@ enum class Tab(val route: Route, @StringRes val label: Int, val icon: ImageVecto
  * Ben/Ayarlar ekranı ve Güneş yazışması (F6) gelince bağlanır.
  */
 @Composable
-fun ToparlaRoot() {
+fun ToparlaRoot(openHealth: Boolean = false, onHealthOpened: () -> Unit = {}) {
     // ViewModel'ler Activity kapsamında: Hilt fabrikası Activity'dedir, gezinme girişinde değil.
     val plan: PlanViewModel = viewModel()
     val add: AddReminderViewModel = viewModel()
@@ -93,6 +93,14 @@ fun ToparlaRoot() {
 
     // Sınama sırasında uygulama kapatıldıysa (sınamanın istediği de budur) açılışta sonuca dönülür.
     LaunchedEffect(Unit) { if (selfTest.hasPending()) root.navigate(Route.SelfTest) { launchSingleTop = true } }
+
+    // Nabız uyarısından gelindiyse doğrudan Hatırlatma Sağlığı.
+    LaunchedEffect(openHealth) {
+        if (openHealth) {
+            root.navigate(Route.Health) { launchSingleTop = true }
+            onHealthOpened()
+        }
+    }
 
     NavHost(navController = root, startDestination = Route.Home) {
         composable<Route.Home> { HomeTabs(plan, onAdd = { root.navigate(Route.AddReminder) }, onHealth = { root.navigate(Route.Health) }) }

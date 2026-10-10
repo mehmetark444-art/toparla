@@ -57,6 +57,9 @@ class AndroidReminderNotifier(
         }
     }
 
+    override fun isBlocked(klass: ReminderClass): Boolean =
+        !manager.areNotificationsEnabled() || manager.getNotificationChannel(channelFor(klass))?.importance == NotificationManager.IMPORTANCE_NONE
+
     override fun cancel(occurrenceKey: String) {
         manager.cancel(idOf(occurrenceKey))
         manager.cancel(TAG_FULL_SCREEN, idOf(occurrenceKey))

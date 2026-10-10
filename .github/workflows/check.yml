@@ -32,6 +32,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
       - name: Birim testleri
         run: ./gradlew --console=plain :domain:test
+      - name: Hatirlatma modulu testleri (Robolectric)
+        run: ./gradlew --console=plain :reminders:testDebugUnitTest
       - name: Biçim ve kod denetimi
         run: ./gradlew --console=plain ktlintCheck detekt
       - name: Android Lint ve derleme
