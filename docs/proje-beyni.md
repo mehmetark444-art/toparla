@@ -161,6 +161,7 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
 | 0004 | İlk odak alışkanlıklar: **Sigara (tam bırakma) + Uyku Ritmi** | Kullanıcı seçimi bana bıraktı; sigara en net hedef, uyku diğer her şeyin temeli | Diğer dört alışkanlık "izleniyor"; dürtme almaz. |
 | 0015 | Kullanıcı'nın göreceği her tasarım **`mobile-app-ui-design` yeteneğiyle** yapılır: önce görsel taslak → Kullanıcı onayı → Compose → telefonda karşılaştırma. Yetenek `.claude/skills/` altına eklendi (üçüncü taraf; eklenmeden önce tamamı okundu) | Kullanıcı: "benim göreceğim tüm UI/UX tasarımlar bu skill ile yapılacaktır… tüm tasarım çok iyi olmalıdır" | Ekran işlerine onay adımı eklenir. Yeteneğin seri, kırmızı, parlak kutlama, düşük kontrast, 44 pt gibi önerileri Toparla kurallarıyla çelişir: çizelge `.claude/rules/tasarim.md`, çelişkide Toparla kuralı kazanır. Görsel ayrıntılar (palet, yazı) Kullanıcı seçimiyle blueprint C'den sapabilir. Google Stitch bağlayıcısı bu ortamda yok. |
 | 0016 | Görsel dil **Seçenek B**: açık palet koyulaştırıldı (`primary #47705F`, Taşınan yazısı `#7C5B12` vb.), kartta sınır yerine sıcak yumuşak gölge, ekranda 4 yazı boyutu (32/20/16/13) ve 2 ağırlık, kenar ve kart içi 24 dp, ikincil düğmeler hafif zeminli | Taslakta kontrast hesaplandı: blueprint'in açık paletinde 5 çift 4,5:1'in altında (en düşük 2,06). Kullanıcı taslağı görüp "B'yi beğendim" dedi | Koyu ve AMOLED renkleri değişmedi. Blueprint C'nin görsel ayrıntılarından sapma; DEHB ve erişilebilirlik kuralları aynen. Gerçek görünüm telefonda henüz karşılaştırılmadı. |
+| 0017 | Uzak depo **herkese açık** kalır; "depo gizli" kuralı ve push öncesi 404 denetimi kalktı | Kullanıcı kararı (10 Ekim): push öncesi denetim deponun açık olduğunu gösterdi, Kullanıcı açık kalmasını seçti | Belgelerdeki kişisel bağlam herkese açık ve geçmişte kalıcı. Gizli değer taraması sürer; sağlık verisi, kişi adı, seri numarası belgeye girmez |
 | 0014 | F1'de ölçülemeyen maddeler ilgili fazlara **devredildi** (konum ve Mi Band → F7 ön koşulu; kısıtlı kova ve küçük açık koşullar → F2; model kalanları → F6; liste karar kaydında) | Kullanıcı evden çıkamıyor, Mi Band siparişte, bir ölçüm günler istiyor; F1 açık kalırsa F2-D başlayamıyor. Kullanıcı: "onaylıyorum devret" | Blueprint'in "tüm `[DOĞRULA]` kapandı" ölçütünden sapma: bazı varsayımlar kod yazılırken ölçülmemiş olacak. Devredilen ölçüm yapılmadan o faz kapanmaz. |
 | 0013 | Konuşma tanıma: Android cihaz içi tanıyıcı (`tr-TR`); Whisper eklenmez | Ölçüm: 30 cümlede gerçek sözcük hatası ~%6, 21/30 anlamca tam doğru; Türkçe paket kurulu | Sayılar rakamla ve biçimli gelir: `TrDateParser` buna göre yazılır. Gürültü, kulaklık, uzun konuşma ölçülmedi. Özel adlar zayıf. |
 | 0012 | **Çıraklık dönemi** (3 hafta): Yeşil her AI işi önce Gemini'ye; yanıtlar bilgi kartı ve örnek olarak saklanır, gece gölge koşuyla karşılaştırılır, ≥ 30 koşuda ≥ %90 uyumlu görev yerel modele devredilir. Kişisel veri cihazda kalır (seçenek A). Yerel "yok" derse Yeşil soru Gemini'ye gider ve karta dönüşür | Kullanıcı istedi: yerel model zamanla Gemini'den öğrensin | Blueprint'te olmayan mekanizma; F6–F7'ye iş ekler. İlk haftalar internete bağlı ve daha maliyetli. "Örnek" kanalının etkisi ölçülmedi (F1.25). |
@@ -486,7 +487,7 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 - **`:domain` kuralları:** Android sınıfı yok; `System.currentTimeMillis()` / `Instant.now()` yok
   (zaman parametre ya da `Clock` ile gelir); `!!` yok. `:spike` bu kurallardan bilerek muaftır.
 - **Git:** ~~her şey yerelde, hiç push yapılmadı~~ → 8 Ekim 2026'da ilk push yapıldı. Uzak depo
-  `mehmetark444-art/toparla`, **gizli**. Bu bilgisayarın varsayılan GitHub girişi başka bir hesap
+  `mehmetark444-art/toparla`, ~~**gizli**~~ → (10 Ekim) **herkese açık** (karar 0017). Bu bilgisayarın varsayılan GitHub girişi başka bir hesap
   (Emire221); bu yüzden uzak adres kullanıcı adıyla tanımlı
   (`https://mehmetark444-art@github.com/…`). Adresi sadeleştirme: push "depo bulunamadı" verir.
   Push yalnız Kullanıcı isteyince (kanca her seferinde sorar). ~~GitHub Actions henüz kurulmadı~~ →
@@ -521,7 +522,7 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 8. Kriz sözlüğü Kullanıcı incelemesi olmadan sürüme giremez.
 9. (9 Ekim) **İmza anahtarının yedeği yok**: tek kopya bu bilgisayarda. Kaybolursa veriyi koruyarak güncelleme
    imkânı biter. Kullanıcı erteledi; gerçek veriyle kullanım (F2 K2) başlamadan önce yapılmalı.
-10. (9 Ekim) API anahtarı hâlâ sohbete açık yazılmış eski anahtar; depo gizli olduğu için acil değil ama
+10. (9 Ekim) API anahtarı hâlâ sohbete açık yazılmış eski anahtar; ~~depo gizli olduğu için acil değil ama~~ → (10 Ekim) depo artık açık (karar 0017); anahtar depoda yok ama
     Güneş'in bulut katmanı (F6) açılmadan yenilenmeli.
 11. (9 Ekim) `release` sürümü cihazda hiç çalıştırılmadı (ekran yok): R8'in Hilt/Room üretilmiş kodunu
     bozmadığı ilk ekranla (F2.24) doğrulanacak. (9 Ekim akşamı: ilk ekran yazıldı ama bulutta yazıldığı için

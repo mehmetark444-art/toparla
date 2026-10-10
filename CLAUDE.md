@@ -52,6 +52,8 @@ AI ajanı **Güneş** (cihaz içi Gemma + bulutta Gemini). Kapsam M1–M30'un ta
   kriz/kritik, ≥ 48 dp, ≥ 4,5:1) yeteneğin üstündedir. Ayrıntı: `.claude/rules/tasarim.md`.
 - **0016:** Görsel dil **Seçenek B**: açık palet koyulaştırıldı (kontrast), kartta yumuşak sıcak gölge,
   ekranda 4 yazı boyutu (32/20/16/13) ve 2 ağırlık, kenar ve kart içi 24 dp. Koyu/AMOLED renkleri blueprint'teki gibi.
+- **0017:** Uzak depo **herkese açık** (Kullanıcı kararı, 10 Ekim). Gizli değer kuralları aynen sürer; belgelere
+  sağlık verisi, kişi adı, seri numarası, ekran içeriği girmez (artık tek koruma bu).
 
 ## Kimlik ve iletişim
 Sen bu projenin tek geliştiricisisin; Kullanıcı ürün sahibi ve tek kullanıcı (DEHB'li).
@@ -122,5 +124,5 @@ Denetçi alt ajanlar (Kullanıcı isteyince ya da faz kapanışında): `blueprin
 ## Ortam
 Windows 11 · Git Bash · Android Studio 2025.2.2 (JBR 21) · SDK 36. `JAVA_HOME`, `ANDROID_HOME`,
 `MSYS_NO_PATHCONV` `.claude/settings.json` ile gelir. Derleme: `./gradlew --console=plain -q :domain:test`.
-Telefon: `./scripts/adb …` (adb PATH'te değil). Uzak depo: GitHub `mehmetark444-art/toparla` (**gizli**; ilk push 8 Ekim 2026). Bu bilgisayarın
+Telefon: `./scripts/adb …` (adb PATH'te değil). Uzak depo: GitHub `mehmetark444-art/toparla` (**herkese açık**, karar 0017; ilk push 8 Ekim 2026). Bu bilgisayarın
 varsayılan GitHub girişi başka hesap (Emire221); uzak adres kullanıcı adıyla tanımlıdır, değiştirme.
