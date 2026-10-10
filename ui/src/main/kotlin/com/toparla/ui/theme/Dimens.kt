@@ -50,6 +50,18 @@ object Sizes {
     val progressRing = 96.dp
     val undoRing = 28.dp
     val undoRingStroke = 2.dp
+
+    // Hatırlatma Sağlığı, kurulum sihirbazı ve sınama (onaylı taslaklar 9 ve 10 Ekim 2026).
+    val rowIcon = 24.dp
+    val compactRowMin = 48.dp
+    val infoValueMax = 200.dp
+    val stepBadge = 32.dp
+    val stepDot = 8.dp
+    val stepDotCurrent = 24.dp
+    val testRing = 200.dp
+    val testRingStroke = 12.dp
+    val heroIcon = 36.dp
+    val lockBadge = 40.dp
 }
 
 /** Kart yüksekliği: yumuşak, sıcak tonlu gölge + neredeyse görünmez sınır (karar 0016). */

@@ -1165,3 +1165,63 @@ yokken de).
 güncelleme yayını, Önemli sınıfın "tam sessizlik" kipindeki davranışı ölçülmedi (F2.42, F2.44, F2.45). Telefon
 deneme sonunda eski durumunda: saat ve dilim otomatik, Rahatsız Etme kapalı, bildirim izni açık, deneme
 hatırlatmaları silindi.
+
+### 10 Ekim 2026 (gece) — F2-E kalanları: kurulum sihirbazı, sınamanın sonucu, Sağlık satırları (debug ve release)
+
+Sürüm 0.0.5 (`26101002`), iki varyant da kuruldu. Kayıtlar: uygulama günlüğü ve veritabanı (debug; `run-as`), sistem
+olay günlüğü (`logcat -b events`: `am_kill`, `am_proc_start`), ekran görüntüleri. Release sürümünde `run-as` çalışmaz;
+orada kanıt yalnız sistem olay günlüğü ve ekran görüntüsüdür.
+
+**1. Kapalı uygulamaya teslim (F2.36; H38'in açık bıraktığı soru).** Sınama deneme hatırlatmasını 20 sn sonraya kurdu,
+Kullanıcı uygulamayı son uygulamalardan kaydırıp kapattı.
+
+| Sürüm | Kaydırıp kapatma | Alarm için süreç doğdu | Planlanan an | Teslim kaydı | Sonuç ekranı |
+|---|---|---|---|---|---|
+| debug | 23:31:42.161 `am_kill … SwipeUpClean` | 23:31:51.009 `am_proc_start … broadcast … AlarmReceiver` | 23:31:51.000 | `FIRED` + `POSTED` + `WOKE_APP 124 ms`, 23:31:51.190 | "ulaştı" (kayıt: `ARRIVED_CLOSED`) |
+| release | 23:41:30.637 `am_kill … SwipeUpClean` | 23:41:46.013 `am_proc_start … broadcast … AlarmReceiver` | okunamadı (`run-as` yok) | okunamadı | Şimdi ekranında kurulum kartı kalktı (kurulum tamam); Kullanıcı "ulaştı dedi" |
+
+Süreç iki denemede de kapatma ile alarm arasında ölü kaldı (9 sn ve 15 sn) ve alarm onu uyandırdı. Alarm alındığında
+sürecin yaşı (debug): **124 ms**; uygulama açıkken yapılan denemede 32 342 ms. `ColdDelivery` eşiği 5 000 ms.
+Tek ölçüm (her sürümde bir); telefon USB'de ve şarjdaydı, ekran açıktı.
+
+**2. Sınamanın öteki sonuçları (debug, birer deneme).** Uygulama açık bırakıldı: `ARRIVED_OPEN`, ekranda "Vaktinde
+geldi. Ama o sırada uygulama açıktı". Sınama sürerken `am force-stop` (alarmlar silinir), 100 sn sonra uygulama açıldı:
+açılıştaki toparlanma teslimi geç yaptı, kayıt `LATE`, ekranda "Deneme hatırlatması geç ulaştı. Planlanandan 1 dk 26 sn
+sonra…" ve nedenler listesi. **Eski kural bu durumda "ulaştı, hatırlatmaların çalışıyor" diyordu** (proje beyni H41).
+"Ulaşmadı" sonucu cihazda görülmedi (yalnız ekran görüntüsü testinde); geç teslimle aynı rehberi kullanır.
+
+**3. Kurulum sihirbazı (F2.37).** Kurulum işaretleri sıfırlanıp uygulama açılınca sihirbaz kendiliğinden geldi (debug
+ve release). Kullanıcı ikisinde de baştan sona yürüdü. Release'te pil adımı: Kullanıcı HyperOS sayfasında "Kısıtlama
+yok"u seçti, uygulama pil muafiyet listesine girdi (`dumpsys deviceidle whitelist`), adım kendiliğinden geçti.
+Otomatik başlatma ve uygulama kilidi okunamadığı için Kullanıcı onayıdır; otomatik başlatma listesinin ekran
+görüntüsünde iki Toparla'nın anahtarı da açık.
+
+**4. Ayar sayfası bağlantıları (F2.37; `SettingsLinks` ile aynı niyetler, adb ile açılıp ekran görüntüsü alındı).**
+
+| Denetim | Açılan sayfa | Ekranda |
+|---|---|---|
+| Bildirim izni | `Settings$AppNotificationSettingsActivity` | "Toparla", "Bildirimleri göster" |
+| Bildirim sesleri (kanal) — **yeni** | `SubSettings` (`CHANNEL_NOTIFICATION_SETTINGS` + kanal kimliği) | "Önemli": Bildirimleri göster, Kayan bildirimler, Ses, Titreşim |
+| Tam vaktinde alarm | `Settings$AlarmsAndRemindersAppActivity` | "Alarmlar ve hatırlatıcılar" (anahtar soluk: izin kurulumda verili) |
+| Otomatik başlatma | `AutoStartManagementActivity` | "Arka planda otomatik başlatma" listesi |
+| Pil kısıtlaması | `PowerDetailActivity` | "Pil ayrıntıları · Toparla": Kısıtlama yok / Pil tasarrufu (önerilir) / … |
+| Tam ekran kart | `SpaActivity` | "Tam ekran bildirimleri · Toparla 0.0.5" |
+| Sessizde kritik ses | `Settings$ZenAccessSettingsActivity` | "Modlar'a erişim" uygulama listesi |
+
+Yedisi de doğru sayfayı açtı (birer deneme, debug paketi). "Kullanıcı kendi gözüyle doğruladı" koşulu F2.45'te.
+
+**5. Sağlık ekranının okudukları.** Pil muafiyeti varken bekleme kovası `EXEMPTED` (ekranda "Kısıtsız"); muafiyetsiz
+ve günlerdir açılmamış release paketi kurulumdan önce `40` (`RARE`), açıldıktan sonra `10`. Kanal önemleri kuruldukları
+gibi (`important`: 4). Kanal sayfasındaki "Kayan bildirimler" kapatılınca önemin düşüp düşmediği **ölçülmedi**.
+
+**6. Bu telefonda adb kısıtları (yeni).** `adb shell input tap` yasak (`INJECT_EVENTS` izni yok; HyperOS'in "USB hata
+ayıklama (Güvenlik ayarları)" seçeneği kapalı): ekranlar dokunarak gezilemiyor. `adb install -g` de yasak
+(`INSTALL_GRANT_RUNTIME_PERMISSIONS`): `connectedDebugAndroidTest` test paketini kuramıyor; paket `adb install -r -t`
+ile kurulup `am instrument -w com.toparla.data.test/androidx.test.runner.AndroidJUnitRunner` ile koşturuldu (17/17).
+`uiautomator dump` resim içinde resim penceresi açıkken yalnız o pencereyi döküyor. Açık uygulamaya `am start` ile
+aynı niyet gönderilince görev öne geliyor ama niyet **teslim edilmiyor** (H24 ile aynı): debug sürümünün ekran açma
+kancası `--activity-clear-top -a toparla.dev.EKRAN … --es ekran <ad>` ile çalışıyor.
+
+**Sınırlar:** hepsi tek deneme; ekran açık, telefon şarjda. Sınama hatırlatması Önemli sınıftır (kesin alarm yolu);
+ekran kapalıyken hizalama (F2.44) bu ölçümün dışındadır. Sihirbazın kanal, tam vakit alarm ve tam ekran adımları
+cihazda görülmedi (o ayarlar yerindeydi); ekran görüntüsü testi yalnız kilit, otomatik başlatma ve deneme adımlarını çizer.

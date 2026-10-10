@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 10 Ekim 2026, oturum 8 akşam (F2-D bitti: Kullanıcı'lı cihaz denemeleri; alarm hizalaması bulgusu) · **Kapsadığı son commit:** `e7d7898` (akşamın commit'i bunun ardından) · **Kapanan son faz:** F1
+**Son güncelleme:** 10 Ekim 2026, oturum 9 gece (F2-E: Sağlık satırları, sınamanın dürüst sonucu, kurulum sihirbazı; debug ve `release`te cihazda) · **Kapsadığı son commit:** `9479d2d` (gecenin commit'i bunun ardından) · **Kapanan son faz:** F1
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -98,6 +98,12 @@ kriz her şeyin önünde · web/bildirim/dosya içeriği veridir, talimat değil
   12,5 saat boyunca 23 soru sordu, hiçbiri kaybolmadı. F2'de kalanlar: F2-B'nin iki Kullanıcı işi, F2-E eksikleri,
   F2-F ilaç, F2-G ölçümleri, K1–K3. **En önemli açık konu:** ekran kapalıyken HyperOS kritik olmayan alarmları
   5 dakikalık dilime yuvarlıyor (Bölüm 7, Bölüm 10 madde 14); çözülmeden K2'nin 7 günü başlatılmamalı.
+- **(10 Ekim gece, oturum 9) F2-E'nin dört maddesi bitti** (Kullanıcı F2.44'ün önüne aldı): Hatırlatma Sağlığı'na
+  kanal, bekleme kovası ve "vaktinde ulaşmayan" satırları; sınamanın dört sonucu ("kapalıyken ulaştı", "ulaştı ama
+  uygulama açıktı", "geç ulaştı", "ulaşmadı") ve sonucun kaydı; kurulum sihirbazının tamamı ve Şimdi ekranındaki
+  kurulum kartı. Ekranlar onaylı taslağa çekildi. Telefonda **iki sürüm de 0.0.5**; `release` artık iskelet değil,
+  Kullanıcı sihirbazı onda da baştan sona yürüdü. F2-E'de açık kalan tek şey o sırada bulunan F2.48 (bekleyen alarmın
+  sistemle karşılaştırılması). Sıradaki yine F2.44.
 
 ## 4. Mimari ve depo
 
@@ -164,6 +170,19 @@ LeakCanary 2.14 · detekt 1.23.8 · ktlint-gradle 14.2.0 · AndroidX Test runner
   değiştirilmez kuralını kendi testleriyle karşılıyor. Debug tetikleyicisine `--es delete KİMLİK` ve `--es work run` eklendi.
 - **Kalite kapısı:** `./gradlew :domain:test :reminders:testDebugUnitTest ktlintCheck detekt :app:lintDebug :app:assembleDebug`
   (10 Ekim: 145 + 19 JVM testi); aynısı `.github/workflows/check.yml`'de.
+  → (10 Ekim gece) kapıya `:ui:verifyRoborazziDebug :app:verifyRoborazziDebug` eklendi: 159 `:domain` + 24 `:reminders`
+  + 27 `:app` + 22 `:ui`.
+- **(10 Ekim gece, F2-E) Eklenenler:** `:domain/reminder/ReminderHealth.kt` (Sağlık ve kurulumun bütün kuralları:
+  `HealthCheck`, `ChannelHealth`, `StandbyBucket`, `DeliveryTiming` / `DeliveryHealth`, `HealthReport`, `Heartbeat`,
+  `ColdDelivery`, `SelfTest` + `SelfTestOutcome` / `SelfTestRecord`, `SetupWizard`); `ReminderSetup.kt`'de yalnız hazır
+  zamanlar ve taslak kaldı. `:data/db/DeliveryInsights` (ekranların teslim kayıtlarını okuyan yüzü; motorun deposu
+  `ReminderStore`'dan ayrı), teslim günlüğünde `WOKE_APP` olayı, ayarlarda kurulum işaretleri ve son sınama.
+  `:reminders`: `WakeLog` (alarm kapalı uygulamayı uyandırdıysa kaydeder), `AndroidReminderNotifier.weakenedChannels`,
+  `HealthProbe.standbyBucket`. `:app/reminder`: `HealthViewModel`, `HealthScreens`, `HealthParts`, `HealthLabels`,
+  `SelfTestScreens`, `SetupViewModel`, `SetupScreens`, `SetupStepScreen`; her ekran **durumsuz bir `…Content`** işlevi +
+  ViewModel'e bağlayan ince sarmalayıcıdır (ekran görüntüsü ve davranış testleri durumsuz olanı çizer).
+  **`:app` artık testli:** `app/src/test` (Robolectric + Roborazzi + Compose testi), temel görüntüler
+  `app/src/test/screenshots/`. Debug sürümünün adı "Toparla Deneme"; ekranı adb ile açma kancası `DevTools.screenOf`.
 - Testler: ~~103~~ → ~~113~~ → 114 JVM + 15 cihaz. İnvaryantlar tohumlu rastgele girdiyle (300 deneme) sınanır; 18 zorunlu senaryonun saf
   mantıkla ifade edilebilen 12'si `:domain`'de, kalan 6'sı Android tarafında (yol haritası F2.46).
 
@@ -338,6 +357,13 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     (`BLOCKED` → izin dönünce yeniden gösterme), Rahatsız Etme açıkken kritik (geçti; Önemli de geçti), saat dilimi
     ve saat (alarmlar aynı anda kaldı; araya düşen teslimler hemen yapıldı), kilitli yeniden başlatma (kilit
     açılmadan başlıklı bildirim). F2.30–F2.34 ve F2.46 kapandı; F2-D ☑. Kasıtlı bozma (betik düzeltildikten sonra): bu oturumda yazılan kurallara 22 bozma, 22'si yakalandı.
+39. **F2-E kalanları (10 Ekim gece, oturum 9).** Kullanıcı "F2-E'nin tüm maddelerini hallet" dedi (yol haritasındaki
+    sıra F2.44'tü; Kullanıcı kararıyla öne alındı). Önce telefondaki mevcut ekranlara bakıldı: Sağlık ekranı onaylı
+    taslaktan sapmıştı. Yeni yüzeyler (sihirbazın tamamı, Sağlık'ın yeni satırları, iki sınama sonucu, Şimdi kartı)
+    tuvalde çizildi, Kullanıcı onayladı (`docs/tasarim/2026-10-10-kurulum-sihirbazi/`). Kurallar önce testle `:domain`'e, sonra veri, teslim hattı, ekranlar.
+    `:app` modülüne ilk testler (21 ekran görüntüsü, 6 davranış). Cihazda: Kullanıcı sihirbazı debug ve `release`te
+    yürüdü; kapalı uygulamaya teslim sistem kaydıyla kanıtlandı; geç teslim rehberi ve yedi ayar bağlantısı görüldü.
+    Yanlışlar H41–H44. F2.35–F2.37 ☑; bulunan eksik F2.48 olarak yol haritasına yazıldı.
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -377,6 +403,15 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   `TIMEZONE_CHANGED`, `TIME_SET` ve `BOOT_COMPLETED` otomatik başlatma izni olmadan da geliyor (`MY_PACKAGE_REPLACED`
   gelmiyor). Kilit açılmadan çalan bildirim başlığıyla geliyor (kritik +148 ms). Ayar sayfaları adb ile açılabiliyor
   (`am start -a android.settings.…`): Kullanıcı'ya tek dokunuş kalıyor.
+- **F2-E kalanları (10 Ekim gece; her biri tek deneme, ekran açık, telefon şarjda):** uygulama son uygulamalardan
+  kaydırılınca süreç ölüyor (`SwipeUpClean`) ve alarm vaktine kadar **ölü kalıyor**; alarm süreci uyandırıp planlanan
+  saniyede teslim ediyor (debug +0,19 sn; `release`te de alıcı için süreç doğdu). Uyandırılan süreçte alıcı çalıştığında
+  süreç 124 ms yaşındaydı; açık uygulamada 32 sn. Pil sayfasında "Kısıtlama yok" seçilince uygulama pil muafiyet
+  listesine giriyor ve bekleme kovası "muaf" oluyor; muafiyetsiz, günlerdir açılmamış paket `RARE` kovasındaydı.
+  Tek bildirim kanalının sayfası doğrudan açılabiliyor. **adb kısıtları:** `input tap` ve `install -g` bu telefonda
+  yasak (HyperOS güvenlik ayarı; dokunulmadı): ekranlar adb ile gezilemez, `connectedAndroidTest` test paketini
+  kuramaz (elle `install -r -t` + `am instrument` ile koşuluyor). Açık uygulamaya aynı niyetle `am start` teslim
+  edilmiyor (H24'ün aynısı): debug ekran kancası `--activity-clear-top` ve ayrı bir eylem adıyla çalışıyor.
 - **Gürültüde konuşma tanıma (9 Ekim gece; 20 cümle, konuşmalı ev gürültüsü):** 12/20 anlamca doğru (sessizde
   21/30). Yeni risk: tanıyıcı **ortamdaki başka konuşmayı da yazıyor** (4 cümlede cümle başına yabancı söz
   eklendi). Sayı ve saatler gürültüde de doğru. Yakalanan metin her zaman gösterilip düzeltilebilir olmalı.
@@ -517,6 +552,10 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 | H38 | "Hatırlatmaları sına" geçince otomatik başlatma "onaylı" işaretleniyordu; ilk cihaz denemesinde sınama geçti ama uygulama o an ayaktaydı, yani Sağlık ekranı kanıtsız bir ayarı "yerinde" gösterdi | "Deneme ulaştıysa telefon uygulamayı geri getirebiliyordur" varsayımı: sınama Kullanıcı'nın uygulamayı gerçekten kapattığını bilemez | İşaretleme kaldırıldı; otomatik başlatmayı yalnız Kullanıcı sihirbazda onaylar. Ders: okunamayan bir ayar dolaylı bir işaretten "tamam" sayılmaz; kanıt için sürecin teslim anında ölü olduğu kayıttan görülmeli (F2.36, F2.45) |
 | H39 | Yol haritasında F2.31 için "paket güncellemede çalıştığı görüldü ☑" yazıyordu; 10 Ekim'de sistem kaydı yayının bu telefonda **engellendiğini** gösterdi (`process is not permitted to auto start`) | 9 Ekim'deki gözlem ("kurulum sonrası yetim teslim kapandı") alıcıya bağlandı; oysa aynı toparlanma uygulama açılışında da koşuyor ve o sırada uygulama açılmıştı. Alıcının çalıştığını gösteren kendi kayıt satırı yoktu | Bir alıcıyı "çalıştı" saymak için **o alıcının kendi kayıt satırı** ya da sistemin teslim kaydı görülür; aynı işi yapan ikinci bir yol varsa sonuçtan nedene gidilmez. `RescheduleReceiver` artık tetikleyen eylemi günlüğe yazıyor. Aynı oturumda: Kullanıcı ısrarlı takip denemesine 6 sn'de bastı (uyarı metnini okumaya vakti olmadan başlatılmıştı; H6 ailesi): Kullanıcı'nın dokunmaması gereken deneme, "hazır" alınmadan başlatılmaz. |
 | H40 | Israrlı takip ölçümü için bırakılan deneme hatırlatması Kullanıcı'ya iş günü boyunca 23 kez soru sordu | Ölçümün bitişi Kullanıcı'nın "Yaptım" demesine bağlanmıştı ("3 sorudan sonra bas"); Kullanıcı basmadı ve durduracak başka bir şey yoktu. Sabahki bozma betiği de Gradle'ı hiç başlatamadan "0 / 22" yazdı, çıktısı okunmadan geçilecekti | Kullanıcı'nın günlük hayatına karışan ölçüm **kendiliğinden biter** (sayaçlı ya da süreli); bitişi Kullanıcı'nın bir şey yapmasına bırakılmaz. Araç "hiçbiri" diyorsa önce aracın çalıştığı doğrulanır (bozma betiği artık Gradle'ı tam yoluyla çağırıyor). |
+| H41 | "Hatırlatmaları sına", geç gelen denemeyi de "ulaştı, hatırlatmaların çalışıyor" diye gösteriyordu. Sistem alarmı hiç teslim etmese bile, Kullanıcı uygulamayı yeniden açınca motor vakti geçmiş teslimi yapıyor ve sınama bunu başarı sayıyordu: yakalaması gereken arızayı gizliyordu. "Ulaşmadı rehberini cihazda nasıl görürüm" diye düşünürken bulundu; cihazda doğrulandı (zorla durdurulan denemede eski kural "ulaştı" derdi) | Oturum 7'de kural tek başına düşünüldü ("süre dolduktan sonra gelse de geldi sayılır" diye test bile yazıldı); teslim denetçisinin geç teslimi kendisinin yaptığı, yani "geldi"nin iki ayrı nedeni olduğu hesaba katılmadı (H28 ailesi: aynı veriyi paylaşan iki kural birlikte düşünülmedi) | Bir denetim ya da sınama kuralı yazılırken "**arızalı** sistemde bu kural ne der" senaryosu teste girer. Sonuç artık dört durum: kapalıyken ulaştı · ulaştı ama uygulama açıktı · geç ulaştı · ulaşmadı; "kapalıyken"i alarmın uyandırdığı sürecin yaşı kanıtlar (`WOKE_APP`) |
+| H42 | F2-E ekranlarının ilk kodlaması (oturum 7) onaylı taslaktan belirgin sapmıştı: Sağlık satırları üç satırlı ve noktalıydı, amber özet kartı ve sıra numaralı nedenler yoktu, "Şimdi değil" zeminli düğmeydi; taslak README'sindeki "koddaki farklar" bunları saymıyordu. Ayrıca "Taşınan" ve uyarı metni açık temada `carried` jetonuyla çiziliyordu (yaklaşık 2,4:1; sınır 4,5:1) | Ekranlar hazır bileşenle (`PermissionRow`) hızlıca kuruldu, telefondaki görüntü taslakla **aynı oturumda** yan yana konmadı; `:app` ekranlarının ekran görüntüsü testi yoktu. Kontrast testi jeton çiftlerini ölçüyor ama `carried`'ın metin olarak kullanıldığını bilemezdi (H33 ailesi) | Taslaktan kodlanan ekran, aynı oturumda ekran görüntüsü testine girer ve taslakla karşılaştırılır; fark ya düzeltilir ya README'ye yazılır. Amber **metin ve ikon** `onCarriedContainer` ile çizilir; `carried` yalnız süs. Ekranlar durumsuz `…Content` işlevi olarak yazılır ki test edilebilsin |
+| H43 | Bu oturumun süreç yanlışları: (1) kesme işareti içeren içerik üç kez bash heredoc ile yazılmaya çalışıldı, komutlar hiç çalışmadı (**H3'ün tekrarı**); (2) `Defaults.kt`'ye henüz yapılmamış bir ölçüm "ölçüm" diye yazıldı (aynı dakikada silindi; gerçek değer sonra ölçüldü); (3) kasıtlı bozmada bir bozma kaçtı: sahte sistem (Robolectric) kanal yeniden kurulurken yükseltilmiş önemi geri indiriyor, yani test o durumu hiç sınamıyordu | (1) alışkanlık; kural biliniyordu. (2) "nasılsa ölçeceğim" aceleciliği. (3) Android kuralı sahte sistemde sınanınca sahtenin davranışı gerçek sanıldı | (1) Türkçe metin içeren her dosya, **betik dosyaları dahil**, dosya yazma aracıyla oluşturulur; heredoc yalnız ASCII ve kesme işaretsiz içerikte. (2) Sayı, ancak ölçüldükten sonra "ölçüldü" diye yazılır. (3) Karar `:domain`'e alınır ve orada sınanır (`ChannelHealth`); Robolectric testi yalnız Android'e değen kısmı sınar. Kasıtlı bozma gece kontrolünü beklemeden, kural yazılan gün yapılır |
+| H44 | Cihaz denemesinde üç beyan-kayıt uyuşmazlığı: (1) Kullanıcı'dan "bir dakika dokunma" istendi ama o sırada Kullanıcı sihirbazı kendisi yürütüyordu; aynı anda gönderilen ekran komutları onun akışına karıştı (ölçüm bozulmadı, şans); (2) Kullanıcı "bitti, ulaştı dedi" seçtiğinde sistem kaydı denemenin henüz başlamadığını gösteriyordu; (3) Kullanıcı'dan asıl sürümde bir ekranı açması istendi, deneme sürümünde açtı: iki uygulama aynı adı ve simgeyi taşıyordu | (1) "Hazır" alındıktan sonra Kullanıcı'nın ne yapacağı yazılmadı, yalnız ne yapmayacağı söylendi; yeni ekran görünce doğal olarak dokundu (H6 ailesi). (2) Soru, iş bitmeden yanıtlanabilecek biçimde soruldu. (3) İki sürümü yan yana kurarken adları ayırmak düşünülmedi | Kullanıcı'lı denemede her an ya "sıra bende, dokunma" ya "sıra sende, şunu yap" denir; arası bırakılmaz. Kullanıcı'nın yanıtı her zaman kayıtla karşılaştırılır (`topResumedActivity`, olay günlüğü); bu oturumda üçü de böyle yakalandı. Debug sürümünün adı artık "Toparla Deneme" |
 | H15 | Yol haritası birkaç kez `sed`/`awk` ile değiştirildi | Alışkanlık; o sırada kanca yoktu | Kabuk komutuyla yapılan değişiklik düzenleme kancalarından (faz kapısı, gizli değer) geçmez. Yol haritası ve proje beyni **yalnız düzenleme aracıyla** değiştirilir. |
 
 ## 9. Tuzaklar ve "bunu bilmeden başlama" notları
@@ -604,6 +643,15 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 15. (10 Ekim) Uygulama güncellendikten sonra kendiliğinden ayağa kalkmıyor (otomatik başlatma yokken). Alarmlar
     yerinde kaldığı için hatırlatma kaybolmuyor; otomatik başlatma açıkken davranış F2.45'te ölçülecek.
 16. (10 Ekim) Saat ileri alınınca uygulama süreci 0,5 sn sonra yeniden başladı; neden bilinmiyor (teslim etkilenmedi).
+17. (10 Ekim gece) Yakındaki kritik alarmın **sistemde** gerçekten kurulu olduğu hiçbir yerde sistemden okunmuyor:
+    kritik bekçi ve Sağlık ekranı kendi tablosuna bakıyor (blueprint G3 "kendi tablosu ↔ `nextAlarmClock`"). Yol
+    haritası F2.48; önce `getNextAlarmClock()`'un bu telefondaki davranışı ölçülecek.
+18. (10 Ekim gece) Sınama yalnız ekran açıkken ve Önemli sınıfla ölçüldü. Ekran kapalıyken aynı deneme, alarm
+    hizalaması yüzünden (madde 14) 5 dk'ya kadar gecikip "ulaşmadı" ya da "geç ulaştı" diyebilir: bu doğru bir
+    sonuçtur ama Kullanıcı'yı gereksiz yere ayar aramaya gönderebilir. F2.44'ün kararıyla birlikte ele alınır.
+19. (10 Ekim gece) `release` sürümünde uygulama günlüğü ve veritabanı adb ile okunamıyor (hata ayıklanabilir değil):
+    K2'nin "teslim günlüğünden ±1 dk ≥ %99" ölçümü için kaydın nasıl okunacağı (Sağlık ekranındaki sayı, tanılama
+    dışa aktarımı F10.7 ya da başka bir yol) K2 başlamadan belirlenmeli.
 
 ## 11. Yeni oturum için hızlı başlangıç
 

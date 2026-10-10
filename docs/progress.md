@@ -132,3 +132,15 @@ gece kontrolü.
 gecikme: HyperOS kesin alarmı 5 dk'lık dilime yuvarlıyor, kritik etkilenmiyor). Kullanıcı'lı dört deneme yapıldı ve
 kayıtla doğrulandı: bildirimleri kapat-aç, Rahatsız Etme açıkken kritik, saat dilimi ve saat, kilitli yeniden
 başlatmada başlık. **F2-D ☑.** Açık karar adayı: Önemli / Normal / ısrarlı takipte alarm yolu (hizalama).
+
+## 10 Ekim 2026 — oturum 9 (gece)
+**Madde:** F2-E kalanları (F2.35–F2.37; Kullanıcı isteğiyle F2.44'ün önüne alındı). Hedef: Hatırlatma Sağlığı'nın eksik
+satırları (kanal, bekleme kovası, vaktinde ulaşmayan), sınamanın dürüst sonucu (geç gelen "ulaştı" sayılmaz; uygulama
+kapalıyken mi geldi kayıttan bilinir) ve kurulum sihirbazının tamamı yazılsın; ekranlar onaylı taslakla karşılaştırılıp
+`release` sürümüyle telefonda denensin.
+**Biten:** F2.35, F2.36, F2.37 ☑. Yeni taslak onaylandı ve kodlandı; `:app` ilk kez testli (21 ekran görüntüsü,
+6 davranış); kalite kapısı temiz (159 + 24 + 27 + 22 JVM, cihazda 17); kasıtlı bozma 20/20. Telefonda debug ve
+`release` 0.0.5; Kullanıcı sihirbazı ikisinde de yürüdü; kapalı uygulamaya teslim sistem kaydıyla kanıtlandı.
+**Açık:** F2.48 (bekleyen alarm ↔ sistem; bu oturumda bulundu). Deneme sürümünün yeni adı ("Toparla Deneme") bir
+sonraki kurulumda telefona gelir. Gece kontrolü Kullanıcı isteyince.
+**Sıradaki:** F2.44 (alarm hizalaması ölçümü).

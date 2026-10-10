@@ -250,6 +250,9 @@ class ReminderEngine(
         const val EVENT_BLOCKED = "BLOCKED"
         const val EVENT_ACTION = "ACTION"
 
+        /** Alarm kapalı uygulamayı uyandırdı ([ColdDelivery]); teslim hattının Android tarafı yazar. */
+        const val EVENT_WOKE_APP = "WOKE_APP"
+
         val EXPIRY: Duration = Duration.ofMinutes(Defaults.UNANSWERED_EXPIRY_MIN)
         private const val MAX_PASSES = 3
 

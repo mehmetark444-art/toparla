@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.toparla.app.nav.Screens
 import com.toparla.app.nav.ToparlaRoot
 import com.toparla.data.settings.SettingsStore
 import com.toparla.ui.theme.AppearanceChoices
@@ -39,8 +40,8 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     private val appearance: AppearanceViewModel by viewModels()
 
-    /** Nabız uyarısına dokunularak gelindiyse Hatırlatma Sağlığı açılır; açılınca istek tüketilir. */
-    private val openHealth = mutableStateOf(false)
+    /** Dışarıdan istenen ekran (nabız uyarısı → Hatırlatma Sağlığı); açılınca istek tüketilir. */
+    private val openScreen = mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // İlk kare pencere zemini gibi koyu (themes.xml); ayar okununca aşağıda temaya göre yeniden kurulur.
@@ -48,7 +49,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge(statusBarStyle = initial, navigationBarStyle = initial)
         super.onCreate(savedInstanceState)
         // Yeniden oluşturmada (ör. tema değişimi) eski niyet yeniden işlenmez.
-        if (savedInstanceState == null) openHealth.value = intent?.action == ACTION_OPEN_HEALTH
+        if (savedInstanceState == null) openScreen.value = screenOf(intent)
         askNotificationPermission()
         setContent {
             val choices by appearance.choices.collectAsState()
@@ -68,15 +69,19 @@ class MainActivity : ComponentActivity() {
                 reduceMotion = choices.reduceMotion || systemAnimationsOff(),
                 hapticsEnabled = choices.haptics,
             ) {
-                ToparlaRoot(openHealth = openHealth.value, onHealthOpened = { openHealth.value = false })
+                ToparlaRoot(openScreen = openScreen.value, onScreenOpened = { openScreen.value = null })
             }
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        if (intent.action == ACTION_OPEN_HEALTH) openHealth.value = true
+        screenOf(intent)?.let { openScreen.value = it }
     }
+
+    /** Nabız uyarısı Hatırlatma Sağlığı'nı ister; başka ekran yalnız debug sürümünde, adb ile istenebilir ([DevTools]). */
+    private fun screenOf(intent: Intent?): String? =
+        if (intent?.action == ACTION_OPEN_HEALTH) Screens.HEALTH else intent?.let(DevTools::screenOf)
 
     /**
      * Bildirim izni olmadan hiçbir hatırlatma görünmez; ilk açılışta sorulur (blueprint B5). Reddedilirse sistem

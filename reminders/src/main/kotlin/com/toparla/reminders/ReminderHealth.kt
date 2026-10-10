@@ -3,19 +3,23 @@ package com.toparla.reminders
 import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationManager
+import android.app.usage.UsageStatsManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.PowerManager
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.toparla.data.db.ReminderStore
+import com.toparla.data.db.DeliveryInsights
 import com.toparla.data.settings.SettingsStore
+import com.toparla.domain.core.Clock
+import com.toparla.domain.reminder.DeliveryHealth
 import com.toparla.domain.reminder.HealthCheck
 import com.toparla.domain.reminder.HealthReport
 import com.toparla.domain.reminder.HealthSnapshot
 import com.toparla.domain.reminder.Heartbeat
 import com.toparla.domain.reminder.HeartbeatDecision
+import com.toparla.domain.reminder.StandbyBucket
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import timber.log.Timber
@@ -26,12 +30,14 @@ import javax.inject.Singleton
 @Singleton
 class HealthProbe @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val store: ReminderStore,
+    private val insights: DeliveryInsights,
     private val settings: SettingsStore,
+    private val clock: Clock,
 ) {
     suspend fun report(): HealthReport {
         val notifications = context.getSystemService(NotificationManager::class.java)
-        val stats = store.deliveryStats()
+        val now = clock.now()
+        val facts = insights.healthFacts(since = now.minus(DeliveryHealth.WINDOW))
         return HealthReport.of(
             HealthSnapshot(
                 notifications = notifications.areNotificationsEnabled(),
@@ -40,10 +46,21 @@ class HealthProbe @Inject constructor(
                 batteryExempt = context.getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(context.packageName),
                 dndAccess = notifications.isNotificationPolicyAccessGranted,
                 autoStartConfirmed = settings.autoStartConfirmed.first(),
-                pendingAlarms = stats.pendingAlarms,
-                lastDeliveredAt = stats.lastDeliveredAt,
+                weakenedChannels = AndroidReminderNotifier.weakenedChannels(context),
+                standbyBucket = standbyBucket(context),
+                upcomingReminders = facts.upcomingReminders,
+                lastDelivery = facts.lastDelivery,
+                recentDeliveries = facts.recentDeliveries,
+                lastSelfTest = settings.lastSelfTest.first(),
             ),
+            now,
         )
+    }
+
+    companion object {
+        /** Uygulamanın kendi kovası izinsiz okunur. Ekran açıkken hep etkindir; arka plandaki değeri nabız günlüğe yazar. */
+        fun standbyBucket(context: Context): StandbyBucket =
+            StandbyBucket.of(context.getSystemService(UsageStatsManager::class.java).appStandbyBucket)
     }
 }
 
@@ -59,14 +76,16 @@ class HealthWatch(
 ) {
     suspend fun beat(): HeartbeatDecision {
         val warned = settings.heartbeatWarned.first().mapNotNullTo(HashSet()) { name -> HealthCheck.entries.firstOrNull { it.name == name } }
-        val decision = Heartbeat.decide(report(), warned)
+        val current = report()
+        val decision = Heartbeat.decide(current, warned)
         val manager = context.getSystemService(NotificationManager::class.java)
         when {
             decision.problems.isEmpty() -> manager.cancel(NOTIFICATION_ID)
             decision.warn -> manager.notify(NOTIFICATION_ID, warning())
         }
         settings.setHeartbeatWarned(decision.problems.mapTo(HashSet()) { it.name })
-        Timber.i("Nabız: eksik %s, yeni uyarı %s", decision.problems, decision.warn)
+        // Kova ekran açıkken hep etkin okunur; arka plandaki gerçek değeri bu satırdan izlenir (yol haritası F2.44).
+        Timber.i("Nabız: eksik %s, yeni uyarı %s, kova %s", decision.problems, decision.warn, current.standbyBucket)
         return decision
     }
 

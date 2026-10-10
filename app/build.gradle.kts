@@ -1,3 +1,4 @@
+import java.time.Duration
 import java.util.Properties
 
 plugins {
@@ -6,11 +7,15 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.roborazzi)
 }
 
 // İmza bilgisi depoya girmez (blueprint B7). Dosya yoksa release imzasız derlenir ve telefona kurulamaz.
 val keystoreFile = rootProject.file("keystore.properties")
 val keystore = Properties().apply { if (keystoreFile.exists()) keystoreFile.inputStream().use { load(it) } }
+
+// Bir test görevinin en uzun süresi (dakika).
+val testTimeoutMinutes = 10L
 
 android {
     namespace = "com.toparla.app"
@@ -21,8 +26,8 @@ android {
         minSdk = libs.versions.sdk.get().toInt()
         targetSdk = libs.versions.sdk.get().toInt()
         // versionCode = yyMMddNN (blueprint B7): yıl, ay, gün, o günkü sıra. Her kurulan sürümde artar.
-        versionCode = 26101001
-        versionName = "0.0.4"
+        versionCode = 26101002
+        versionName = "0.0.5"
     }
 
     signingConfigs {
@@ -58,6 +63,32 @@ android {
         compose = true
     }
 
+    // Ekranların ekran görüntüsü ve Compose testleri (Roborazzi + Robolectric) JVM'de koşar; düzen `:ui` ile aynı.
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            all {
+                // Robolectric'in JDK 17+ gereksinimi (robolectric.github.io "getting-started"; proje beyni H31).
+                it.jvmArgs(
+                    "--add-opens=java.base/java.lang=ALL-UNNAMED",
+                    "--add-opens=java.base/java.util=ALL-UNNAMED",
+                    "--add-opens=java.base/java.io=ALL-UNNAMED",
+                    "--add-opens=java.base/java.net=ALL-UNNAMED",
+                    "--add-opens=java.base/java.security=ALL-UNNAMED",
+                    "--add-opens=java.base/java.text=ALL-UNNAMED",
+                    "--add-opens=java.base/jdk.internal.access=ALL-UNNAMED",
+                    "--add-opens=java.desktop/java.awt.font=ALL-UNNAMED",
+                    "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+                )
+                it.timeout.set(Duration.ofMinutes(testTimeoutMinutes))
+                it.testLogging {
+                    exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+                    events("failed")
+                }
+            }
+        }
+    }
+
     lint {
         warningsAsErrors = false
         abortOnError = true
@@ -88,4 +119,11 @@ dependencies {
     debugImplementation(libs.leakcanary)
     // Yalnız debug tetikleyicisi için (güvenlik ağı işlerini beklemeden koşturma).
     debugImplementation(libs.work.runtime)
+
+    testImplementation(platform(libs.compose.bom))
+    testImplementation(libs.junit4)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.compose.ui.test.junit4)
 }

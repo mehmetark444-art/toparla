@@ -33,6 +33,15 @@ object Defaults {
     const val SELF_TEST_DELAY_SEC = 20L
     const val SELF_TEST_TIMEOUT_SEC = 60L
 
+    /**
+     * Alarm alındığında süreç en çok bu kadar yaşındaysa alarm kapalı uygulamayı uyandırmıştır, ms.
+     * Uyandırılan süreçte alıcı, süreç doğduktan hemen sonra çalışır; ölçülen değerler `platform-bulgulari.md`'de.
+     */
+    const val WOKEN_PROCESS_MAX_AGE_MS = 5_000L
+
+    /** Hatırlatma Sağlığı "vaktinde ulaşmayan" sayımının geriye baktığı süre, gün (blueprint D23: "son 7 gün"). */
+    const val HEALTH_LOOKBACK_DAYS = 7L
+
     /** Merdiveni biten yanıtsız iş bu kadar dakika sonra "süresi doldu" sayılır (blueprint Bölüm I: +60 dk). */
     const val UNANSWERED_EXPIRY_MIN = 60L
 

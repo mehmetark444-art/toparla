@@ -62,7 +62,7 @@
     <string name="close">Kapat</string>
     <string name="back">Geri</string>
 
-    <!-- Hatırlatma Sağlığı (blueprint D23). Eksik ayar amber ile gösterilir; kırmızı yok. -->
+    <!-- Hatırlatma Sağlığı (blueprint D23; taslaklar 9 ve 10 Ekim 2026). Eksik ayar amber ile gösterilir; kırmızı yok. -->
     <string name="health_title">Hatırlatma Sağlığı</string>
     <string name="health_all_good">Her şey yerinde</string>
     <string name="health_all_good_text">Hatırlatmaların zamanında ulaşması için gereken ayarların hepsi açık.</string>
@@ -73,53 +73,141 @@
     <string name="health_missing_text">Bunlar olmadan telefon, uygulama kapanınca hatırlatmaları geri başlatmayabilir ya da geciktirebilir.</string>
     <string name="health_to_fix">Düzeltilecekler</string>
     <string name="health_ok">Yerinde olanlar</string>
+    <string name="health_recent">Son durum</string>
     <string name="health_fix">Düzelt</string>
-    <string name="health_on">Açık</string>
-    <string name="health_last">Son hatırlatma</string>
-    <string name="health_last_none">Henüz yok</string>
-    <string name="health_pending">Bekleyen alarm</string>
+    <string name="health_show">Göster</string>
     <string name="health_test_hint">Emin olmak için 20 saniyelik bir deneme yapabilirsin.</string>
     <string name="health_test">Hatırlatmaları sına</string>
     <string name="check_notifications">Bildirim izni</string>
     <string name="check_notifications_why">İzin olmadan hiçbir hatırlatma görünmez.</string>
+    <string name="check_channels">Bildirim sesleri</string>
+    <string name="check_channels_why">%1$s hatırlatmaların sesi kısılmış.</string>
     <string name="check_exact_alarms">Tam vaktinde alarm</string>
     <string name="check_exact_alarms_why">Hatırlatmalar saniyesinde çalsın.</string>
     <string name="check_auto_start">Otomatik başlatma</string>
     <string name="check_auto_start_why">Uygulama kapanırsa kendiliğinden geri gelsin.</string>
     <string name="check_battery">Pil kısıtlaması</string>
     <string name="check_battery_why">Telefon uyurken alarmlar gecikmesin.</string>
+    <string name="check_bucket">Arka plan önceliği</string>
+    <string name="check_bucket_why">Telefon uygulamayı az kullanılan sayıyor; alarmlar gecikebilir.</string>
     <string name="check_full_screen">Tam ekran kart</string>
     <string name="check_full_screen_why">Kritik hatırlatma kilit ekranında açılsın.</string>
     <string name="check_dnd">Sessizde kritik ses</string>
     <string name="check_dnd_why">Rahatsız Etme açıkken de kritik hatırlatma çalsın.</string>
+    <!-- "Yerinde olanlar" satırlarının sağındaki değer. -->
+    <string name="value_on">Açık</string>
+    <string name="value_none">Yok</string>
+    <string name="value_confirmed">Sen onayladın</string>
+    <string name="value_on_time">Vaktinde</string>
+    <string name="bucket_exempted">Kısıtsız</string>
+    <string name="bucket_active">Yüksek</string>
+    <string name="bucket_working_set">İyi</string>
+    <string name="bucket_frequent">Orta</string>
+    <string name="bucket_rare">Düşük</string>
+    <string name="bucket_restricted">Kısıtlı</string>
+    <string name="list_and">%1$s ve %2$s</string>
+    <!-- "Son durum" satırları. Gecikme teslim hattınındır, Kullanıcı'nın değil. -->
+    <string name="health_last">Son hatırlatma</string>
+    <string name="health_last_none">Henüz yok</string>
+    <string name="health_when">%1$s %2$s</string>
+    <string name="health_when_status">%1$s · %2$s</string>
+    <string name="health_on_time">vaktinde</string>
+    <string name="health_late_min">%1$d dk geç</string>
+    <string name="health_pending">Bekleyen hatırlatma</string>
+    <string name="health_missed">Vaktinde ulaşmayan</string>
+    <string name="health_missed_note">Son 7 gün</string>
+    <string name="health_missed_note_some">Son 7 gün. Ayarlar tamamsa bir deneme yap.</string>
+    <string name="health_last_test">Son deneme</string>
+    <string name="health_last_test_none">Henüz yapılmadı</string>
+    <string name="outcome_arrived">ulaştı</string>
+    <string name="outcome_arrived_open">ulaştı, uygulama açıktı</string>
+    <string name="outcome_late">geç ulaştı</string>
+    <string name="outcome_not_arrived">ulaşmadı</string>
 
-    <!-- Kurulum sihirbazı adımı (blueprint G3). -->
-    <string name="wizard_auto_start_title">Otomatik başlatmayı aç</string>
-    <string name="wizard_auto_start_text">Telefon uygulamayı kapatırsa hatırlatmalar kendiliğinden geri gelsin. Bu izin olmadan kapanan uygulama, sen açana kadar susar.</string>
+    <!-- Kurulum sihirbazı (blueprint D1-4, G3; taslak 10 Ekim 2026). -->
+    <string name="setup_title">Hatırlatmalar sana ulaşsın</string>
+    <string name="setup_text">Bu telefon, ayarı açılmamış uygulamaları uyutabiliyor. Birkaç kısa ayar ve bir deneme; yaklaşık 2 dakika.</string>
+    <string name="setup_skip_hint">Atlarsan Şimdi ekranında küçük bir kart olarak bekler.</string>
+    <string name="setup_start">Başlayalım</string>
+    <string name="setup_continue">Sürdür</string>
+    <string name="setup_step_done">Tamam</string>
+    <string name="setup_step_next">Sıradaki</string>
+    <string name="setup_lock">Uygulamayı kilitle</string>
+    <string name="setup_lock_done">Uygulama kilidi</string>
+    <string name="setup_test">Deneme hatırlatması</string>
+    <string name="setup_progress">Adım %1$d / %2$d</string>
+    <string name="setup_done_title">Hatırlatmaların hazır</string>
+    <string name="setup_done_text_closed">Deneme hatırlatması uygulama kapalıyken, vaktinde ulaştı.</string>
+    <string name="setup_done_text_open">Deneme hatırlatması vaktinde ulaştı.</string>
+    <string name="setup_done_note">Bir ayar sonradan değişirse haber veririm. Hepsi Plan sekmesindeki Sağlık sayfasında durur.</string>
+    <string name="setup_finish">Bitir</string>
+    <plurals name="setup_card_title">
+        <item quantity="one">Kurulumda %d adım kaldı</item>
+        <item quantity="other">Kurulumda %d adım kaldı</item>
+    </plurals>
+    <string name="setup_card_text">Tamamlanınca hatırlatmalar uygulama kapalıyken de ulaşır.</string>
     <string name="wizard_on_page">Açılacak sayfada</string>
-    <string name="wizard_step_find">Listeden Toparla\'yı bul</string>
-    <string name="wizard_step_switch">Yanındaki anahtarı aç</string>
-    <string name="wizard_step_back">Geri tuşuyla buraya dön</string>
+    <string name="wizard_how">Nasıl yapılır</string>
     <string name="wizard_open">Ayar sayfasını aç</string>
+    <string name="wizard_reopen">Sayfayı yeniden aç</string>
     <string name="wizard_done">Açtım</string>
     <string name="wizard_later">Şimdi değil</string>
+    <string name="wizard_step_back">Geri tuşuyla buraya dön</string>
+    <string name="wizard_notifications_title">Bildirimlere izin ver</string>
+    <string name="wizard_notifications_text">İzin olmadan hiçbir hatırlatma görünmez.</string>
+    <string name="wizard_notifications_step">Bildirimlere izin ver anahtarını aç</string>
+    <string name="wizard_channels_title">Bildirim seslerini geri aç</string>
+    <string name="wizard_channels_text">%1$s hatırlatmaların sesi kısılmış. Sessiz gelirse fark etmeyebilirsin.</string>
+    <string name="wizard_channels_step">Bildirimleri göster ve Kayan bildirimler anahtarlarını aç</string>
+    <string name="wizard_exact_title">Tam vaktinde alarma izin ver</string>
+    <string name="wizard_exact_text">Hatırlatmalar saniyesinde çalsın.</string>
+    <string name="wizard_permission_step">İzin anahtarını aç</string>
+    <string name="wizard_auto_start_title">Otomatik başlatmayı aç</string>
+    <string name="wizard_auto_start_text">Telefon uygulamayı kapatırsa hatırlatmalar kendiliğinden geri gelsin. Bu izin olmadan kapanan uygulama, sen açana kadar susar.</string>
+    <string name="wizard_step_find">Listeden Toparla\'yı bul</string>
+    <string name="wizard_step_switch">Yanındaki anahtarı aç</string>
+    <string name="wizard_battery_title">Pil kısıtlamasını kaldır</string>
+    <string name="wizard_battery_text">Telefon uyurken uygulamayı uyutmasın; alarmlar gecikmesin.</string>
+    <string name="wizard_battery_step">Kısıtlama yok seçeneğini seç</string>
+    <string name="wizard_full_screen_title">Tam ekran karta izin ver</string>
+    <string name="wizard_full_screen_text">Kritik hatırlatma kilit ekranında açılsın.</string>
+    <string name="wizard_lock_title">Toparla\'yı kilitle</string>
+    <string name="wizard_lock_text">Telefon belleği temizlerken kilitli uygulamaya dokunmaz. Kilitsiz uygulama kapanabilir.</string>
+    <string name="wizard_lock_step_recents">Son uygulamalar ekranını aç</string>
+    <string name="wizard_lock_step_hold">Toparla kartına basılı tut</string>
+    <string name="wizard_lock_step_tap">Kilit simgesine dokun</string>
+    <string name="wizard_lock_picture">Son uygulamalar ekranında, köşesinde kilit işareti olan Toparla kartı</string>
+    <string name="wizard_lock_confirm">Kilitledim</string>
+    <string name="wizard_test_title">Son adım: bir deneme</string>
+    <string name="wizard_test_text">20 saniye sonraya bir deneme hatırlatması kuracağım. Uygulamayı kapatsan da gelmeli.</string>
+    <string name="wizard_test_start">Denemeyi başlat</string>
 
-    <!-- Hatırlatmaları sına (blueprint D23). -->
+    <!-- Hatırlatmaları sına (blueprint D23, G3). Sonuç teslim kaydından okunur. -->
     <string name="selftest_title">Hatırlatmaları sına</string>
     <string name="selftest_seconds">saniye</string>
+    <string name="selftest_remaining">Kalan süre %1$d saniye</string>
     <string name="selftest_close_app">Şimdi uygulamayı kapat</string>
     <string name="selftest_close_app_text">Son uygulamalar ekranını aç ve Toparla\'yı yukarı kaydır. Deneme hatırlatması yine de gelmeli.</string>
     <string name="selftest_return">Bildirim gelince uygulamayı yeniden aç; sonucu burada göstereceğim.</string>
     <string name="selftest_reminder_title">Deneme hatırlatması</string>
     <string name="selftest_reminder_body">Hatırlatmalar çalışıyor. Uygulamaya dönebilirsin.</string>
     <string name="selftest_arrived">Deneme hatırlatması ulaştı</string>
-    <string name="selftest_arrived_text">Planlanan andan %1$d saniye sonra geldi. Hatırlatmaların çalışıyor.</string>
+    <string name="selftest_arrived_closed_text">Uygulama kapalıyken, planlanan andan %1$d saniye sonra geldi. Hatırlatmaların çalışıyor.</string>
+    <string name="selftest_arrived_open_text">Vaktinde geldi. Ama o sırada uygulama açıktı; bu deneme kapalı uygulamayı sınamadı.</string>
+    <string name="selftest_open_tip">Yeniden denerken geri sayım bitmeden Toparla\'yı son uygulamalardan yukarı kaydır.</string>
+    <string name="selftest_enough">Bu kadarı yeter</string>
+    <string name="selftest_late">Deneme hatırlatması geç ulaştı</string>
+    <string name="selftest_late_text">Planlanandan %1$s sonra, ancak uygulama yeniden açılınca geldi. Sırayla bakalım; her birinden sonra yeniden deneriz.</string>
     <string name="selftest_not_arrived">Deneme hatırlatması ulaşmadı</string>
     <string name="selftest_not_arrived_text">Büyük olasılıkla telefonun bir ayarı engelliyor. Sırayla bakalım; her birinden sonra yeniden deneriz.</string>
     <string name="selftest_likely">En olası nedenler</string>
-    <string name="selftest_lock_tip">Uygulama kilitli değil</string>
-    <string name="selftest_lock_tip_text">Son uygulamalarda Toparla\'ya basılı tut, kilidi seç.</string>
+    <string name="cause_auto_start">Kapanan uygulama geri gelemiyor olabilir.</string>
+    <string name="cause_battery">Telefon uygulamayı uyutuyor olabilir.</string>
+    <string name="cause_lock">Kilitsiz uygulamayı telefon kapatabilir.</string>
+    <string name="duration_min_sec">%1$d dk %2$d sn</string>
+    <string name="duration_sec">%1$d sn</string>
     <string name="selftest_retry">Yeniden dene</string>
     <string name="selftest_cancel">Vazgeç</string>
     <string name="selftest_ok">Tamam</string>
 </resources>
+

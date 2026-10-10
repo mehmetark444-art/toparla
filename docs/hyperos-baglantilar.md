@@ -8,6 +8,11 @@ bağlantı başına 1–2 deneme (`:spike` `AGroup.openLink`). Ham kayıt: `plat
 "Açıldı" = sistem hedefi çözdü ve hata vermedi; sayfanın doğru uygulamayı gösterdiği Kullanıcı
 gözüyle ayrıca doğrulanmadı.
 
+**10 Ekim 2026 (asıl uygulama, debug paketi):** Hatırlatma Sağlığı ve kurulum sihirbazının kullandığı yedi bağlantı
+(uygulama bildirim ayarları, bildirim kanalı, tam vaktinde alarm, otomatik başlatma, pil, tam ekran bildirim, Rahatsız
+Etme erişimi) adb ile aynı niyetlerle açıldı ve **ekran görüntüsüyle** doğru sayfayı, doğru uygulamayı gösterdikleri
+görüldü (`platform-bulgulari.md` § F2-E kalanları). Kullanıcı'nın kendi gözüyle doğrulaması yol haritası F2.45'te.
+
 | Ayar | Intent (paket / sınıf / eylem) | Sonuç |
 |---|---|---|
 | Otomatik başlatma | bileşen `com.miui.securitycenter` / `com.miui.permcenter.autostart.AutoStartManagementActivity` | Açıldı (liste sayfası; uygulamayı Kullanıcı listeden bulur) |
@@ -21,5 +26,7 @@ gözüyle ayrıca doğrulanmadı.
 | Rahatsız Etme erişimi | `Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS` | Açıldı |
 | Kullanım erişimi | `Settings.ACTION_USAGE_ACCESS_SETTINGS` | Açıldı |
 | Uygulama bildirim ayarları | `Settings.ACTION_APP_NOTIFICATION_SETTINGS` + `EXTRA_APP_PACKAGE` | Açıldı (1 deneme; ikinci koşuda kayıt düşmedi, yeniden denenecek) |
+| Bildirim kanalı (tek kanalın sayfası) | `Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS` + `EXTRA_APP_PACKAGE` + `EXTRA_CHANNEL_ID` → `SubSettings` | Açıldı (10 Ekim 2026, 1 deneme; "Önemli": Bildirimleri göster, Kayan bildirimler, Ses, Titreşim) |
+| Tam vaktinde alarm | `Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM` + `package:` → `Settings$AlarmsAndRemindersAppActivity` | Açıldı (10 Ekim 2026; anahtar soluk: izin kurulumda verili) |
 | Kısıtlı ayarlara izin ver | — | Doğrudan bağlantısı yok; yol: Uygulama bilgisi → ⋮. Bu telefonda gerekip gerekmediği F1.8'de ölçülecek |
 | Gri tonlama | eylem `com.android.settings.ACCESSIBILITY_COLOR_SPACE_SETTINGS` → `Settings$AccessibilityDaltonizerSettingsActivity` | Hedef var (yalnız `resolve-activity`); açılış denenmedi |

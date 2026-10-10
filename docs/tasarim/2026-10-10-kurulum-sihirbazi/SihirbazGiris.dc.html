@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Kurulum, başlangıç ve kalan adımlar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.t-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+.t-root button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div class="t-root" style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #1B1917; color: #ECE7DF">
+  <div style="display: flex; align-items: center; padding: 20px 24px 8px 12px">
+    <button aria-label="Kapat" style="width: 48px; height: 48px; border: 0; background: transparent; color: #AFA79B; display: flex; align-items: center; justify-content: center">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+
+  <div style="flex: 1 1 auto; padding: 24px 24px 0 24px; display: flex; flex-direction: column; gap: 24px">
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <h1 style="margin: 0; font-size: 32px; line-height: 40px; font-weight: 600">Hatırlatmalar sana ulaşsın</h1>
+      <p style="margin: 0; font-size: 16px; line-height: 24px; color: #AFA79B">Bu telefon, ayarı açılmamış uygulamaları uyutabiliyor. Üç kısa ayar ve bir deneme; yaklaşık 2 dakika.</p>
+    </div>
+
+    <div style="padding: 24px; border-radius: 20px; background: #242220; box-shadow: 0 8px 24px rgba(10,8,6,0.35); display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; align-items: center; gap: 12px">
+        <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8CC2A0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: none"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg>
+        <span style="flex: 1 1 auto; font-size: 16px">Bildirim izni</span>
+        <span style="font-size: 13px; color: #AFA79B">Tamam</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px">
+        <span style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; border: 2px solid #8DBBA9; flex: none"></span>
+        <span style="flex: 1 1 auto; font-size: 16px; font-weight: 600">Otomatik başlatma</span>
+        <span style="font-size: 13px; color: #8DBBA9">Sıradaki</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px">
+        <span style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; border: 2px solid #6B655D; flex: none"></span>
+        <span style="flex: 1 1 auto; font-size: 16px">Pil kısıtlaması</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px">
+        <span style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; border: 2px solid #6B655D; flex: none"></span>
+        <span style="flex: 1 1 auto; font-size: 16px">Uygulamayı kilitle</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px">
+        <span style="width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; border: 2px solid #6B655D; flex: none"></span>
+        <span style="flex: 1 1 auto; font-size: 16px">Deneme hatırlatması</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 16px 24px 28px 24px; display: flex; flex-direction: column; gap: 8px">
+    <div style="font-size: 13px; color: #AFA79B; text-align: center">Atlarsan Şimdi ekranında küçük bir kart olarak bekler.</div>
+    <button style="height: 56px; border: 0; border-radius: 20px; background: #8DBBA9; color: #12261E; font-size: 16px; font-weight: 600">Başlayalım</button>
+    <button style="height: 48px; border: 0; border-radius: 16px; background: transparent; color: #AFA79B; font-size: 16px">Şimdi değil</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

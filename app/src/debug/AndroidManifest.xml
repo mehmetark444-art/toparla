@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <application>
+    <!-- Deneme sürümünün adı farklıdır: asıl sürümle aynı adı taşıyınca telefonda hangisinin açıldığı anlaşılmıyor. -->
+    <application
+        android:label="@string/app_label_debug"
+        tools:replace="android:label">
         <!-- Yalnız debug: adb ile deneme hatırlatması kurar. Release sürümünde bu alıcı yoktur. -->
         <receiver
             android:name=".DebugReminderReceiver"

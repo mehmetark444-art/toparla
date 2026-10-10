@@ -34,4 +34,7 @@ Hatırlatma ekle: başlık boşken **Hatırlat** pasif. Plan: hiç hatırlatma y
 - Onay tarihi: 10 Ekim 2026
 - İstenen değişiklikler: yok.
 - Koddaki farklar: tekrar seçimi yok (yalnız tek seferlik; "her gün" eklenmedi). Dört hazır zaman iki satıra
-  bölündü (%200 yazı ölçeğinde taşmasın). Telefon ekran görüntüsüyle yan yana karşılaştırma henüz yapılmadı.
+  bölündü (%200 yazı ölçeğinde taşmasın). ~~Telefon ekran görüntüsüyle yan yana karşılaştırma henüz yapılmadı.~~
+  → (10 Ekim 2026 gece) Karşılaştırma yapıldı: Sağlık, sınama ve sihirbaz adımı ilk kodlamada taslaktan sapmıştı
+  (proje beyni H42) ve taslağa çekildi; kalan farkların tam listesi devam taslağının README'sinde
+  (`../2026-10-10-kurulum-sihirbazi/README.md` § Koddaki farklar).

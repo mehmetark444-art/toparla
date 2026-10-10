@@ -10,6 +10,7 @@ import com.toparla.data.core.DefaultDispatcherProvider
 import com.toparla.data.core.SecureRandomSource
 import com.toparla.data.core.SystemClock
 import com.toparla.data.core.UuidGenerator
+import com.toparla.data.db.DeliveryInsights
 import com.toparla.data.db.ReminderStore
 import com.toparla.data.db.ToparlaDatabase
 import com.toparla.data.secret.KeystoreSecretStore
@@ -53,6 +54,9 @@ object AppModule {
 
     @Provides @Singleton
     fun reminderStore(db: ToparlaDatabase): ReminderStore = ReminderStore(db)
+
+    @Provides @Singleton
+    fun deliveryInsights(db: ToparlaDatabase): DeliveryInsights = DeliveryInsights(db)
 
     @Provides @Singleton
     fun preferences(@ApplicationContext context: Context): DataStore<Preferences> =

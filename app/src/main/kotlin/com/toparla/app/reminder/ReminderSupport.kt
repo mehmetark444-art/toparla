@@ -17,6 +17,7 @@ import com.toparla.domain.reminder.ReminderClass
 import com.toparla.domain.reminder.ReminderDraft
 import com.toparla.domain.reminder.ReminderEngine
 import com.toparla.domain.reminder.ReminderPlanner
+import com.toparla.reminders.AndroidReminderNotifier
 import timber.log.Timber
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
@@ -64,19 +65,35 @@ class ReminderCreator @Inject constructor(
  * uygulama bilgisi sayfasına düşülür; o da açılmazsa hiçbir şey olmaz ve günlüğe yazılır.
  */
 object SettingsLinks {
-    fun open(context: Context, check: HealthCheck) {
+    /**
+     * @param weakened kanal denetiminde sesi kısılmış sınıflar: ilkinin kanal sayfası açılır
+     * Hedefler sırayla denenir; ilk açılan kazanır, hiçbiri açılmazsa uygulama bilgisi sayfası.
+     */
+    fun open(context: Context, check: HealthCheck, weakened: Set<ReminderClass> = emptySet()) {
         val pkg = Uri.parse("package:${context.packageName}")
-        val intent = when (check) {
-            HealthCheck.NOTIFICATIONS -> Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-            HealthCheck.EXACT_ALARMS -> Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, pkg)
-            HealthCheck.AUTO_START -> Intent().setComponent(
-                ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity"),
+        val appNotifications = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+        val battery = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, pkg)
+        val targets = when (check) {
+            HealthCheck.NOTIFICATIONS -> listOf(appNotifications)
+            HealthCheck.CHANNELS -> listOfNotNull(
+                weakened.minOrNull()?.let { klass ->
+                    Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
+                        .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                        .putExtra(Settings.EXTRA_CHANNEL_ID, AndroidReminderNotifier.channelFor(klass))
+                },
+                appNotifications,
             )
-            HealthCheck.BATTERY -> Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, pkg)
-            HealthCheck.FULL_SCREEN -> Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT, pkg)
-            HealthCheck.DND_ACCESS -> Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+            HealthCheck.EXACT_ALARMS -> listOf(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, pkg))
+            HealthCheck.AUTO_START -> listOf(
+                Intent().setComponent(ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")),
+            )
+            // Bekleme kovasının çaresi pil muafiyetidir: muaf uygulama kovaya girmez.
+            HealthCheck.BATTERY, HealthCheck.STANDBY_BUCKET -> listOf(battery)
+            HealthCheck.FULL_SCREEN -> listOf(Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT, pkg))
+            HealthCheck.DND_ACCESS -> listOf(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
         }
-        if (!start(context, intent)) start(context, Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, pkg))
+        val fallback = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, pkg)
+        (targets + fallback).firstOrNull { start(context, it) }
     }
 
     private fun start(context: Context, intent: Intent): Boolean = try {

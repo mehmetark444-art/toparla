@@ -1,0 +1,22 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-10-10T19:30:00Z"},
+  "title": "Toparla · Kurulum sihirbazı ve Sağlık eklemeleri",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 390, "h": 1240, "title": "1 · Hatırlatma Sağlığı, yeni satırlarla (koyu)"},
+    "SaglikAcik.dc.html": {"x": 470, "y": 0, "w": 390, "h": 1240, "title": "1 · Hatırlatma Sağlığı (açık)"},
+    "SihirbazGiris.dc.html": {"x": 940, "y": 0, "w": 390, "h": 844, "title": "2 · Kurulum: başlangıç ve kalanlar"},
+    "SihirbazKilit.dc.html": {"x": 1410, "y": 0, "w": 390, "h": 844, "title": "3 · Kurulum: uygulamayı kilitle"},
+    "SihirbazBitis.dc.html": {"x": 1880, "y": 0, "w": 390, "h": 844, "title": "4 · Kurulum: bitiş"},
+    "SimdiKart.dc.html": {"x": 940, "y": 964, "w": 390, "h": 844, "title": "5 · Şimdi ekranında kurulum kartı"},
+    "SinaAcikti.dc.html": {"x": 1410, "y": 964, "w": 390, "h": 844, "title": "6 · Sınama: ulaştı ama uygulama açıktı"},
+    "SinaGec.dc.html": {"x": 1880, "y": 964, "w": 390, "h": 844, "title": "7 · Sınama: geç ulaştı"}
+  },
+  "order": ["Main.dc.html", "SaglikAcik.dc.html", "SihirbazGiris.dc.html", "SihirbazKilit.dc.html", "SihirbazBitis.dc.html", "SimdiKart.dc.html", "SinaAcikti.dc.html", "SinaGec.dc.html"],
+  "notes": {
+    "baslik": {"x": 0, "y": -260, "text": "Kurulum sihirbazı ve Sağlık eklemeleri · onay taslağı", "kind": "title1", "maxW": 2270}
+  },
+  "designSystems": []
+}

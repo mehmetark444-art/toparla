@@ -37,6 +37,12 @@ object ToparlaIcons {
     val AlertCircle: ImageVector = icon("AlertCircle", STROKE_BOLD, "M3,12 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0", "M12,7 V13", "M12,16.5 V17")
     val Shield: ImageVector = icon("Shield", STROKE, "M12,3 L19,6 V12 C19,16 16,19 12,21 C8,19 5,16 5,12 V6 z", "M9,12 L11.5,14.5 L15,10")
 
+    // Kurulum sihirbazı ve sınama sonuçları (F2.36, F2.37).
+    val Check: ImageVector = icon("Check", STROKE_BOLD, "M5,12.5 L9.5,17 L19,7.5")
+    val InfoCircle: ImageVector = icon("InfoCircle", STROKE_BOLD, "M3,12 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0", "M12,11 V17", "M12,7.5 V8")
+    val Bell: ImageVector = icon("Bell", STROKE_BOLD, "M12,3 a6,6 0 0,0 -6,6 v4 l-2,3 h16 l-2,-3 V9 a6,6 0 0,0 -6,-6 z", "M10,20 a2,2 0 0,0 4,0")
+    val Lock: ImageVector = icon("Lock", STROKE_BOLD, "M7,11 h10 a2,2 0 0,1 2,2 v5 a2,2 0 0,1 -2,2 H7 a2,2 0 0,1 -2,-2 v-5 a2,2 0 0,1 2,-2 z", "M8,11 V8 a4,4 0 0,1 8,0 v3")
+
     private fun icon(name: String, stroke: Float, vararg paths: String): ImageVector {
         val builder = ImageVector.Builder(
             name = name,

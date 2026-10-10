@@ -8,6 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.toparla.data.db.AlarmKind
 import com.toparla.data.db.CreatedBy
 import com.toparla.data.db.DeliveryEvent
+import com.toparla.data.db.DeliveryInsights
 import com.toparla.data.db.OwnerType
 import com.toparla.data.db.PreMigrationBackup
 import com.toparla.data.db.ReminderEntity
@@ -16,6 +17,7 @@ import com.toparla.data.db.ReminderStore
 import com.toparla.data.db.ToparlaDatabase
 import com.toparla.domain.reminder.AlarmApi
 import com.toparla.domain.reminder.OccurrenceState
+import com.toparla.domain.reminder.PlannedAlarm
 import com.toparla.domain.reminder.Recurrence
 import com.toparla.domain.reminder.ReminderClass
 import com.toparla.domain.reminder.ReminderPlanner
@@ -162,6 +164,50 @@ class ReminderDatabaseTest {
         assertEquals(1, store.pendingSnoozes().size)
         assertEquals(Instant.ofEpochMilli(500), flight.lastAskedAt)
         assertEquals(2, flight.asksDone)
+    }
+
+    @Test
+    fun saglikBilgisiSiradakileriSonTeslimiVeKullanicininSonTeslimleriniVerir() = runTest {
+        db.reminders().upsert(reminder("r1"))
+        db.reminders().upsert(reminder("deneme").copy(createdBy = CreatedBy.SYSTEM))
+        db.reminders().upsert(reminder("silinen"))
+        store.deleteReminder("silinen", Instant.ofEpochMilli(50))
+        // Sıradakiler: ana teslim ve erteleme sayılır; merdiven basamağı, takip sorusu ve silinen tanımın alarmı sayılmaz.
+        store.applyPlan(
+            listOf("r1@9000", "r1@9000#l1", "r1@8000#f0", "r1@7000#s1", "silinen@9000").map {
+                PlannedAlarm(it, it.substringBefore('@'), Instant.ofEpochMilli(9000), ReminderClass.CRITICAL, AlarmApi.ALARM_CLOCK)
+            },
+            emptyList(),
+        )
+        db.occurrences().upsert(ReminderOccurrenceEntity("r1@1000", "r1", 1000, OccurrenceState.DONE, deliveredAt = 1000))
+        db.occurrences().upsert(ReminderOccurrenceEntity("r1@2000", "r1", 2000, OccurrenceState.DELIVERED, deliveredAt = 2300))
+        db.occurrences().upsert(ReminderOccurrenceEntity("r1@500", "r1", 500, OccurrenceState.DONE, deliveredAt = 500))
+        db.occurrences().upsert(ReminderOccurrenceEntity("r1@3000#s1", "r1", 3000, OccurrenceState.PLANNED))
+        db.occurrences().upsert(ReminderOccurrenceEntity("deneme@4000", "deneme", 4000, OccurrenceState.DELIVERED, deliveredAt = 4001))
+        store.log("r1@2000", Instant.ofEpochMilli(2300), DeliveryEvent.BLOCKED.name, null)
+        store.log("deneme@4000", Instant.ofEpochMilli(4001), DeliveryEvent.WOKE_APP.name, "312 ms")
+
+        val insights = DeliveryInsights(db)
+        val facts = insights.healthFacts(since = Instant.ofEpochMilli(1000))
+
+        assertEquals(2, facts.upcomingReminders)
+        // Son teslim, deneme hatırlatması dahil en son çalandır.
+        assertEquals(Instant.ofEpochMilli(4000), facts.lastDelivery?.plannedAt)
+        assertEquals(Instant.ofEpochMilli(4001), facts.lastDelivery?.deliveredAt)
+        // Son teslimler: yalnız Kullanıcı'nın hatırlatmaları, pencere içinde, çalmış olanlar; engellenen işaretli.
+        assertEquals(listOf(1000L, 2000L), facts.recentDeliveries.map { it.plannedAt.toEpochMilli() })
+        assertEquals(listOf(false, true), facts.recentDeliveries.map { it.blocked })
+        assertTrue(insights.wokeApp("deneme@4000"))
+        assertFalse(insights.wokeApp("r1@2000"))
+    }
+
+    @Test
+    fun hicTeslimYokkenSaglikBilgisiBosDoner() = runTest {
+        val facts = DeliveryInsights(db).healthFacts(since = Instant.ofEpochMilli(0))
+
+        assertEquals(0, facts.upcomingReminders)
+        assertNull(facts.lastDelivery)
+        assertTrue(facts.recentDeliveries.isEmpty())
     }
 
     @Test

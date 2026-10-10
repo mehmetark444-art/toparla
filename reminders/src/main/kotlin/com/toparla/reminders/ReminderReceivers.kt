@@ -3,11 +3,14 @@ package com.toparla.reminders
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Process
 import android.os.UserManager
 import com.toparla.data.core.SystemClock
 import com.toparla.domain.core.Clock
+import com.toparla.domain.reminder.ColdDelivery
 import com.toparla.domain.reminder.ReminderAction
 import com.toparla.domain.reminder.ReminderEngine
+import com.toparla.domain.reminder.ReminderRepository
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -15,6 +18,8 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.time.Duration
+import java.time.Instant
 
 /** Alıcılar ve servis, uygulamanın tek motoruna ve arka plan kapsamına buradan ulaşır. */
 @EntryPoint
@@ -30,6 +35,8 @@ interface ReminderEntryPoint {
     fun scheduler(): AlarmManagerScheduler
 
     fun healthWatch(): HealthWatch
+
+    fun repository(): ReminderRepository
 
     companion object {
         fun of(context: Context): ReminderEntryPoint =
@@ -60,6 +67,8 @@ internal fun BroadcastReceiver.runAsync(context: Context, block: suspend (Remind
  */
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        // İlk iş: süreç bu alarm için mi doğdu? Sonradan okunursa teslimin süresi yaşa karışır.
+        val processAge = WakeLog.processAge()
         val key = intent.getStringExtra(AlarmManagerScheduler.EXTRA_KEY) ?: return
         val critical = intent.getBooleanExtra(AlarmManagerScheduler.EXTRA_CRITICAL, false)
         if (!context.isUserUnlocked()) {
@@ -69,20 +78,26 @@ class AlarmReceiver : BroadcastReceiver() {
             }
             return
         }
-        if (critical && startService(context, key)) return
+        if (critical && startService(context, key, processAge)) return
         runAsync(context) { entry ->
             deliverSafely(context, key, critical) {
                 if (key == AlarmManagerScheduler.MAINTENANCE_KEY) {
                     entry.engine().replan(entry.clock().now())
                 } else {
-                    entry.engine().onAlarmFired(key, entry.clock().now())
+                    val now = entry.clock().now()
+                    entry.engine().onAlarmFired(key, now)
+                    WakeLog.record(key, processAge, now, entry.repository()::log)
                 }
             }
         }
     }
 
-    private fun startService(context: Context, key: String): Boolean = try {
-        context.startForegroundService(Intent(context, ReminderService::class.java).putExtra(AlarmManagerScheduler.EXTRA_KEY, key))
+    private fun startService(context: Context, key: String, processAge: Duration): Boolean = try {
+        context.startForegroundService(
+            Intent(context, ReminderService::class.java)
+                .putExtra(AlarmManagerScheduler.EXTRA_KEY, key)
+                .putExtra(ReminderService.EXTRA_PROCESS_AGE_MS, processAge.toMillis()),
+        )
         true
     } catch (e: IllegalStateException) {
         // ForegroundServiceStartNotAllowedException dahil: bildirim yoluna düşülür (blueprint G2).
@@ -135,5 +150,21 @@ object ReminderStartup {
         BootMirror(context).takeAwaitingDetail().forEach { entry.engine().onAlarmFired(it, now) }
         entry.engine().replan(now, rearm = true)
         entry.healthWatch().beat()
+    }
+}
+
+/**
+ * "Kapalı uygulamaya teslim" kanıtı (F2.36, proje beyni H38): alarm alındığında süreç yeni doğmuşsa alarm kapalı
+ * uygulamayı uyandırmıştır; bu, teslim günlüğüne `WOKE_APP` olarak yazılır. Karar [ColdDelivery]'dedir.
+ */
+internal object WakeLog {
+    /** Sürecin yaşı: açılıştan beri geçen süre ile sürecin doğduğu an arasındaki fark. */
+    fun processAge(): Duration = Duration.ofMillis(android.os.SystemClock.elapsedRealtime() - Process.getStartElapsedRealtime())
+
+    suspend fun record(key: String, processAge: Duration, now: Instant, log: suspend (String, Instant, String, String?) -> Unit) {
+        if (key == AlarmManagerScheduler.MAINTENANCE_KEY) return
+        val woke = ColdDelivery.wokeApp(processAge)
+        Timber.i("Alarm teslim edildi: süreç yaşı %d ms, uygulama kapalıydı: %s", processAge.toMillis(), woke)
+        if (woke) log(key, now, ReminderEngine.EVENT_WOKE_APP, "${processAge.toMillis()} ms")
     }
 }

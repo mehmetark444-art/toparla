@@ -15,7 +15,8 @@ enum class CreatedBy { USER, AGENT, SYSTEM }
 /** Sistem alarmının türü; anahtar ekleriyle eşleşir (`#l`, `#f`, `#s`). */
 enum class AlarmKind { MAIN, LADDER, FOLLOW_UP, SNOOZE }
 
-enum class DeliveryEvent { SCHEDULED, FIRED, POSTED, BLOCKED, TAPPED, ACTION, MISSED_DETECTED, WATCHDOG_REARMED }
+/** `WOKE_APP`: alarm kapalı uygulamayı uyandırdı (F2.36: "kapalı uygulamaya teslim" kanıtı). */
+enum class DeliveryEvent { SCHEDULED, FIRED, POSTED, BLOCKED, TAPPED, ACTION, MISSED_DETECTED, WATCHDOG_REARMED, WOKE_APP }
 
 /**
  * Hatırlatma tanımı (v3 §9.2, blueprint H2). Zamanlar UTC epoch ms; yerel başlangıç ISO metin + `zoneId`.

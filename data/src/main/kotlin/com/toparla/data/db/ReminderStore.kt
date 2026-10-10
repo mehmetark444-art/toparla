@@ -18,8 +18,6 @@ import java.time.ZoneId
 import java.time.format.DateTimeParseException
 import java.time.zone.ZoneRulesException
 
-data class DeliveryStats(val pendingAlarms: Int, val lastDeliveredAt: Instant?)
-
 /**
  * Hatırlatma verisinin planlayıcıya ve teslim hattına bakan yüzü: tabloları `:domain` modellerine çevirir.
  * Bozuk satır (çözülemeyen tekrar kuralı, saat ya da dilim) planı çökertmez; atlanır ve günlüğe yazılır.
@@ -70,10 +68,6 @@ class ReminderStore(private val db: ToparlaDatabase) : ReminderRepository {
     fun observeWaiting(): Flow<List<WaitingRow>> = db.reminders().observeWaiting()
 
     fun observeUpcoming(): Flow<List<UpcomingRow>> = db.reminders().observeUpcoming()
-
-    /** Hatırlatma Sağlığı ekranının iki göstergesi: kurulu alarm sayısı ve son çalan hatırlatmanın anı. */
-    suspend fun deliveryStats(): DeliveryStats =
-        DeliveryStats(db.scheduledAlarms().count(), db.deliveryLog().lastTs(DeliveryEvent.FIRED)?.let(Instant::ofEpochMilli))
 
     /** Tanımı kaydeder (yeni ya da güncelleme). Planlama ayrıca tetiklenir. */
     suspend fun saveReminder(reminder: ReminderEntity) = db.reminders().upsert(reminder)

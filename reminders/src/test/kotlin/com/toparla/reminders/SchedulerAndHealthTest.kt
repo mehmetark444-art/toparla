@@ -3,6 +3,7 @@ package com.toparla.reminders
 import android.app.AlarmManager
 import android.app.Application
 import android.app.NotificationManager
+import android.app.usage.UsageStatsManager
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import com.toparla.data.settings.SettingsStore
 import com.toparla.domain.reminder.AlarmApi
@@ -11,6 +12,8 @@ import com.toparla.domain.reminder.HealthReport
 import com.toparla.domain.reminder.HealthSnapshot
 import com.toparla.domain.reminder.PlannedAlarm
 import com.toparla.domain.reminder.ReminderClass
+import com.toparla.domain.reminder.ReminderEngine
+import com.toparla.domain.reminder.StandbyBucket
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -24,6 +27,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import java.io.File
+import java.time.Duration
 import java.time.Instant
 
 /** Sistem alarmları ve cihaz korumalı kopya (F2.25, F2.32). */
@@ -100,9 +104,10 @@ class HealthWatchTest {
     private val settings = SettingsStore(PreferenceDataStoreFactory.create { File(context.cacheDir, "nabiz-${System.nanoTime()}.preferences_pb") })
     private var snapshot = HealthSnapshot(
         notifications = true, exactAlarms = true, fullScreen = true, batteryExempt = true,
-        dndAccess = true, autoStartConfirmed = true, pendingAlarms = 0, lastDeliveredAt = null,
+        dndAccess = true, autoStartConfirmed = true, weakenedChannels = emptySet(), standbyBucket = StandbyBucket.ACTIVE,
+        upcomingReminders = 0, lastDelivery = null, recentDeliveries = emptyList(), lastSelfTest = null,
     )
-    private val watch = HealthWatch(context, settings, LauncherIntents(context)) { HealthReport.of(snapshot) }
+    private val watch = HealthWatch(context, settings, LauncherIntents(context)) { HealthReport.of(snapshot, Instant.EPOCH) }
 
     @Test
     fun `eksik yokken uyari gosterilmez`() = runBlocking {
@@ -131,5 +136,64 @@ class HealthWatchTest {
         watch.beat()
         assertNull(manager.getNotification(HealthWatch.NOTIFICATION_ID))
         assertTrue(settings.heartbeatWarned.first().isEmpty())
+    }
+}
+
+/**
+ * Hatırlatma Sağlığı'nın sistemden okunan satırları (F2.35): kanal önemi ve bekleme kovası; "kapalı uygulamaya
+ * teslim" kaydı (F2.36). Kararlar `:domain`'dedir (`StandbyBucket`, `ColdDelivery`); burada Android'e değen kısım.
+ */
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [36])
+class SystemHealthTest {
+    private val context: Application = RuntimeEnvironment.getApplication()
+    private val manager = context.getSystemService(NotificationManager::class.java)
+
+    @Test
+    fun `kanallar kuruldugu gibiyken kisilan sinif yoktur`() {
+        AndroidReminderNotifier.ensureChannels(context)
+
+        assertTrue(AndroidReminderNotifier.weakenedChannels(context).isEmpty())
+    }
+
+    @Test
+    fun `onemi dusurulen ya da kapatilan kanalin sinifi kisilmis sayilir`() {
+        AndroidReminderNotifier.ensureChannels(context)
+        manager.getNotificationChannel(AndroidReminderNotifier.CHANNEL_CRITICAL).importance = NotificationManager.IMPORTANCE_NONE
+        manager.getNotificationChannel(AndroidReminderNotifier.CHANNEL_IMPORTANT).importance = NotificationManager.IMPORTANCE_LOW
+        // Yükseltilen kanalın sayılmaması `:domain/ChannelHealth` testindedir: sahte sistem, kanal yeniden
+        // kurulurken yükseltilmiş önemi geri indirdiği için burada sınanamıyor (kasıtlı bozma bunu gösterdi).
+
+        assertEquals(setOf(ReminderClass.CRITICAL, ReminderClass.IMPORTANT), AndroidReminderNotifier.weakenedChannels(context))
+    }
+
+    @Test
+    fun `bekleme kovasi sistemden okunur`() {
+        val usage = shadowOf(context.getSystemService(UsageStatsManager::class.java))
+
+        usage.setCurrentAppStandbyBucket(UsageStatsManager.STANDBY_BUCKET_ACTIVE)
+        assertEquals(StandbyBucket.ACTIVE, HealthProbe.standbyBucket(context))
+        usage.setCurrentAppStandbyBucket(UsageStatsManager.STANDBY_BUCKET_RARE)
+        assertEquals(StandbyBucket.RARE, HealthProbe.standbyBucket(context))
+        usage.setCurrentAppStandbyBucket(UsageStatsManager.STANDBY_BUCKET_RESTRICTED)
+        assertEquals(StandbyBucket.RESTRICTED, HealthProbe.standbyBucket(context))
+    }
+
+    @Test
+    fun `alarm kapali uygulamayi uyandirdiysa teslim gunlugune yazilir acik uygulamada ve bakim alarminda yazilmaz`() = runBlocking {
+        val logged = ArrayList<Triple<String, String, String?>>()
+        val log: suspend (String, Instant, String, String?) -> Unit = { key, _, event, detail -> logged += Triple(key, event, detail) }
+        val at = Instant.ofEpochMilli(5000)
+
+        WakeLog.record("deneme@5000", Duration.ofMillis(312), at, log)
+        WakeLog.record("acik@5000", Duration.ofMinutes(3), at, log)
+        WakeLog.record(AlarmManagerScheduler.MAINTENANCE_KEY, Duration.ofMillis(200), at, log)
+
+        assertEquals(listOf(Triple("deneme@5000", ReminderEngine.EVENT_WOKE_APP, "312 ms")), logged)
+    }
+
+    @Test
+    fun `surec yasi okunur ve negatif degildir`() {
+        assertTrue(!WakeLog.processAge().isNegative)
     }
 }

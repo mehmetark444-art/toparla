@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.toparla.domain.Defaults
 import com.toparla.domain.FeatureFlag
 import com.toparla.domain.SettingsRules
+import com.toparla.domain.reminder.SelfTestRecord
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalTime
@@ -68,6 +69,34 @@ class SettingsStore(private val dataStore: DataStore<Preferences>) {
         dataStore.edit { it[AUTO_START_CONFIRMED] = value }
     }
 
+    /** Son uygulamalarda kilit de okunamaz (HyperOS'e özgü); yalnız Kullanıcı sihirbazda "kilitledim" dediğinde true olur. */
+    val recentsLockConfirmed: Flow<Boolean> = dataStore.data.map { it[RECENTS_LOCK_CONFIRMED] ?: false }
+
+    suspend fun setRecentsLockConfirmed(value: Boolean) {
+        dataStore.edit { it[RECENTS_LOCK_CONFIRMED] = value }
+    }
+
+    /** Kurulum sihirbazı ilk açılışta bir kez kendiliğinden gösterilir; sonrası Şimdi ekranındaki karttan sürer. */
+    val setupIntroSeen: Flow<Boolean> = dataStore.data.map { it[SETUP_INTRO_SEEN] ?: false }
+
+    suspend fun setSetupIntroSeen(value: Boolean) {
+        dataStore.edit { it[SETUP_INTRO_SEEN] = value }
+    }
+
+    /** Kurulum bitince sakin bitiş ekranı bir kez gösterilir; sonradan bozulup düzelen ayar yeniden kutlanmaz. */
+    val setupDoneSeen: Flow<Boolean> = dataStore.data.map { it[SETUP_DONE_SEEN] ?: false }
+
+    suspend fun setSetupDoneSeen(value: Boolean) {
+        dataStore.edit { it[SETUP_DONE_SEEN] = value }
+    }
+
+    /** Biten son sınamanın sonucu (blueprint G3: "sonuç kaydedilir"); bozuk kayıt yok sayılır. */
+    val lastSelfTest: Flow<SelfTestRecord?> = dataStore.data.map { SelfTestRecord.decode(it[LAST_SELF_TEST]) }
+
+    suspend fun setLastSelfTest(value: SelfTestRecord?) {
+        dataStore.edit { if (value == null) it.remove(LAST_SELF_TEST) else it[LAST_SELF_TEST] = value.encode() }
+    }
+
     /** Süren "Hatırlatmaları sına" denemesinin teslim anahtarı; uygulama kapatılıp açılınca sonuç buradan bulunur. */
     val selfTestKey: Flow<String?> = dataStore.data.map { it[SELF_TEST_KEY] }
 
@@ -115,6 +144,10 @@ class SettingsStore(private val dataStore: DataStore<Preferences>) {
         val REDUCE_MOTION = booleanPreferencesKey("reduce_motion")
         val HAPTICS = booleanPreferencesKey("haptics")
         val AUTO_START_CONFIRMED = booleanPreferencesKey("auto_start_confirmed")
+        val RECENTS_LOCK_CONFIRMED = booleanPreferencesKey("recents_lock_confirmed")
+        val SETUP_INTRO_SEEN = booleanPreferencesKey("setup_intro_seen")
+        val SETUP_DONE_SEEN = booleanPreferencesKey("setup_done_seen")
+        val LAST_SELF_TEST = stringPreferencesKey("last_self_test")
         val SELF_TEST_KEY = stringPreferencesKey("self_test_key")
         val HEARTBEAT_WARNED = stringSetPreferencesKey("heartbeat_warned")
 

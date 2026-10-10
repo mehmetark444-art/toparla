@@ -9,6 +9,7 @@ import com.toparla.data.db.CreatedBy
 import com.toparla.data.db.OwnerType
 import com.toparla.data.db.ReminderEntity
 import com.toparla.data.db.ReminderStore
+import com.toparla.data.settings.SettingsStore
 import com.toparla.domain.core.IdGenerator
 import com.toparla.domain.reminder.ReminderClass
 import com.toparla.reminders.CriticalWatchdogWorker
@@ -29,7 +30,8 @@ import java.time.temporal.ChronoUnit
  * `adb shell am broadcast -n com.toparla.app.dev/com.toparla.app.DebugReminderReceiver --es title Dişçi --es klass CRITICAL --ei delaySec 20 --ez persistent false`
  * `--es clear all` bütün hatırlatmaları siler (yalnız geliştirme sürümünün kendi verisi); `--es delete KİMLİK` yalnız
  * birini siler (kimlik kurulurken günlüğe yazılır). `--es work run` üç güvenlik ağı işini beklemeden bir kez koşturur
- * (WorkManager dönemli işi vaktinden önce zorlanınca çalıştırmıyor; 10 Ekim cihaz ölçümü).
+ * (WorkManager dönemli işi vaktinden önce zorlanınca çalıştırmıyor; 10 Ekim cihaz ölçümü). `--es setup reset` kurulum
+ * sihirbazının işaretlerini (otomatik başlatma ve kilit onayı, ilk gösterim, bitiş, son sınama) siler.
  */
 class DebugReminderReceiver : BroadcastReceiver() {
     @EntryPoint
@@ -38,6 +40,8 @@ class DebugReminderReceiver : BroadcastReceiver() {
         fun store(): ReminderStore
 
         fun ids(): IdGenerator
+
+        fun settings(): SettingsStore
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -51,6 +55,14 @@ class DebugReminderReceiver : BroadcastReceiver() {
                     access.store().activeDefinitions().forEach { access.store().deleteReminder(it.id, now) }
                 } else if (intent.hasExtra("delete")) {
                     access.store().deleteReminder(intent.getStringExtra("delete").orEmpty(), now)
+                } else if (intent.hasExtra("setup")) {
+                    // Kurulum sihirbazını baştan denemek için: Kullanıcı onayları ve sınama sonucu silinir.
+                    access.settings().setAutoStartConfirmed(false)
+                    access.settings().setRecentsLockConfirmed(false)
+                    access.settings().setSetupIntroSeen(false)
+                    access.settings().setSetupDoneSeen(false)
+                    access.settings().setLastSelfTest(null)
+                    Timber.i("Kurulum işaretleri sıfırlandı")
                 } else if (intent.hasExtra("work")) {
                     WorkManager.getInstance(context).enqueue(
                         listOf(

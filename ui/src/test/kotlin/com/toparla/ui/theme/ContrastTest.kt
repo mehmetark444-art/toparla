@@ -30,6 +30,8 @@ class ContrastTest {
         Triple("onSurface/tertiaryContainer", p.onSurface, p.tertiaryContainer),
         Triple("onCarriedContainer/carriedContainer", p.onCarriedContainer, p.carriedContainer),
         Triple("onCarriedContainer/surface", p.onCarriedContainer, p.surface),
+        // Hatırlatma Sağlığı ve sınamanın amber kartı: başlık amber, gövde metni ana metin rengi.
+        Triple("onSurface/carriedContainer", p.onSurface, p.carriedContainer),
         // Metin eylemi (TextAction): vurgu rengi, kendi yarı saydam zemini yüzeye bindirilmiş hâlde.
         Triple("primary/primarySoft@surface", p.accent.primary, primarySoftOver(mode, p, p.surface)),
         Triple("primary/primarySoft@background", p.accent.primary, primarySoftOver(mode, p, p.background)),

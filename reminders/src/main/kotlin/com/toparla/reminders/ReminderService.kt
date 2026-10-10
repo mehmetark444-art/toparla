@@ -9,6 +9,7 @@ import android.content.pm.ServiceInfo
 import android.os.IBinder
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.time.Duration
 
 /**
  * Kritik teslimin sahibi (blueprint G2): alarm alıcısından başlatılır, teslimi yapar ve hemen durur.
@@ -32,7 +33,15 @@ class ReminderService : Service() {
         val entry = ReminderEntryPoint.of(this)
         entry.scope().launch {
             try {
-                if (key != null) deliverSafely(this@ReminderService, key, critical = true) { entry.engine().onAlarmFired(key, entry.clock().now()) }
+                if (key != null) {
+                    deliverSafely(this@ReminderService, key, critical = true) {
+                        val now = entry.clock().now()
+                        entry.engine().onAlarmFired(key, now)
+                        // Yaş alıcıda ölçülür (servis başlayana dek geçen süre karışmasın); yoksa kanıt sayılmaz.
+                        val age = Duration.ofMillis(intent.getLongExtra(EXTRA_PROCESS_AGE_MS, UNKNOWN_AGE_MS))
+                        WakeLog.record(key, age, now, entry.repository()::log)
+                    }
+                }
             } finally {
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf(startId)
@@ -41,8 +50,10 @@ class ReminderService : Service() {
         return START_NOT_STICKY
     }
 
-    private companion object {
-        const val FOREGROUND_ID = 2
+    companion object {
+        const val EXTRA_PROCESS_AGE_MS = "processAgeMs"
+        private const val UNKNOWN_AGE_MS = -1L
+        private const val FOREGROUND_ID = 2
     }
 }
 

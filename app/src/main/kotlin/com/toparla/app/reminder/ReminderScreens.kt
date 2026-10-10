@@ -217,7 +217,7 @@ private fun UpcomingLine(row: UpcomingRow, zone: ZoneId, now: Instant, onDelete:
                 text = stringResource(R.string.row_meta, day, tag),
                 style = ToparlaTheme.type.caption,
                 // Taşınan iş amber ve metinle belirtilir (yalnız renkle değil); kırmızı kullanılmaz.
-                color = if (carried) ToparlaTheme.extended.carried else MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (carried) ToparlaTheme.extended.onCarriedContainer else MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         TextAction(text = stringResource(R.string.reminder_delete), onClick = { onDelete(row.reminderId) })

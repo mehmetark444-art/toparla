@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Deneme sürümü asıl sürümle yan yana kurulur; ana ekranda ve ayar listelerinde ayırt edilebilsin (10 Ekim cihaz denemesi). -->
+    <string name="app_label_debug">Toparla Deneme</string>
+</resources>

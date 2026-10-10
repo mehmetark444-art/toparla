@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Şimdi ekranında kurulum kartı</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.t-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+.t-root button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div class="t-root" style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #1B1917; color: #ECE7DF">
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 8px 24px; min-height: 48px">
+    <h1 style="margin: 0; font-size: 20px; font-weight: 600">Şimdi</h1>
+    <span role="img" aria-label="Güneş" style="width: 40px; height: 40px; box-sizing: border-box; border-radius: 50%; background: #3A3550; border: 2px solid #E9B872"></span>
+  </div>
+
+  <div style="flex: 1 1 auto; padding: 8px 24px 0 24px; display: flex; flex-direction: column; gap: 24px">
+    <div style="padding: 24px; border-radius: 20px; background: #242220; box-shadow: 0 8px 24px rgba(10,8,6,0.35); display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#AFA79B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: none"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg>
+          <div style="font-size: 20px; font-weight: 600">Kurulumda 2 adım kaldı</div>
+        </div>
+        <div style="font-size: 16px; line-height: 24px; color: #AFA79B">Tamamlanınca hatırlatmalar uygulama kapalıyken de ulaşır.</div>
+      </div>
+      <button style="align-self: flex-start; min-height: 48px; padding: 0 24px; border: 0; border-radius: 16px; background: rgba(141,187,169,0.16); color: #8DBBA9; font-size: 16px; font-weight: 600">Sürdür</button>
+    </div>
+
+    <div style="flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-align: center">
+      <span aria-hidden="true" style="width: 72px; height: 72px; box-sizing: border-box; border-radius: 50%; border: 3px solid #AFA79B; display: flex; align-items: center; justify-content: center">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: #AFA79B"></span>
+      </span>
+      <div style="font-size: 16px; line-height: 24px">Şimdilik bir şey yok. İstersen gelen kutusuna bakalım ya da dinlen.</div>
+      <button style="min-height: 48px; padding: 0 16px; border: 0; border-radius: 16px; background: #2E2B28; color: #ECE7DF; font-size: 16px; font-weight: 600">Gelen kutusuna bak</button>
+    </div>
+  </div>
+
+  <div style="height: 80px; background: #151311; display: flex; align-items: center; justify-content: space-around; padding: 0 8px">
+    <div style="display: flex; flex-direction: column; align-items: center; color: #ECE7DF; font-size: 13px; font-weight: 600; width: 64px"><span style="padding: 6px 16px; border-radius: 999px; background: #2F4A3F">Şimdi</span></div>
+    <div style="color: #AFA79B; font-size: 13px; width: 64px; text-align: center">Gelen</div>
+    <div style="color: #AFA79B; font-size: 13px; width: 64px; text-align: center">Plan</div>
+    <div style="color: #AFA79B; font-size: 13px; width: 64px; text-align: center">Akış</div>
+    <div style="color: #AFA79B; font-size: 13px; width: 64px; text-align: center">Güneş</div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

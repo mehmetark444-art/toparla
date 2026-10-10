@@ -130,7 +130,7 @@ fun AddReminderScreen(viewModel: AddReminderViewModel, onClose: () -> Unit) {
                 WhenChips(ui, viewModel)
                 Text(text = whenText, style = ToparlaTheme.type.caption, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 if (ui.pastChosen) {
-                    Text(text = stringResource(R.string.add_past), style = ToparlaTheme.type.caption, color = ToparlaTheme.extended.carried)
+                    Text(text = stringResource(R.string.add_past), style = ToparlaTheme.type.caption, color = ToparlaTheme.extended.onCarriedContainer)
                 }
             }
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {

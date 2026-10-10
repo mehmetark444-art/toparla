@@ -44,6 +44,13 @@ interface ReminderDao {
             "WHERE s.kind IN ('MAIN', 'SNOOZE') AND r.deletedAt IS NULL ORDER BY s.fireAt",
     )
     fun observeUpcoming(): Flow<List<UpcomingRow>>
+
+    /** Kurulu sıradaki hatırlatma sayısı: [observeUpcoming] ile aynı küme. */
+    @Query(
+        "SELECT COUNT(*) FROM ScheduledAlarm s JOIN Reminder r ON r.id = s.reminderId " +
+            "WHERE s.kind IN ('MAIN', 'SNOOZE') AND r.deletedAt IS NULL",
+    )
+    suspend fun countUpcoming(): Int
 }
 
 data class WaitingRow(val occurrenceKey: String, val title: String, val klass: ReminderClass, val persistent: Boolean, val since: Long?)
@@ -70,10 +77,24 @@ interface ReminderOccurrenceDao {
     @Query("SELECT * FROM ReminderOccurrence WHERE `key` = :key")
     suspend fun byKey(key: String): ReminderOccurrenceEntity?
 
+    /** En son çalan teslim (deneme hatırlatması dahil). */
+    @Query("SELECT `key`, plannedAt, deliveredAt FROM ReminderOccurrence WHERE deliveredAt IS NOT NULL ORDER BY deliveredAt DESC LIMIT 1")
+    suspend fun lastDelivered(): DeliveredRow?
+
+    /** Kullanıcı'nın ve Güneş'in kurduğu hatırlatmaların [since] anından beri çalmış teslimleri; deneme hatırlatmaları sayılmaz. */
+    @Query(
+        "SELECT o.`key` AS `key`, o.plannedAt AS plannedAt, o.deliveredAt AS deliveredAt " +
+            "FROM ReminderOccurrence o JOIN Reminder r ON r.id = o.reminderId " +
+            "WHERE o.deliveredAt IS NOT NULL AND o.plannedAt >= :since AND r.createdBy != 'SYSTEM' ORDER BY o.plannedAt",
+    )
+    suspend fun deliveredSince(since: Long): List<DeliveredRow>
+
     /** Teslim edilmiş, yanıt bekleyenler: merdiven ve ısrarlı takip bunlar için sürer. */
     @Query("SELECT * FROM ReminderOccurrence WHERE state IN (:states)")
     suspend fun inStates(states: List<OccurrenceState>): List<ReminderOccurrenceEntity>
 }
+
+data class DeliveredRow(val key: String, val plannedAt: Long, val deliveredAt: Long)
 
 @Dao
 interface ScheduledAlarmDao {
@@ -101,8 +122,4 @@ interface DeliveryLogDao {
 
     @Query("SELECT DISTINCT `key` FROM DeliveryLog WHERE event = :event AND `key` IN (:keys)")
     suspend fun keysWithEvent(keys: List<String>, event: DeliveryEvent): List<String>
-
-    /** Son teslimin anı (Hatırlatma Sağlığı "Son hatırlatma"). */
-    @Query("SELECT MAX(ts) FROM DeliveryLog WHERE event = :event")
-    suspend fun lastTs(event: DeliveryEvent): Long?
 }

@@ -61,6 +61,20 @@ Geliştirici seçenekleri → "USB ile yükle" kapalı.
 - Bu telefonda: `pm revoke` kabuğa yasak; `appops set` uid kipi varken `--uid` ister; WorkManager dönemli işi
   `jobscheduler run -f` ile öne çekilemez; alarmın gerçekte ne zamana kurulduğu `dumpsys alarm`'daki `whenElapsed`
   ve `policyWhenElapsed` satırından okunur (HyperOS ekran kapalıyken 5 dk'ya yuvarlıyor).
+- **adb bu telefonda dokunamaz ve izin vererek kuramaz** (10 Ekim ölçümü; HyperOS güvenlik ayarı, değiştirilmez):
+  `input tap` → `INJECT_EVENTS` hatası; `install -g` → `INSTALL_GRANT_RUNTIME_PERMISSIONS` hatası. Sonuçları:
+  - Ekranı açmak için debug kancası: `am start --activity-clear-top -a toparla.dev.EKRAN -n com.toparla.app.dev/com.toparla.app.MainActivity --es ekran <ad>`
+    (`plan`, `ekle`, `saglik`, `kurulum`, `sina`, `adim:AUTO_START`, `adim:RECENTS_LOCK`). Bayrak ve eylem olmadan açık
+    uygulamaya niyet teslim edilmez. `release`te kanca yok: dokunuşu Kullanıcı yapar.
+  - Kurulum sihirbazını baştan denemek: `am broadcast -n …/com.toparla.app.DebugReminderReceiver --es setup reset`.
+  - `:data` cihaz testleri: `./gradlew :data:assembleDebugAndroidTest`, `adb install -r -t data/build/outputs/apk/androidTest/debug/data-debug-androidTest.apk`
+    (telefonda onay), `adb shell am instrument -w com.toparla.data.test/androidx.test.runner.AndroidJUnitRunner`.
+  - Görüntü: `adb exec-out screencap -p > dosya.png`. `uiautomator dump` resim içinde resim açıkken işe yaramıyor.
+- Sürecin ne zaman ölüp doğduğu: `adb logcat -d -b events | grep -E "am_kill|am_proc_start" | grep PAKET`
+  (kaydırıp kapatma `SwipeUpClean`, alarmla doğuş `broadcast,{…AlarmReceiver}`). `release` paketinde `run-as` çalışmaz;
+  kanıt yalnız bu günlük ve ekran görüntüsüdür.
+- Kullanıcı'nın "açtım / bitti" yanıtını `dumpsys activity activities | grep topResumedActivity` ile doğrula (H44):
+  iki sürüm yan yana kurulu; deneme sürümünün adı "Toparla Deneme".
 - Süreç ölümü sınaması: `am crash PAKET`. Otomatik başlatma izni yoksa HyperOS süreci geri başlatmaz;
   erişilebilirlik servisi her durumda yalnız güncelleme, yeniden başlatma ya da elle kapat-aç ile döner.
 

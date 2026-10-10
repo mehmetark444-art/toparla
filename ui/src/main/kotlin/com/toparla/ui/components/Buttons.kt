@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.toparla.ui.theme.Shapes
 import com.toparla.ui.theme.Sizes
@@ -104,6 +105,27 @@ fun TextAction(
     )
 }
 
+/**
+ * Sessiz eylem ("Şimdi değil", "Vazgeç"): zeminsiz, ikincil metin renginde, 48 dp. Birincil eylemin altında durur
+ * ve onunla yarışmaz (taslak onayı 9 Ekim 2026).
+ */
+@Composable
+fun QuietAction(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FlatButton(
+        text = text,
+        onClick = onClick,
+        container = Color.Transparent,
+        content = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier,
+        enabled = true,
+        textStyle = ToparlaTheme.type.bodyL,
+    )
+}
+
 /** "Düzelt" gibi Taşınan ailesinden eylem: amber zemin, koyu amber yazı (asla kırmızı). */
 @Composable
 internal fun CarriedAction(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -125,6 +147,7 @@ private fun FlatButton(
     content: Color,
     modifier: Modifier,
     enabled: Boolean,
+    textStyle: TextStyle = ToparlaTheme.type.label,
 ) {
     Button(
         onClick = onClick,
@@ -135,6 +158,6 @@ private fun FlatButton(
         elevation = null,
         contentPadding = PaddingValues(horizontal = Spacing.m, vertical = 0.dp),
     ) {
-        Text(text = text, style = ToparlaTheme.type.label)
+        Text(text = text, style = textStyle)
     }
 }

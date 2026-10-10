@@ -11,10 +11,11 @@ Aşağıdakileri sırayla koş. Birinin kalması diğerlerini koşmana engel de�
 
 1. **Testler ve derleme**
    ```bash
-   ./gradlew --console=plain -q :domain:test :reminders:testDebugUnitTest :app:assembleDebug
+   ./gradlew --console=plain -q :domain:test :reminders:testDebugUnitTest :app:assembleDebug :ui:verifyRoborazziDebug :app:verifyRoborazziDebug
    ```
-   Test sayısını `domain/build/test-results/test/*.xml` ve `reminders/build/test-results/testDebugUnitTest/*.xml`
-   dosyalarından oku (`tests=`, `failures=`, `errors=`).
+   Test sayısını `domain/build/test-results/test/*.xml` ve `reminders`, `app`, `ui` modüllerinin
+   `build/test-results/testDebugUnitTest/*.xml` dosyalarından oku (`tests=`, `failures=`, `errors=`).
+   Ekran bilerek değiştiyse temel görüntüler `:app:recordRoborazziDebug` ile yenilenir ve gözle bakılır.
    Android modüllerinde test varsa `./gradlew check` de koş.
 
 2. **Depo ve belge tutarlılığı**

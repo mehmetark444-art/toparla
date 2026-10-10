@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
 import android.media.RingtoneManager
+import com.toparla.domain.reminder.ChannelHealth
 import com.toparla.domain.reminder.DeliveryNotice
 import com.toparla.domain.reminder.LadderAction
 import com.toparla.domain.reminder.PersistentItem
@@ -163,6 +164,25 @@ class AndroidReminderNotifier(
             ReminderClass.INFO -> CHANNEL_GUNES
         }
 
+        /** Hatırlatma sınıflarının kanalları ve kuruldukları önem (blueprint G5); Sağlık denetimi bununla karşılaştırır. */
+        private val DESIGNED_IMPORTANCE = linkedMapOf(
+            ReminderClass.CRITICAL to NotificationManager.IMPORTANCE_HIGH,
+            ReminderClass.IMPORTANT to NotificationManager.IMPORTANCE_HIGH,
+            ReminderClass.NORMAL to NotificationManager.IMPORTANCE_DEFAULT,
+        )
+
+        /**
+         * Kanalı kapatılmış ya da önemi kurulduğundan aşağı çekilmiş hatırlatma sınıfları (blueprint G3 "kanal önemi"):
+         * o sınıfın hatırlatması sessiz gelir ya da hiç görünmez. Karar [ChannelHealth]'tedir.
+         */
+        fun weakenedChannels(context: Context): Set<ReminderClass> {
+            ensureChannels(context)
+            val manager = context.getSystemService(NotificationManager::class.java)
+            return DESIGNED_IMPORTANCE.filterTo(LinkedHashMap()) { (klass, designed) ->
+                ChannelHealth.weakened(designed, manager.getNotificationChannel(channelFor(klass))?.importance ?: designed)
+            }.keys
+        }
+
         /** Sekiz kanal (blueprint G5). Yeniden çağırmak zararsızdır; Kullanıcı'nın kanal ayarını ezmez. */
         fun ensureChannels(context: Context) {
             val manager = context.getSystemService(NotificationManager::class.java)
@@ -177,16 +197,16 @@ class AndroidReminderNotifier(
                 .build()
             manager.createNotificationChannels(
                 listOf(
-                    channel(CHANNEL_CRITICAL, R.string.channel_critical, R.string.channel_critical_desc, NotificationManager.IMPORTANCE_HIGH) {
+                    channel(CHANNEL_CRITICAL, R.string.channel_critical, R.string.channel_critical_desc, DESIGNED_IMPORTANCE.getValue(ReminderClass.CRITICAL)) {
                         setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM), alarmSound)
                         enableVibration(true)
                         setBypassDnd(true)
                         lockscreenVisibility = Notification.VISIBILITY_PUBLIC
                     },
-                    channel(CHANNEL_IMPORTANT, R.string.channel_important, R.string.channel_important_desc, NotificationManager.IMPORTANCE_HIGH) {
+                    channel(CHANNEL_IMPORTANT, R.string.channel_important, R.string.channel_important_desc, DESIGNED_IMPORTANCE.getValue(ReminderClass.IMPORTANT)) {
                         enableVibration(true)
                     },
-                    channel(CHANNEL_NORMAL, R.string.channel_normal, R.string.channel_normal_desc, NotificationManager.IMPORTANCE_DEFAULT),
+                    channel(CHANNEL_NORMAL, R.string.channel_normal, R.string.channel_normal_desc, DESIGNED_IMPORTANCE.getValue(ReminderClass.NORMAL)),
                     channel(CHANNEL_GUNES, R.string.channel_gunes, R.string.channel_gunes_desc, NotificationManager.IMPORTANCE_LOW),
                     channel(CHANNEL_FLOW, R.string.channel_flow, R.string.channel_flow_desc, NotificationManager.IMPORTANCE_LOW),
                     channel(CHANNEL_FLOW_EVENT, R.string.channel_flow_event, R.string.channel_flow_event_desc, NotificationManager.IMPORTANCE_DEFAULT),
