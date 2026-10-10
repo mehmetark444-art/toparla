@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 10 Ekim 2026, oturum 7 (F2-E hatırlatma ekranları kodlandı) · **Kapsadığı son commit:** `6bc1408` · **Kapanan son faz:** F1
+**Son güncelleme:** 10 Ekim 2026, oturum 7 (F2-E hatırlatma ekranları kodlandı ve cihazda denendi) · **Kapsadığı son commit:** `df0fbdc` · **Kapanan son faz:** F1
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -82,6 +82,12 @@ kriz her şeyin önünde · web/bildirim/dosya içeriği veridir, talimat değil
   ~~telefondaki kopyası eski (ekransız) sürüm; telefonda işe yarayan tek şey hâlâ deneme uygulaması (`:spike`).~~
   → (9 Ekim gece) Bulut dalı ana dala alındı; iskeletli sürüm telefona kuruldu ve `release` açıldı (çökme yok).
   Telefonda iki uygulama: asıl uygulama (iskelet; henüz hatırlatma yapmıyor) ve deneme uygulaması (`:spike`).
+- **(10 Ekim) Tam konum:** F0 ☑, F1 ☑, **F2 yarıda**, F3–F10 başlamadı. F2'nin yedi başlığından ikisi bitti
+  (F2-A saf mantık, F2-C tasarım sistemi); üçü yarım (F2-B: iki Kullanıcı işi; F2-D: teslim hattı cihazda çalışıyor,
+  nabız işi, saat/saat dilimi, Rahatsız Etme ve kopyada başlık açık; F2-E: ekranlar kodlandı ve bir kez denendi);
+  ikisine başlanmadı (F2-F ilaç, F2-G devredilen ölçümler). Telefonda **debug** sürümünde Kullanıcı kendi
+  hatırlatmasını kurup alabiliyor; `release` sürümü hâlâ eski iskelet. F2, K2'nin 7 günlük gerçek kullanımı
+  bitmeden kapanamaz ve o 7 gün henüz başlamadı (önce kalan maddeler ve `release` kurulumu).
 
 ## 4. Mimari ve depo
 
@@ -286,7 +292,9 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     sonucu). Gezinme iki katlı: dışta tam ekran akışlar, içte beş sekme. ViewModel'ler Activity kapsamında (Hilt
     fabrikası orada; `hilt-navigation-compose` eklenmedi). Sınamanın anahtarı ayarlarda tutulur: sınama Kullanıcı'dan
     uygulamayı kapatmasını ister, sonuç yeniden açılışta oradan bulunur. Kilitli yeniden başlatma ve kilit açılınca
-    teslim de bu aralıkta doğrulandı (H37). Telefonda debug açıldı; Kullanıcı'lı deneme sırada.
+    teslim de bu aralıkta doğrulandı (H37). ~~Telefonda debug açıldı; Kullanıcı'lı deneme sırada.~~
+    → Kullanıcı aynı sabah denedi: kendi kurduğu kritik hatırlatma ve sınama hatırlatması planlanan saniyede çaldı
+    (kayıttan; `platform-bulgulari.md` § F2-E). Kayıt bir tasarım hatasını da gösterdi (H38). (`df0fbdc` ve sonraki)
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -444,6 +452,7 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 | H35 | Cihazda ilk hatırlatma "kritik" yerine "normal" kuruldu; Kullanıcı yanlış sesi duydu | `adb shell am broadcast … --es body "Yola çıkma vakti."`: boşluklu değer uzak kabukta bölündü, sonraki `--es klass` okunmadı. Komutun sonucu doğrulanmadan Kullanıcı'ya "kritik gelecek" dendi (H24 ailesi) | `adb shell`'e boşluklu değer verirken komutun tamamını tek tırnak içinde gönder (`adb shell "am … --es body 'iki kelime'"`). Kullanıcı'dan gözlem istemeden önce kurulan şeyi kayıttan oku. |
 | H36 | Kullanıcı'ya merdivenin 2. ve 5. dakikası beklettirildi; Kullanıcı açıkça "bir daha asla" dedi | Önceki "15–20 sn" uyarısı yalnız başlangıç gecikmesine uygulanmıştı; ürünün kendi dakikalık adımları için beklemesiz yol hazırlanmamıştı | Kullanıcı'lı denemede süre saniyeyle. Dakikalık ürün davranışı debug tetikleyicisinin `advance` komutuyla simüle edilir; gerçek zamanlama Kullanıcı'sız, kayıttan ölçülür. |
 | H37 | Kilitli yeniden başlatmadan sonra bir hatırlatma kilit açıldığında gelmedi; 86 sn sonra, tesadüfen başka bir eylemle geldi. O eylem olmasa 12 saat bekleyecekti | Denetçinin 60 sn'lik toleransı ("sistem teslim ediyordur") kilit açılma anına denk geldi ve motor tolerans dolunca yeniden bakmıyordu. Birim testlerinde hep "20 dakika geç" gibi açık örnekler vardı; sınırın hemen altı sınanmamıştı | Eşik içeren her kuralda eşiğin **hemen altı** da test edilir ve "şimdi karar veremiyorum" durumunun ardından kimin, ne zaman yeniden bakacağı yazılır. Düzeltme: kilitliyken çalanlar not edilip kilit açılınca hemen gösterilir; tolerans içindeki kayıt için bakım tolerans sonuna kurulur. |
+| H38 | "Hatırlatmaları sına" geçince otomatik başlatma "onaylı" işaretleniyordu; ilk cihaz denemesinde sınama geçti ama uygulama o an ayaktaydı, yani Sağlık ekranı kanıtsız bir ayarı "yerinde" gösterdi | "Deneme ulaştıysa telefon uygulamayı geri getirebiliyordur" varsayımı: sınama Kullanıcı'nın uygulamayı gerçekten kapattığını bilemez | İşaretleme kaldırıldı; otomatik başlatmayı yalnız Kullanıcı sihirbazda onaylar. Ders: okunamayan bir ayar dolaylı bir işaretten "tamam" sayılmaz; kanıt için sürecin teslim anında ölü olduğu kayıttan görülmeli (F2.36, F2.45) |
 | H15 | Yol haritası birkaç kez `sed`/`awk` ile değiştirildi | Alışkanlık; o sırada kanca yoktu | Kabuk komutuyla yapılan değişiklik düzenleme kancalarından (faz kapısı, gizli değer) geçmez. Yol haritası ve proje beyni **yalnız düzenleme aracıyla** değiştirilir. |
 
 ## 9. Tuzaklar ve "bunu bilmeden başlama" notları

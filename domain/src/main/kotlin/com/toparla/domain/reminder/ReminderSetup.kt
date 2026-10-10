@@ -54,7 +54,7 @@ enum class HealthCheck {
 
 /**
  * Telefonun o anki durumu. [autoStartConfirmed]: HyperOS otomatik başlatma izni uygulama içinden okunamaz;
- * Kullanıcı sihirbazda "açtım" dediyse ya da kendi kendini sınama geçtiyse true.
+ * yalnız Kullanıcı sihirbazda "açtım" dediyse true (sınamanın geçmesi bunu kanıtlamaz).
  */
 data class HealthSnapshot(
     val notifications: Boolean,

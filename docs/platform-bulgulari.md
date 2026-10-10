@@ -1031,3 +1031,21 @@ kaldığı için "sistem teslim ediyordur" diye bekletiliyor, sonra da 12 saatli
 Doğrulananlar: Direct Boot kopyasından kilit açılmadan alarm kurma ve çalma; `BOOT_COMPLETED` sonrası toparlanma;
 geç teslimin kaydı (`MISSED_DETECTED`). **Sınırlar:** iki tur, debug sürümü; kilit açılmadan çalan bildirim
 içeriksiz ("Hatırlatman var"): başlık kopyada tutulmuyor; kilitsiz (PIN'siz) yeniden başlatma ayrıca denenmedi.
+
+### 10 Ekim 2026 — F2-E: hatırlatma ekranları telefonda (debug sürümü, ilk deneme)
+
+Kullanıcı üç adımı yaptı ve "hepsi oldu" dedi; aşağıdakiler uygulamanın veritabanından ve günlüğünden okundu.
+
+| Adım | Kayıt | Sonuç |
+|---|---|---|
+| Hatırlatma ekle | 08:50:18 tanım (Kritik, ısrarlı, Kullanıcı; "Başka zaman…" ile 08:51) | Kuruldu |
+| Teslim | 08:51:00 `FIRED` + `POSTED` (planlanan an 08:51:00) | Gecikme 0 sn |
+| Eylem | 08:51:10 `ACTION SNOOZE`; 09:01:10'a yeni teslim `PLANNED` | Erteleme çalıştı |
+| Hatırlatmaları sına | 08:51:15 deneme tanımı (Sistem, Önemli), plan 08:51:35; 08:51:35 `FIRED` + `POSTED`; 08:51:38 silindi | Gecikme 0 sn; iz kalmadı |
+| Hatırlatma Sağlığı, "Düzelt" | Ekran ve ayar sayfası açılışı kayda geçmiyor | Yalnız Kullanıcı beyanı |
+
+**Sınırlar ve bulgu:** tek deneme, debug sürümü. Sınama sırasında uygulama süreci 08:51:24'te yeniden başlamış
+(günlükte açılış satırı): deneme hatırlatması çaldığında uygulama **ayaktaydı**. Yani bu deneme "kapalı uygulamaya
+teslim"i kanıtlamıyor; yalnız sınama akışının çalıştığını gösteriyor. İlk sürüm sınama geçince otomatik başlatmayı
+"onaylı" işaretliyordu; kaldırıldı (H38). Telefondaki ayarda o işaret bu denemeden kalma olarak duruyor.
+Ek: 9 Ekim 22:19:31'de **Yarın** eylemi de günlükte (`ACTION TOMORROW`, ertesi gün 07:30'a teslim planlandı).

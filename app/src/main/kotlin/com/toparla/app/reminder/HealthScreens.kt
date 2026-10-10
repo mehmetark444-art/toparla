@@ -295,9 +295,9 @@ class SelfTestViewModel @Inject constructor(
             val toFix = if (result == SelfTestResult.NotArrived) probe.report().toFix else emptyList()
             mutable.value = SelfTestUi(result, Duration.between(now, plannedAt).seconds.coerceAtLeast(0), toFix)
             if (result != SelfTestResult.Waiting) {
-                // Deneme hatırlatması iz bırakmaz; ulaştıysa telefon uygulamayı geri getirebiliyor demektir.
+                // Deneme hatırlatması iz bırakmaz. Ulaşması otomatik başlatmayı kanıtlamaz (uygulama o an açık
+                // olabilir; proje beyni H38): o ayarı yalnız Kullanıcı sihirbazda onaylar.
                 removeTestReminder()
-                if (result is SelfTestResult.Arrived) settings.setAutoStartConfirmed(true)
                 return
             }
             delay(POLL_MS)
