@@ -1065,7 +1065,7 @@ Yöntem: `com.toparla.app.dev`, USB bağlı, ekran açık. Uygulamanın dönen g
 | Paket güncelleme | `adb install -r` (3 kurulum), ardından hiçbir şeye dokunmadan 12 sn | Sistem kaydı: `Unable to launch app … for broadcast MY_PACKAGE_REPLACED: process is not permitted to auto start`. **Yayın teslim edilmedi, süreç kalkmadı.** Kurulu sistem alarmı (bakım) güncellemeden sonra yerinde kaldı |
 | Bildirim iznini adb ile kapatma | `pm revoke PKG android.permission.POST_NOTIFICATIONS` | `SecurityException` (kabuğun bu telefonda yetkisi yok). Bildirim izni kapalıyken teslim **cihazda ölçülemedi** |
 | Ağ izni | `dumpsys package PKG` | `INTERNET` izni yok (yalnız WorkManager'dan gelen `ACCESS_NETWORK_STATE`): teslim hattı ağa bağlı olamaz |
-| Israrlı takip, gerçek aralık | 09:23:06'da ısrarlı deneme hatırlatması teslim edildi; ilk soru 09:53:06'ya kesin yolla kuruldu | **Sonuç bekleniyor** (Kullanıcı telefonu yanında götürdü; kayıt akşam okunacak). Önceki denemede Kullanıcı 6 sn sonra "10 dk sonra"ya bastığı için ölçüm yinelenmişti |
+| Israrlı takip, gerçek aralık | 09:23:06'da ısrarlı deneme hatırlatması teslim edildi; ilk soru 09:53:06'ya kesin yolla kuruldu | 09:23:54'te yine "10 dk sonra"ya basıldı, teslim 09:33:54'e ertelendi. **Sonuç bekleniyor** (Kullanıcı telefonu yanında götürdü; kayıt akşam okunacak). Önceki denemede Kullanıcı 6 sn sonra "10 dk sonra"ya bastığı için ölçüm yinelenmişti |
 
 **Bulgular**
 1. **Paket güncellemesinden sonra uygulama kendiliğinden ayağa kalkmıyor** (otomatik başlatma izni yokken):
