@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 10 Ekim 2026, oturum 9 gece (F2-E: Sağlık satırları, sınamanın dürüst sonucu, kurulum sihirbazı; debug ve `release`te cihazda) · **Kapsadığı son commit:** `9479d2d` (gecenin commit'i bunun ardından) · **Kapanan son faz:** F1
+**Son güncelleme:** 10 Ekim 2026, oturum 9 gece (F2-E: Sağlık satırları, sınamanın dürüst sonucu, kurulum sihirbazı; debug ve `release`te cihazda) · **Kapsadığı son commit:** `714c520` · **Kapanan son faz:** F1
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -363,7 +363,7 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     tuvalde çizildi, Kullanıcı onayladı (`docs/tasarim/2026-10-10-kurulum-sihirbazi/`). Kurallar önce testle `:domain`'e, sonra veri, teslim hattı, ekranlar.
     `:app` modülüne ilk testler (21 ekran görüntüsü, 6 davranış). Cihazda: Kullanıcı sihirbazı debug ve `release`te
     yürüdü; kapalı uygulamaya teslim sistem kaydıyla kanıtlandı; geç teslim rehberi ve yedi ayar bağlantısı görüldü.
-    Yanlışlar H41–H44. F2.35–F2.37 ☑; bulunan eksik F2.48 olarak yol haritasına yazıldı.
+    Yanlışlar H41–H44. F2.35–F2.37 ☑; bulunan eksik F2.48 olarak yol haritasına yazıldı. (`714c520`)
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
