@@ -127,3 +127,8 @@ Robolectric testli (19 test), CI'da koşuyor. Kalite kapısı temiz (145 + 19 JV
 **Açık (akşam):** ısrarlı takibin 30 dk'lık kaydı okunacak; Kullanıcı'lı dört deneme (saat dilimi, Rahatsız Etme,
 kilitli yeniden başlatmada başlık, bildirimleri kapat-aç); kasıtlı bozma koşusu (betik bu oturumda çalışmadı) ve
 gece kontrolü.
+
+**Akşam (oturum 8 devamı):** ısrarlı takip kaydı okundu (23 soru, kayıp yok; ekran kapalıyken 5 dk'ya varan
+gecikme: HyperOS kesin alarmı 5 dk'lık dilime yuvarlıyor, kritik etkilenmiyor). Kullanıcı'lı dört deneme yapıldı ve
+kayıtla doğrulandı: bildirimleri kapat-aç, Rahatsız Etme açıkken kritik, saat dilimi ve saat, kilitli yeniden
+başlatmada başlık. **F2-D ☑.** Açık karar adayı: Önemli / Normal / ısrarlı takipte alarm yolu (hizalama).

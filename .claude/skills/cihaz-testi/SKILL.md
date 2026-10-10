@@ -51,6 +51,16 @@ Geliştirici seçenekleri → "USB ile yükle" kapalı.
 - Kullanıcı'nın başında beklediği denemede gecikme 15–20 sn; önce ondan "hazır" al, sonra başlat.
 - Kullanıcı'ya çalıştıracağı komut verilecekse Git Bash'i tam yoluyla çağır (H25):
   `& "C:\Program Files\Git\bin\bash.exe" scripts/…` (PowerShell'de `bash` başka bir kabuğu açar).
+- **Asıl uygulama (debug, `com.toparla.app.dev`):** hatırlatma `DebugReminderReceiver` ile kurulur (`--es title … --es klass
+  CRITICAL --ei delaySec 20`), `--es delete KİMLİK` ile silinir (`clear all` Kullanıcı'nın kendi kayıtlarını da siler:
+  kullanma), `--es work run` güvenlik ağı işlerini koşturur. Kayıt: `run-as … cat files/logs/*.log` ve veritabanı
+  (`adb exec-out run-as PKG cat databases/toparla.db` + `-wal`, bilgisayarda `sqlite3` ile).
+- Kullanıcı'nın dokunacağı ayar sayfasını adb ile aç, ona tek dokunuş bırak: `am start -a android.settings.DATE_SETTINGS`,
+  `…ZEN_MODE_SETTINGS`, `…APP_NOTIFICATION_SETTINGS --es android.provider.extra.APP_PACKAGE PKG`. Her adımda önce
+  "hazır" al, sonucu kayıttan oku. Kullanıcı'nın gününe karışan ölçüm kendiliğinden bitmeli (H40).
+- Bu telefonda: `pm revoke` kabuğa yasak; `appops set` uid kipi varken `--uid` ister; WorkManager dönemli işi
+  `jobscheduler run -f` ile öne çekilemez; alarmın gerçekte ne zamana kurulduğu `dumpsys alarm`'daki `whenElapsed`
+  ve `policyWhenElapsed` satırından okunur (HyperOS ekran kapalıyken 5 dk'ya yuvarlıyor).
 - Süreç ölümü sınaması: `am crash PAKET`. Otomatik başlatma izni yoksa HyperOS süreci geri başlatmaz;
   erişilebilirlik servisi her durumda yalnız güncelleme, yeniden başlatma ya da elle kapat-aç ile döner.
 

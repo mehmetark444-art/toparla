@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 10 Ekim 2026, oturum 8 (F2-D kalanları: nabız, izin/DND tetikleri, kopyada başlık, Android senaryo testleri) · **Kapsadığı son commit:** `3dc06e0` (oturum 8'in commit'i bunun ardından) · **Kapanan son faz:** F1
+**Son güncelleme:** 10 Ekim 2026, oturum 8 akşam (F2-D bitti: Kullanıcı'lı cihaz denemeleri; alarm hizalaması bulgusu) · **Kapsadığı son commit:** `e7d7898` (akşamın commit'i bunun ardından) · **Kapanan son faz:** F1
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -93,6 +93,11 @@ kriz her şeyin önünde · web/bildirim/dosya içeriği veridir, talimat değil
   F2-D'de açık kalan yalnız Kullanıcı'nın telefonda bir ayara dokunmasını isteyen dört cihaz denemesi (saat dilimi,
   Rahatsız Etme açıkken kritik, kilitli açılışta başlıklı bildirim, bildirimleri kapat-aç) ve ısrarlı takibin
   30 dakikalık kaydının okunması. Susturan durumlar (odak, Bunaldım, "Bugün sessiz") F3–F4'te bağlanır.
+- **(10 Ekim akşam) F2-D bitti.** Dört Kullanıcı'lı deneme yapıldı ve kayıtla doğrulandı (bildirimleri kapat-aç,
+  Rahatsız Etme açıkken kritik, saat dilimi ve saat, kilitli yeniden başlatmada başlıklı bildirim); ısrarlı takip
+  12,5 saat boyunca 23 soru sordu, hiçbiri kaybolmadı. F2'de kalanlar: F2-B'nin iki Kullanıcı işi, F2-E eksikleri,
+  F2-F ilaç, F2-G ölçümleri, K1–K3. **En önemli açık konu:** ekran kapalıyken HyperOS kritik olmayan alarmları
+  5 dakikalık dilime yuvarlıyor (Bölüm 7, Bölüm 10 madde 14); çözülmeden K2'nin 7 günü başlatılmamalı.
 
 ## 4. Mimari ve depo
 
@@ -193,6 +198,15 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   gece testi sonucuna göre güncellenecek. `ReminderPlanner.apiFor` tek değişim noktası.
 - ~~**Gemini kademe modelleri ve fiyat tablosu**~~ → kapandı: karar 0007 (8 Ekim 2026).
 - **Konu Motoru varsayılan sıklığı** (maliyet ölçümünden sonra; aylık 25 $'ın %40'ı yetmeyebilir).
+- **(10 Ekim) Kritik olmayan sınıfların alarm yolu.** Ölçüm: ekran kapalıyken `setExactAndAllowWhileIdle` 5 dk'lık
+  dilime yuvarlanıyor, `setAlarmClock` yuvarlanmıyor. Önce ölçülecek: HyperOS pil ayarı "Kısıtlama yok" ve otomatik
+  başlatma yuvarlamayı kaldırıyor mu (F1'de deneme uygulamasında bu ayarlar açıkken ≤ 2,1 sn idi). Kaldırıyorsa
+  karar 0006 durur ve iki ayar sihirbazda zorunlu olur. Kaldırmıyorsa seçenekler: (a) Önemli ve ısrarlı takip de
+  `setAlarmClock` (bedeli: her hatırlatma durum çubuğunda alarm simgesi ve "sıradaki alarm" olarak görünür),
+  (b) kritik olmayanlarda 5 dk'ya kadar gecikme kabul edilir ve K2 ölçütü yalnız kritik için okunur. Kullanıcı kararı.
+- **(10 Ekim) Önemli sınıf Rahatsız Etme'de.** Blueprint G5 "aşmaz" der; bu telefonda hatırlatıcı kategorisi
+  yüzünden geçiyor. Ölçüm F2.42'de tamamlanınca: kategori bırakılır mı (Kullanıcı'nın Rahatsız Etme ayarı belirler)
+  yoksa Önemli'den kaldırılır mı.
 
 ## 6. Zaman çizelgesi (ne yapıldı, hangi sırayla)
 
@@ -317,6 +331,13 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     paket güncelleme yayınının engellenmesi (H39). Kullanıcı'nın vakti olmadığı için uzun ve Kullanıcı'lı denemeler
     akşama bırakıldı; ısrarlı takibin 30 dk'lık ölçümü telefonda kurulu bırakıldı. Kasıtlı bozma betiği bu oturumda
     çalışmadı (22 bozmanın hiçbiri derlenmedi: betik Gradle'ı başlatamadı), gece kontrolüne kaldı.
+38. **F2-D kapanış denemeleri (10 Ekim akşam).** Israrlı takip kaydı okundu: 23 soru, kayıp yok, ama ekran
+    kapalıyken çoğu 3–5 dk geç. Neden sistem kaydından bulundu: HyperOS `setExactAndAllowWhileIdle` isteğini
+    5 dk'lık dilime yuvarlıyor; `setAlarmClock` yuvarlanmıyor. Ardından Kullanıcı'yla dört deneme, her adımda
+    "hazır" alınarak ve ayar sayfası adb ile açılıp tek dokunuş istenerek yapıldı: bildirimleri kapat-aç
+    (`BLOCKED` → izin dönünce yeniden gösterme), Rahatsız Etme açıkken kritik (geçti; Önemli de geçti), saat dilimi
+    ve saat (alarmlar aynı anda kaldı; araya düşen teslimler hemen yapıldı), kilitli yeniden başlatma (kilit
+    açılmadan başlıklı bildirim). F2.30–F2.34 ve F2.46 kapandı; F2-D ☑. Kasıtlı bozma (betik düzeltildikten sonra): bu oturumda yazılan kurallara 22 bozma, 22'si yakalandı.
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 
@@ -344,6 +365,18 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
   bekçi kendi 15 dk'lık döneminde 1 kez görüldü. Rahatsız Etme erişimi değişince yayın manifest alıcısına geliyor.
   `pm revoke` bu telefonda kabuğa yasak: bildirim izni adb ile kapatılamıyor. `appops set` uid kipi varken paket
   düzeyinde etkisiz (`--uid` gerekir). Uygulamada `INTERNET` izni yok.
+- **Alarm hizalaması (10 Ekim; 12,5 saatlik kayıt + sistem kaydı) — tasarımı etkiler:** ekran kapalıyken HyperOS,
+  bu uygulamanın `setExactAndAllowWhileIdle` alarmlarını **5 dakikalık dilime yuvarlıyor** (isteğin kendisini
+  değiştiriyor; şarjdayken de). Gün boyu 23 ısrarlı takip sorusunun 15'i 3–5 dk geç, 6'sı saniyesinde (ekran
+  açıkken), 2'sini teslim denetçisi yakaladı; kayıp yok. **`setAlarmClock` yuvarlanmıyor:** kritik sınıfın ±1 dk
+  sözü etkilenmiyor. F1'deki açıklanamayan 3,5 dk'lık gecikme büyük olasılıkla buydu. Yuvarlamayı hangi ayarın
+  kaldırdığı ölçülmedi (F1'de deneme uygulamasında, otomatik başlatma ve pil ayarı açıkken görülmemişti).
+- **F2-D kapanış denemeleri (10 Ekim akşam, her biri tek tur):** bildirim izni kapanınca sistem uygulama sürecini
+  sonlandırıyor; açılınca `APP_BLOCK_STATE_CHANGED` manifest alıcısına geliyor. Rahatsız Etme'de kritik
+  `priorityApp` diye, **Önemli de `allowedReminder` diye geçiyor** (telefonun ayarı hatırlatıcılara izin veriyor).
+  `TIMEZONE_CHANGED`, `TIME_SET` ve `BOOT_COMPLETED` otomatik başlatma izni olmadan da geliyor (`MY_PACKAGE_REPLACED`
+  gelmiyor). Kilit açılmadan çalan bildirim başlığıyla geliyor (kritik +148 ms). Ayar sayfaları adb ile açılabiliyor
+  (`am start -a android.settings.…`): Kullanıcı'ya tek dokunuş kalıyor.
 - **Gürültüde konuşma tanıma (9 Ekim gece; 20 cümle, konuşmalı ev gürültüsü):** 12/20 anlamca doğru (sessizde
   21/30). Yeni risk: tanıyıcı **ortamdaki başka konuşmayı da yazıyor** (4 cümlede cümle başına yabancı söz
   eklendi). Sayı ve saatler gürültüde de doğru. Yakalanan metin her zaman gösterilip düzeltilebilir olmalı.
@@ -483,6 +516,7 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 | H37 | Kilitli yeniden başlatmadan sonra bir hatırlatma kilit açıldığında gelmedi; 86 sn sonra, tesadüfen başka bir eylemle geldi. O eylem olmasa 12 saat bekleyecekti | Denetçinin 60 sn'lik toleransı ("sistem teslim ediyordur") kilit açılma anına denk geldi ve motor tolerans dolunca yeniden bakmıyordu. Birim testlerinde hep "20 dakika geç" gibi açık örnekler vardı; sınırın hemen altı sınanmamıştı | Eşik içeren her kuralda eşiğin **hemen altı** da test edilir ve "şimdi karar veremiyorum" durumunun ardından kimin, ne zaman yeniden bakacağı yazılır. Düzeltme: kilitliyken çalanlar not edilip kilit açılınca hemen gösterilir; tolerans içindeki kayıt için bakım tolerans sonuna kurulur. |
 | H38 | "Hatırlatmaları sına" geçince otomatik başlatma "onaylı" işaretleniyordu; ilk cihaz denemesinde sınama geçti ama uygulama o an ayaktaydı, yani Sağlık ekranı kanıtsız bir ayarı "yerinde" gösterdi | "Deneme ulaştıysa telefon uygulamayı geri getirebiliyordur" varsayımı: sınama Kullanıcı'nın uygulamayı gerçekten kapattığını bilemez | İşaretleme kaldırıldı; otomatik başlatmayı yalnız Kullanıcı sihirbazda onaylar. Ders: okunamayan bir ayar dolaylı bir işaretten "tamam" sayılmaz; kanıt için sürecin teslim anında ölü olduğu kayıttan görülmeli (F2.36, F2.45) |
 | H39 | Yol haritasında F2.31 için "paket güncellemede çalıştığı görüldü ☑" yazıyordu; 10 Ekim'de sistem kaydı yayının bu telefonda **engellendiğini** gösterdi (`process is not permitted to auto start`) | 9 Ekim'deki gözlem ("kurulum sonrası yetim teslim kapandı") alıcıya bağlandı; oysa aynı toparlanma uygulama açılışında da koşuyor ve o sırada uygulama açılmıştı. Alıcının çalıştığını gösteren kendi kayıt satırı yoktu | Bir alıcıyı "çalıştı" saymak için **o alıcının kendi kayıt satırı** ya da sistemin teslim kaydı görülür; aynı işi yapan ikinci bir yol varsa sonuçtan nedene gidilmez. `RescheduleReceiver` artık tetikleyen eylemi günlüğe yazıyor. Aynı oturumda: Kullanıcı ısrarlı takip denemesine 6 sn'de bastı (uyarı metnini okumaya vakti olmadan başlatılmıştı; H6 ailesi): Kullanıcı'nın dokunmaması gereken deneme, "hazır" alınmadan başlatılmaz. |
+| H40 | Israrlı takip ölçümü için bırakılan deneme hatırlatması Kullanıcı'ya iş günü boyunca 23 kez soru sordu | Ölçümün bitişi Kullanıcı'nın "Yaptım" demesine bağlanmıştı ("3 sorudan sonra bas"); Kullanıcı basmadı ve durduracak başka bir şey yoktu. Sabahki bozma betiği de Gradle'ı hiç başlatamadan "0 / 22" yazdı, çıktısı okunmadan geçilecekti | Kullanıcı'nın günlük hayatına karışan ölçüm **kendiliğinden biter** (sayaçlı ya da süreli); bitişi Kullanıcı'nın bir şey yapmasına bırakılmaz. Araç "hiçbiri" diyorsa önce aracın çalıştığı doğrulanır (bozma betiği artık Gradle'ı tam yoluyla çağırıyor). |
 | H15 | Yol haritası birkaç kez `sed`/`awk` ile değiştirildi | Alışkanlık; o sırada kanca yoktu | Kabuk komutuyla yapılan değişiklik düzenleme kancalarından (faz kapısı, gizli değer) geçmez. Yol haritası ve proje beyni **yalnız düzenleme aracıyla** değiştirilir. |
 
 ## 9. Tuzaklar ve "bunu bilmeden başlama" notları
@@ -531,7 +565,8 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
 
 ## 10. Açık sorular ve riskler
 
-1. `setExactAndAllowWhileIdle` gecikmesinin kök nedeni (kova mı, pil politikası mı, HyperOS mu)?
+1. ~~`setExactAndAllowWhileIdle` gecikmesinin kök nedeni (kova mı, pil politikası mı, HyperOS mu)?~~ → kapandı
+   (10 Ekim): HyperOS, ekran kapalıyken isteği 5 dk'lık dilime yuvarlıyor. Yerine madde 14 açıldı.
 2. Gerçek Doze'da ve uzun ufukta (1–8 sa) üç alarm yolunun davranışı → gece testi.
    (kısmen kapandı, 8 Ekim: 24/24 çaldı, karar 0006; ~~**derin Doze hâlâ açık**: kablosuz gece testi kuruldu,
    sonucu okunmadı.~~ → kapandı 9 Ekim: kablosuz gece 21/21; kesin yollar ≤ 2,1 sn. Sınır: `idle=true`
@@ -563,6 +598,12 @@ Her satır gerçekten yaşandı. Aynı hatayı tekrarlamadan önce burayı oku.
     çubuğu, öngörülü geri) hâlâ yapılmadı.
 12. (9 Ekim) Süreç çökünce erişilebilirlik servisi kendiliğinden dönmüyor: müdahale ekranının (M25-I)
     güvenilirliği Sağlık uyarısına ve Kullanıcı'nın elle kapat-açmasına bağlı.
+14. (10 Ekim) **Kritik olmayan hatırlatmalar ekran kapalıyken 5 dk'ya kadar geç çalıyor** (alarm hizalaması).
+    F2'nin K2 ölçütü "±1 dk teslim ≥ %99" bununla tutmaz. Önce hangi ayarın kaldırdığı ölçülecek (F2.44), sonra
+    alarm yolu kararı (Bölüm 5, bekleyen karar adayı). Bakım alarmı da yuvarlanıyor (zararsız: en çok 5 dk).
+15. (10 Ekim) Uygulama güncellendikten sonra kendiliğinden ayağa kalkmıyor (otomatik başlatma yokken). Alarmlar
+    yerinde kaldığı için hatırlatma kaybolmuyor; otomatik başlatma açıkken davranış F2.45'te ölçülecek.
+16. (10 Ekim) Saat ileri alınınca uygulama süreci 0,5 sn sonra yeniden başladı; neden bilinmiyor (teslim etkilenmedi).
 
 ## 11. Yeni oturum için hızlı başlangıç
 

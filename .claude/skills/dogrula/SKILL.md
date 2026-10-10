@@ -11,9 +11,10 @@ Aşağıdakileri sırayla koş. Birinin kalması diğerlerini koşmana engel de�
 
 1. **Testler ve derleme**
    ```bash
-   ./gradlew --console=plain -q :domain:test :app:assembleDebug
+   ./gradlew --console=plain -q :domain:test :reminders:testDebugUnitTest :app:assembleDebug
    ```
-   Test sayısını `domain/build/test-results/test/*.xml` dosyalarından oku (`tests=`, `failures=`, `errors=`).
+   Test sayısını `domain/build/test-results/test/*.xml` ve `reminders/build/test-results/testDebugUnitTest/*.xml`
+   dosyalarından oku (`tests=`, `failures=`, `errors=`).
    Android modüllerinde test varsa `./gradlew check` de koş.
 
 2. **Depo ve belge tutarlılığı**

@@ -1082,3 +1082,86 @@ Yöntem: `com.toparla.app.dev`, USB bağlı, ekran açık. Uygulamanın dönen g
 görülmedi (yalnız tetiklenerek). Saat / saat dilimi değişimi, Rahatsız Etme **açıkken** kritik teslim, bildirim izni
 kapalıyken teslim ve kilitli açılışta başlıklı bildirim cihazda denenmedi (dördü de Kullanıcı'nın telefonda bir ayara
 dokunmasını ister). Telefon ölçüm sonunda eski durumuna döndürüldü (tam ekran izni `allow`, Rahatsız Etme erişimi açık).
+
+### 10 Ekim 2026 (akşam) — F2-D kapanış denemeleri: ısrarlı takip kaydı, alarm hizalaması, izin, Rahatsız Etme, saat, kilitli açılış
+
+Debug sürümü (`com.toparla.app.dev`, 26101001). Kayıtlar uygulamanın veritabanından ve günlüğünden, sistem tarafı
+`dumpsys alarm` / `dumpsys notification` ile okundu. Kullanıcı'nın yaptığı her adım kayıtla karşılaştırıldı.
+
+**1. Israrlı takibin gerçek aralığı (F2.30; 12,5 saat, telefon gün boyu kablosuz, Kullanıcı'nın yanında)**
+
+Teslim 09:33:54. Kullanıcı "Yaptım" demedi; motor 22:19'a kadar 23 soru sordu (hiçbiri kaybolmadı).
+Her soru bir öncekinden 30 dk sonraya kesin yolla (`setExactAndAllowWhileIdle`) kuruldu.
+
+| Gecikme (planlanan ana göre) | Soru sayısı | Hangi saatler |
+|---|---|---|
+| 0–2 sn | 6 | 11:11, 11:41, 12:46 ve akşam 20:48, 21:18, 21:48 |
+| 3–5 dk (15'inden 13'ü 4 dk 57 sn – 5 dk 1 sn) | 15 | 10:06 – 19:46 arası |
+| 1–2 dk, alarm çalmadan teslim denetçisi yakaladı (`MISSED_DETECTED`) | 2 | 20:18 (110 sn), 22:19 (63 sn) |
+
+**2. Neden: HyperOS, ekran kapalıyken kesin alarmı 5 dakikalık dilime yuvarlıyor (sistem kaydından)**
+
+Ekran kapalıyken (şarjda, USB bağlı) aynı anda iki deneme alarmı kuruldu ve `dumpsys alarm` okundu:
+
+| Alarm | İstenen an | Sistemin yazdığı `whenElapsed` | Sonuç |
+|---|---|---|---|
+| Kritik, `setAlarmClock` (`flags=0x3`) | 22:23:07.000 | 86 770 055 ms (istenen anın kendisi) | **Yuvarlanmadı** |
+| Önemli, `setExactAndAllowWhileIdle` (`flags=0x9`) | 22:23:09.000 | 87 000 000 ms (5 dk'nın tam katı) | **3 dk 48 sn ileri atıldı** |
+| Bakım alarmı (`setExactAndAllowWhileIdle`) | 10:20:39 | 129 900 000 ms (5 dk'nın tam katı) | Yuvarlandı |
+
+Yuvarlama `policyWhenElapsed` satırında `requester` alanına yazılmış (Android'in bekleme kovası, Doze ya da pil
+tasarrufu sütunları değil): yani isteğin kendisi değiştirilmiş. Gün içindeki "tam 5 dk" gecikmesi bununla
+açıklanıyor: her soru dilimin 1–2 sn sonrasına kurulduğu için bir sonraki dilimi bekliyor. Ekran açıkken
+(akşam, Kullanıcı telefonu kullanırken) alarmlar saniyesinde çaldı.
+
+- **Kritik sınıf etkilenmiyor** (`setAlarmClock`). Önemli, Normal, ısrarlı takip ve bakım alarmı etkileniyor (karar 0006).
+- F1 kablosuz gece testinde aynı yol ≤ 2,1 sn idi; o ölçüm deneme uygulamasıyla, otomatik başlatma ve HyperOS pil
+  ayarı açıkken yapılmıştı. Bu uygulamada Android'in pil muafiyeti var (`deviceidle whitelist`), otomatik başlatma
+  yok; HyperOS'in kendi pil ayarının durumu bilinmiyor. **Hangi ayarın yuvarlamayı kaldırdığı ölçülmedi.**
+- F1'deki tek seferlik 3,5 dk'lık gecikme (kök nedeni bilinmiyordu) büyük olasılıkla aynı davranış.
+
+**3. Bildirim izni kapalıyken teslim (F2.46; Kullanıcı ayar sayfasında anahtarı kapattı ve açtı)**
+
+| An | Kayıt |
+|---|---|
+| Kapatınca | İzin `granted=false`; uygulama süreci sistemce sonlandırıldı; kapanma yayını uygulamaya ulaşmadı |
+| 22:22:58 (planlanan an) | `FIRED` + `BLOCKED`; etkin bildirim 0; ses yok (Kullanıcı); merdivenin sıradaki basamağı kuruldu; nabız "eksik [NOTIFICATIONS]" |
+| 22:23:29 açınca | `APP_BLOCK_STATE_CHANGED (yeniden açıldı: true)` manifest alıcısına geldi; bekleyen teslim kritik kanalda yeniden gösterildi, alarm sesi çaldı (Kullanıcı); nabız "eksik []" |
+
+**4. Rahatsız Etme açıkken (F2.34; `zen_mode=1`, yalnız öncelikliler)**
+
+| Bildirim | Sistem kaydı | Kullanıcı |
+|---|---|---|
+| Kritik, 22:25:08 | `not_intercepted … priorityApp` | Alarm sesini duydu |
+| Önemli, 22:25:21 | `not_intercepted … allowedReminder`, `mIntercept=false` | Sesini duydu |
+
+Kritik kanal Rahatsız Etme'yi aşıyor. **Önemli sınıf da geçti**: bildirim "hatırlatıcı" kategorisinde ve telefonun
+Rahatsız Etme ayarı hatırlatıcılara izin veriyor. Blueprint G5 Önemli için "aşmaz" der; bu telefonda sonucu
+Kullanıcı'nın Rahatsız Etme ayarı belirliyor. Kipi değiştirince `INTERRUPTION_FILTER_CHANGED` alıcıya geldi (gün içinde 6 kez).
+
+**5. Saat dilimi ve saat (F2.31; iki deneme hatırlatması 22:51'e kuruluyken)**
+
+| Adım | Kayıt |
+|---|---|
+| Saat dilimi İstanbul → Anchorage | `TIMEZONE_CHANGED` alıcıya geldi; alarmlar yeniden kuruldu, **aynı anda** kaldı (hatırlatma kendi diliminde) |
+| Saat 1 saat ileri | `TIME_SET` geldi; araya düşen iki teslim aynı saniyede `MISSED_DETECTED` → `FIRED` → `POSTED`; ikisi de geldi (Kullanıcı) |
+| Saat otomatiğe dönünce | `TIME_SET` yeniden geldi; daha önce teslim edilen ikinci kez gösterilmedi |
+
+Gözlem: saat ileri alındıktan 0,5 sn sonra uygulama süreci yeniden başladı (günlükte açılış satırı); neden bilinmiyor,
+çökme kaydında ayrıntı yok. Teslim etkilenmedi.
+
+**6. Kilitli yeniden başlatmada başlıklı bildirim (F2.32)**
+
+| | Kritik "DenemeKilit" | Önemli "DenemeKilitOnemli" |
+|---|---|---|
+| Planlanan an | 22:32:28.000 | 22:32:35.000 |
+| Kilit açılmadan bildirim (`RUNNING_LOCKED`) | 22:32:28.148; başlık hatırlatmanın adı; kilit ekranında açık | 22:32:35.221; başlık adı, kilit ekranında "Hatırlatman var" |
+| Kilit açılınca | 22:32:47.305 `FIRED` + `POSTED` (ayrıntılı bildirim yerini aldı) | aynı an |
+
+Kullanıcı kilit ekranında "DenemeKilit" başlığını gördü. `BOOT_COMPLETED` alıcıya geldi (otomatik başlatma izni
+yokken de).
+
+**Sınırlar:** her deneme tek tur, debug sürümü. Hizalamayı hangi ayarın kaldırdığı, otomatik başlatma açıkken paket
+güncelleme yayını, Önemli sınıfın "tam sessizlik" kipindeki davranışı ölçülmedi (F2.42, F2.44, F2.45). Telefon
+deneme sonunda eski durumunda: saat ve dilim otomatik, Rahatsız Etme kapalı, bildirim izni açık, deneme
+hatırlatmaları silindi.
