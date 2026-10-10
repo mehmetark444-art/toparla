@@ -112,3 +112,9 @@ rengi, release'e giren önizleme kütüphanesi), bayat belge satırları eşitle
 
 **Sıradaki:** F2-D hatırlatmanın Android tarafı (F2.25–F2.34, F2.46); görünür yüzeyler için önce taslak ve
 Kullanıcı onayı (karar 0015).
+
+## 10 Ekim 2026 — oturum 7
+**Madde:** F2.35–F2.38 (F2-E ekranları). Hedef: onaylanan sekiz taslağı Compose ile kodlamak ve debug sürümünü
+telefona kurmak; kurallar `:domain`'de testli olacak.
+**Biten:** beş ekran + dört ViewModel + iki katlı gezinme; kalite kapısı temiz; debug telefonda açıldı.
+**Sıradaki:** Kullanıcı ile saniyeli cihaz denemesi.

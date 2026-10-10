@@ -29,6 +29,14 @@ object ToparlaIcons {
     val Person: ImageVector = icon("Person", STROKE, "M8,8 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0", "M4,20 c1.6,-3.6 4.6,-5 8,-5 s6.4,1.4 8,5")
     val Send: ImageVector = icon("Send", STROKE_BOLD, "M4,12 L20,4 L14,20 L11,13 z", "M11,13 L20,4")
 
+    // Hatırlatma ekranları (F2.35–F2.38).
+    val Close: ImageVector = icon("Close", STROKE_BOLD, "M6,6 L18,18", "M18,6 L6,18")
+    val Back: ImageVector = icon("Back", STROKE_BOLD, "M15,5 L8,12 L15,19")
+    val Plus: ImageVector = icon("Plus", STROKE_BOLD, "M12,5 V19", "M5,12 H19")
+    val CheckCircle: ImageVector = icon("CheckCircle", STROKE_BOLD, "M3,12 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0", "M8,12.5 L11,15.5 L16,9.5")
+    val AlertCircle: ImageVector = icon("AlertCircle", STROKE_BOLD, "M3,12 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0", "M12,7 V13", "M12,16.5 V17")
+    val Shield: ImageVector = icon("Shield", STROKE, "M12,3 L19,6 V12 C19,16 16,19 12,21 C8,19 5,16 5,12 V6 z", "M9,12 L11.5,14.5 L15,10")
+
     private fun icon(name: String, stroke: Float, vararg paths: String): ImageVector {
         val builder = ImageVector.Builder(
             name = name,

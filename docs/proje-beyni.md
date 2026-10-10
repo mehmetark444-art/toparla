@@ -4,7 +4,7 @@ Bu dosya projenin hafızasıdır. Bağlamı sıfırlanmış bir oturum, başka b
 geliştirici **yalnız bu dosyayı okuyarak** projenin ne olduğunu, bugüne nasıl geldiğini,
 nelerin denenip neden değiştiğini ve hangi hataların bir daha yapılmaması gerektiğini anlamalıdır.
 
-**Son güncelleme:** 9 Ekim 2026, oturum 6 (F1 kapanışı; F2-D hatırlatma motoru telefonda) · **Kapsadığı son commit:** `1df5756` · **Kapanan son faz:** F1
+**Son güncelleme:** 10 Ekim 2026, oturum 7 (F2-E hatırlatma ekranları kodlandı) · **Kapsadığı son commit:** `6bc1408` · **Kapanan son faz:** F1
 
 > **Zorunlu güncelleme kuralı:** Her faz kapanışında (ve fazı beklemeden: her karar kaydında,
 > her yapılan hatada, her cihaz bulgusunda) bu dosya güncellenir. Bu dosya güncellenmeden
@@ -280,6 +280,13 @@ Blueprint'in kilitli kararları (K1–K23) geçerlidir; aşağıdakiler onları 
     güvenlik ağı işleri. `:app`: `ReminderFullScreenActivity`, açılışta yeniden planlama, debug tetikleyici.
     Cihazda uçtan uca: kritik teslim saniyesinde, merdiven, Yaptım, erteleme, ısrarlı takip, tam ekran kart.
     Üç kusur denemede bulundu ve düzeltildi (H34, H35; silinen hatırlatmanın bildirimi). (`3802e02` … `1df5756`)
+36. **F2-E: hatırlatma ekranları (10 Ekim).** Sekiz panoluk taslak onaylandı (`docs/tasarim/2026-10-09-hatirlatma-ekranlari/`)
+    ve kodlandı: Plan sekmesi listesi, hatırlatma ekle, Hatırlatma Sağlığı, otomatik başlatma adımı, hatırlatmaları
+    sına. Kurallar `:domain/ReminderSetup` içinde ve testli (hazır zamanlar, taslak doğrulama, sağlık raporu, sınama
+    sonucu). Gezinme iki katlı: dışta tam ekran akışlar, içte beş sekme. ViewModel'ler Activity kapsamında (Hilt
+    fabrikası orada; `hilt-navigation-compose` eklenmedi). Sınamanın anahtarı ayarlarda tutulur: sınama Kullanıcı'dan
+    uygulamayı kapatmasını ister, sonuç yeniden açılışta oradan bulunur. Kilitli yeniden başlatma ve kilit açılınca
+    teslim de bu aralıkta doğrulandı (H37). Telefonda debug açıldı; Kullanıcı'lı deneme sırada.
 
 ## 7. Bu telefonda öğrenilenler (özet; ham veri `platform-bulgulari.md`)
 

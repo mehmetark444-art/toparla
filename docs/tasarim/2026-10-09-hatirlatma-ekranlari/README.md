@@ -1,6 +1,6 @@
 # Hatırlatma ekranları taslağı (F2.35–F2.38) — 9 Ekim 2026
 
-**Durum:** Kullanıcı onayı bekliyor.
+**Durum:** Onaylandı (10 Ekim 2026) ve kodlandı.
 **Görüntüle:** https://claude.ai/artifact/BZX4b7PgcEGrt5kTJt3WoQ (tuval; bu klasördeki dosyalar onun kopyasıdır).
 **Yöntem:** `mobile-app-ui-design` yeteneğinin 5 adımı + `.claude/rules/tasarim.md` sınırları; görsel dil karar 0016
 (Seçenek B). Örnek içerik uydurmadır.
@@ -30,6 +30,8 @@ Hatırlatma ekle: başlık boşken **Hatırlat** pasif. Plan: hiç hatırlatma y
 "İlkini ekle"). Sağlık: her şey yerindeyken yeşil tek cümle. Sınama: "Geldi" sonucu (süreyle birlikte).
 
 ## Onay
-- Seçilen: —
-- Onay tarihi: —
-- İstenen değişiklikler: —
+- Seçilen: sekiz panonun tamamı, olduğu gibi ("taslakları beğendim").
+- Onay tarihi: 10 Ekim 2026
+- İstenen değişiklikler: yok.
+- Koddaki farklar: tekrar seçimi yok (yalnız tek seferlik; "her gün" eklenmedi). Dört hazır zaman iki satıra
+  bölündü (%200 yazı ölçeğinde taşmasın). Telefon ekran görüntüsüyle yan yana karşılaştırma henüz yapılmadı.

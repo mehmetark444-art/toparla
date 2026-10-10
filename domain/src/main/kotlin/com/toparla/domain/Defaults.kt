@@ -24,6 +24,15 @@ object Defaults {
     /** Teslim bu süreden fazla gecikirse "geç teslim" sayılır (kritikte ±1 dk sözü). */
     const val LATE_DELIVERY_TOLERANCE_SEC = 60L
 
+    /** Hatırlatma eklerken hazır zamanlar: "10 dk sonra", "bu akşam" ve "yarın sabah" saatleri. */
+    const val QUICK_TIME_SOON_MIN = 10L
+    const val QUICK_TIME_EVENING_HOUR = 20
+    const val QUICK_TIME_MORNING_HOUR = 9
+
+    /** Kendi kendini sınama: deneme hatırlatmasının gecikmesi ve "gelmedi" demeden önce beklenen süre, saniye. */
+    const val SELF_TEST_DELAY_SEC = 20L
+    const val SELF_TEST_TIMEOUT_SEC = 60L
+
     /** Merdiveni biten yanıtsız iş bu kadar dakika sonra "süresi doldu" sayılır (blueprint Bölüm I: +60 dk). */
     const val UNANSWERED_EXPIRY_MIN = 60L
 

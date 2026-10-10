@@ -10,12 +10,15 @@ import com.toparla.domain.reminder.ReminderDef
 import com.toparla.domain.reminder.ReminderInfo
 import com.toparla.domain.reminder.ReminderRepository
 import com.toparla.domain.reminder.ScheduledAlarm
+import kotlinx.coroutines.flow.Flow
 import timber.log.Timber
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeParseException
 import java.time.zone.ZoneRulesException
+
+data class DeliveryStats(val pendingAlarms: Int, val lastDeliveredAt: Instant?)
 
 /**
  * Hatırlatma verisinin planlayıcıya ve teslim hattına bakan yüzü: tabloları `:domain` modellerine çevirir.
@@ -63,6 +66,14 @@ class ReminderStore(private val db: ToparlaDatabase) : ReminderRepository {
     override suspend fun pendingSnoozes(): List<OccurrenceRecord> =
         db.occurrences().inStates(listOf(OccurrenceState.PLANNED)).map { it.toRecord() }
             .filter { AlarmKey.parse(it.key).kind == AlarmKeyKind.SNOOZE }
+
+    fun observeWaiting(): Flow<List<WaitingRow>> = db.reminders().observeWaiting()
+
+    fun observeUpcoming(): Flow<List<UpcomingRow>> = db.reminders().observeUpcoming()
+
+    /** Hatırlatma Sağlığı ekranının iki göstergesi: kurulu alarm sayısı ve son çalan hatırlatmanın anı. */
+    suspend fun deliveryStats(): DeliveryStats =
+        DeliveryStats(db.scheduledAlarms().count(), db.deliveryLog().lastTs(DeliveryEvent.FIRED)?.let(Instant::ofEpochMilli))
 
     /** Tanımı kaydeder (yeni ya da güncelleme). Planlama ayrıca tetiklenir. */
     suspend fun saveReminder(reminder: ReminderEntity) = db.reminders().upsert(reminder)

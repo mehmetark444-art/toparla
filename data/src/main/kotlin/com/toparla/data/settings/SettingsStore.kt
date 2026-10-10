@@ -57,6 +57,23 @@ class SettingsStore(private val dataStore: DataStore<Preferences>) {
         )
     }
 
+    /**
+     * HyperOS otomatik başlatma izni uygulama içinden okunamaz (F1 bulgusu). Kullanıcı sihirbazda "açtım" dediğinde
+     * ya da kendi kendini sınama geçtiğinde true olur.
+     */
+    val autoStartConfirmed: Flow<Boolean> = dataStore.data.map { it[AUTO_START_CONFIRMED] ?: false }
+
+    suspend fun setAutoStartConfirmed(value: Boolean) {
+        dataStore.edit { it[AUTO_START_CONFIRMED] = value }
+    }
+
+    /** Süren "Hatırlatmaları sına" denemesinin teslim anahtarı; uygulama kapatılıp açılınca sonuç buradan bulunur. */
+    val selfTestKey: Flow<String?> = dataStore.data.map { it[SELF_TEST_KEY] }
+
+    suspend fun setSelfTestKey(value: String?) {
+        dataStore.edit { if (value == null) it.remove(SELF_TEST_KEY) else it[SELF_TEST_KEY] = value }
+    }
+
     fun flag(flag: FeatureFlag): Flow<Boolean> = dataStore.data.map { it[flagKey(flag)] ?: flag.defaultOn }
 
     suspend fun setNotificationBudget(value: Int) {
@@ -89,6 +106,8 @@ class SettingsStore(private val dataStore: DataStore<Preferences>) {
         val TEXT_SIZE = stringPreferencesKey("text_size")
         val REDUCE_MOTION = booleanPreferencesKey("reduce_motion")
         val HAPTICS = booleanPreferencesKey("haptics")
+        val AUTO_START_CONFIRMED = booleanPreferencesKey("auto_start_confirmed")
+        val SELF_TEST_KEY = stringPreferencesKey("self_test_key")
 
         fun flagKey(flag: FeatureFlag) = booleanPreferencesKey("flag_${flag.name.lowercase()}")
     }
