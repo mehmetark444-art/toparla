@@ -209,5 +209,137 @@
     <string name="selftest_retry">Yeniden dene</string>
     <string name="selftest_cancel">Vazgeç</string>
     <string name="selftest_ok">Tamam</string>
+
+    <!-- Ayarlar (blueprint D20; yalnız çalışan satırlar; karar 0018) -->
+    <string name="settings_title">Ayarlar</string>
+    <string name="settings_modules">Modüller</string>
+    <string name="settings_medication">İlaç takibi</string>
+    <string name="settings_medication_desc">Kendi planına göre hatırlatma ve kayıt. Kapalıyken hiçbir yerde görünmez.</string>
+    <string name="settings_medications">İlaçlar</string>
+    <string name="settings_medication_lock">İlaç ekranlarını kilitle</string>
+    <string name="settings_medication_lock_desc">Girerken parmak izi, yüz ya da ekran kilidi sorulur.</string>
+    <string name="settings_medication_lock_unavailable">Telefonda ekran kilidi olmadığı için şu an kullanılamıyor.</string>
+    <string name="settings_reminders">Hatırlatmalar</string>
+    <string name="settings_medication_note">İlaç takibi kapatılınca ilaç hatırlatmaları durur; ilaçların ve kayıtların silinmez. Yeniden açınca kaldığı yerden sürer.</string>
+
+    <!-- İlaç (M9): uygulama doz ya da zaman önermez; "kaçırdın" yok, geciken doz amber. -->
+    <string name="med_title">İlaçlar</string>
+    <string name="med_history">Geçmiş</string>
+    <string name="med_today">Bugün</string>
+    <string name="med_list">İlaçların</string>
+    <string name="med_add">İlaç ekle</string>
+    <string name="med_note">Toparla doz ya da saat önermez; yalnız senin girdiğin plana göre hatırlatır ve kaydeder.</string>
+    <string name="med_empty">Henüz ilaç eklemedin. Eklediğinde saatinde hatırlatırım.</string>
+    <string name="med_today_empty">Bugün için doz yok.</string>
+    <string name="med_state_taken">Alındı %1$s</string>
+    <string name="med_state_late">Geç alındı %1$s</string>
+    <string name="med_state_skipped">Atlandı</string>
+    <string name="med_state_not_logged">Kaydedilmedi</string>
+    <string name="med_state_pending">Bekliyor</string>
+    <string name="med_state_upcoming">Sırada</string>
+    <string name="med_state_snoozed">Ertelendi</string>
+    <string name="med_taken">Aldım</string>
+    <string name="med_log_late">Geç aldım</string>
+    <string name="med_log_skip">Atladım</string>
+    <string name="med_every_day">Her gün</string>
+    <string name="med_stock_left">%1$d kaldı</string>
+    <string name="med_row_meta">%1$s · %2$s</string>
+    <string-array name="med_day_short">
+        <item>Pt</item>
+        <item>Sa</item>
+        <item>Ça</item>
+        <item>Pe</item>
+        <item>Cu</item>
+        <item>Ct</item>
+        <item>Pz</item>
+    </string-array>
+    <string name="med_double_dose_title">Emin misin?</string>
+    <string name="med_double_dose_yes">Evet, aldım</string>
+    <string name="med_double_dose_no">Vazgeç</string>
+
+    <!-- İlaç ekle / düzenle -->
+    <string name="med_add_title">İlaç ekle</string>
+    <string name="med_edit_title">İlacı düzenle</string>
+    <string name="med_name">Adı</string>
+    <string name="med_dose">Doz</string>
+    <string name="med_dose_hint">Yazdığın gibi gösterilir; hiçbir hesaba girmez.</string>
+    <string name="med_times">Saatler</string>
+    <string name="med_time_add">+ Saat ekle</string>
+    <string name="med_time_remove">%1$s saatini kaldır</string>
+    <string name="med_days">Günler</string>
+    <string name="med_days_every">Her gün</string>
+    <string name="med_days_some">Seçili günler</string>
+    <string name="med_gap">Çift doz koruması</string>
+    <string name="med_gap_lead">İki “Aldım” arasında en az</string>
+    <string name="med_gap_off">Kapalı</string>
+    <string name="med_gap_hours">%1$d sa</string>
+    <string name="med_gap_hint">Daha erken “Aldım” dersen “Emin misin?” diye sorarım. Aralığı sen seçersin.</string>
+    <string name="med_stock">Stok (isteğe bağlı)</string>
+    <string name="med_stock_count">Kalan adet</string>
+    <string name="med_stock_per_dose">Her dozda</string>
+    <string name="med_stock_low">Bu sayıya inince “Eczaneye uğra” de</string>
+    <string name="med_notes">Not (isteğe bağlı)</string>
+    <string name="med_hide">Bildirimde adını gizle</string>
+    <string name="med_hide_hint">Bildirim “İlaç zamanı” der. Kilit ekranında ad zaten hiç görünmez.</string>
+    <string name="med_delete">İlacı sil</string>
+    <string name="med_delete_confirm">Bu ilacın hatırlatmaları durur. Kayıtların silinmez.</string>
+    <string name="med_delete_yes">Sil</string>
+    <string name="med_save">Kaydet</string>
+    <string name="med_problem_name">Bir ad yaz.</string>
+    <string name="med_problem_times">En az bir saat ekle.</string>
+    <string name="med_problem_days">En az bir gün seç.</string>
+    <string name="med_problem_stock">Stok alanlarına yalnız sayı yaz.</string>
+
+    <!-- Geçmiş ve dışa aktarım -->
+    <string name="med_history_info">Kaydı olmayan doz için telafi önermem. Talimat için doktorunu ya da eczacını izle.</string>
+    <string name="med_history_note">Son 30 gün. Dozlar yalnız hatırlatma çaldıktan sonra listeye girer.</string>
+    <string name="med_history_empty">Henüz kayıt yok. Hatırlatmalar çaldıkça burada görünür.</string>
+    <string name="med_yesterday">Dün</string>
+    <string name="med_export">Dışa aktar</string>
+    <string name="med_export_title">Dışa aktar</string>
+    <string name="med_export_range">Aralık</string>
+    <string name="med_export_7">Son 7 gün</string>
+    <string name="med_export_30">Son 30 gün</string>
+    <string name="med_export_90">Son 90 gün</string>
+    <string name="med_export_format">Biçim</string>
+    <string name="med_export_pdf">PDF</string>
+    <string name="med_export_pdf_hint">Yazdırmak ya da randevuya götürmek için</string>
+    <string name="med_export_csv">CSV</string>
+    <string name="med_export_csv_hint">Hesap tablosunda açmak için</string>
+    <string name="med_export_note">Dosyayı nereye kaydedeceğini sen seçersin. Toparla onu kimseye göndermez.</string>
+    <string name="med_export_save">Dosyayı kaydet</string>
+    <string name="med_export_done">Dosya kaydedildi.</string>
+    <string name="med_export_failed">Dosya kaydedilemedi. Başka bir yer seçip yeniden dene.</string>
+    <string name="med_export_file">ilac-kaydi</string>
+    <string name="med_export_pdf_title">İlaç kaydı</string>
+    <string name="med_export_pdf_range">%1$s – %2$s</string>
+    <string name="med_export_pdf_footer">Toparla ile bu telefonda oluşturuldu. Yalnız kayıttır; tanı ya da tavsiye içermez.</string>
+    <string name="med_export_col_date">Tarih</string>
+    <string name="med_export_col_time">Planlanan saat</string>
+    <string name="med_export_col_name">İlaç</string>
+    <string name="med_export_col_dose">Doz</string>
+    <string name="med_export_col_state">Durum</string>
+    <string name="med_export_col_logged">Kayıt saati</string>
+    <string name="med_export_state_taken">Alındı</string>
+    <string name="med_export_state_late">Geç alındı</string>
+
+    <!-- Kilit (biyometrik; karar 0018) -->
+    <string name="med_locked_title">Bu bölüm kilitli</string>
+    <string name="med_locked_text">Açmak için parmak izi, yüz ya da ekran kilidini kullan.</string>
+    <string name="med_unlock">Kilidi aç</string>
+    <string name="med_lock_back">Geri dön</string>
+    <string name="med_lock_prompt">İlaç ekranları</string>
+
+    <!-- Plan kartı ve tam ekran kart -->
+    <string name="med_plan_next">Sıradaki %1$s</string>
+    <string name="med_plan_none">Bugün başka doz yok</string>
+    <plurals name="med_plan_not_logged">
+        <item quantity="one">%d doz kaydedilmedi</item>
+        <item quantity="other">%d doz kaydedilmedi</item>
+    </plurals>
+    <string name="med_card_generic_title">İlaç zamanı</string>
+    <string name="med_card_locked_text">Kilidi açınca hangi ilaç olduğunu gösteririm.</string>
+    <string name="med_card_snooze">15 dk sonra</string>
+    <string name="med_card_skip">Atlıyorum</string>
 </resources>
 

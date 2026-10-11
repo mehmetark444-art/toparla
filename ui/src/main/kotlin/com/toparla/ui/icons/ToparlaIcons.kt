@@ -43,6 +43,9 @@ object ToparlaIcons {
     val Bell: ImageVector = icon("Bell", STROKE_BOLD, "M12,3 a6,6 0 0,0 -6,6 v4 l-2,3 h16 l-2,-3 V9 a6,6 0 0,0 -6,-6 z", "M10,20 a2,2 0 0,0 4,0")
     val Lock: ImageVector = icon("Lock", STROKE_BOLD, "M7,11 h10 a2,2 0 0,1 2,2 v5 a2,2 0 0,1 -2,2 H7 a2,2 0 0,1 -2,-2 v-5 a2,2 0 0,1 2,-2 z", "M8,11 V8 a4,4 0 0,1 8,0 v3")
 
+    // İlaç takibi (M9, onaylı taslak 11 Ekim 2026): çapraz kapsül.
+    val Pill: ImageVector = icon("Pill", STROKE_BOLD, "M10.5,19.5 L19.5,10.5 A4.24,4.24 0 0,0 13.5,4.5 L4.5,13.5 A4.24,4.24 0 0,0 10.5,19.5 z", "M9,9 L15,15")
+
     private fun icon(name: String, stroke: Float, vararg paths: String): ImageVector {
         val builder = ImageVector.Builder(
             name = name,

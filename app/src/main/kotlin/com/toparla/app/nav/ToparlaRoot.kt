@@ -24,12 +24,25 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.toparla.app.R
+import com.toparla.app.medication.MedicationFormScreen
+import com.toparla.app.medication.MedicationFormViewModel
+import com.toparla.app.medication.MedicationHistoryScreen
+import com.toparla.app.medication.MedicationNav
+import com.toparla.app.medication.MedicationPlanCard
+import com.toparla.app.medication.MedicationViewModel
+import com.toparla.app.medication.MedicationsScreen
+import com.toparla.app.medication.ModuleGate
+import com.toparla.app.medication.SettingsActions
+import com.toparla.app.medication.SettingsScreen
+import com.toparla.app.medication.SettingsViewModel
 import com.toparla.app.reminder.AddReminderScreen
 import com.toparla.app.reminder.AddReminderViewModel
 import com.toparla.app.reminder.HealthScreen
@@ -74,6 +87,17 @@ sealed interface Route {
     @Serializable data object Setup : Route
 
     @Serializable data object SelfTest : Route
+
+    /** Ayarlar (blueprint D20): şimdilik Modüller ve Hatırlatma Sağlığı (karar 0018). */
+    @Serializable data object Settings : Route
+
+    /** İlaç ekranları (M9): yalnız modül açıkken açılır. */
+    @Serializable data object Medications : Route
+
+    @Serializable data object MedicationHistory : Route
+
+    /** @param id düzenlenecek ilaç; yeni ilaçta null */
+    @Serializable data class MedicationEdit(val id: String? = null) : Route
 }
 
 /** Alt çubuğun 5 sekmesi (blueprint C9): Şimdi · Gelen · Plan · Akış · Güneş. */
@@ -100,6 +124,9 @@ fun ToparlaRoot(openScreen: String? = null, onScreenOpened: () -> Unit = {}) {
     val health: HealthViewModel = viewModel()
     val selfTest: SelfTestViewModel = viewModel()
     val setup: SetupViewModel = viewModel()
+    val settings: SettingsViewModel = viewModel()
+    val medication: MedicationViewModel = viewModel()
+    val medicationForm: MedicationFormViewModel = viewModel()
     val root = rememberNavController()
     val scope = rememberCoroutineScope()
     val go = remember(root, setup) { RootActions(root, setup) }
@@ -124,7 +151,7 @@ fun ToparlaRoot(openScreen: String? = null, onScreenOpened: () -> Unit = {}) {
 
     NavHost(navController = root, startDestination = Route.Home) {
         composable<Route.Home> {
-            HomeTabs(plan, setup, startOnPlan = openScreen == Screens.PLAN, onAdd = { go.to(Route.AddReminder) }, onHealth = { go.to(Route.Health) }, onSetup = go::overview)
+            HomeTabs(plan, setup, medication, startOnPlan = openScreen == Screens.PLAN, actions = go.home())
         }
         composable<Route.AddReminder> { FlowSurface { AddReminderScreen(add, onClose = go::back) } }
         composable<Route.Health> {
@@ -133,6 +160,7 @@ fun ToparlaRoot(openScreen: String? = null, onScreenOpened: () -> Unit = {}) {
             }
         }
         composable<Route.Setup> { FlowSurface { SetupScreen(setup, onClose = go::back, onSelfTest = go::selfTestInsteadOfSetup) } }
+        medicationRoutes(go, settings, medication, medicationForm)
         composable<Route.SelfTest> {
             FlowSurface {
                 SelfTestScreen(
@@ -150,6 +178,48 @@ fun ToparlaRoot(openScreen: String? = null, onScreenOpened: () -> Unit = {}) {
     }
 }
 
+/** Ayarlar ve ilaç ekranlarının rotaları (karar 0018; ilaç ekranları yalnız modül açıkken). */
+private fun NavGraphBuilder.medicationRoutes(
+    go: RootActions,
+    settings: SettingsViewModel,
+    medication: MedicationViewModel,
+    medicationForm: MedicationFormViewModel,
+) {
+    composable<Route.Settings> {
+        FlowSurface {
+            SettingsScreen(
+                viewModel = settings,
+                lockAvailable = settings.lockAvailable(),
+                actions = SettingsActions(
+                    onBack = go::back,
+                    onMedication = settings::setMedication,
+                    onMedicationLock = settings::setMedicationLock,
+                    onMedications = { go.to(Route.Medications) },
+                    onHealth = { go.to(Route.Health) },
+                ),
+            )
+        }
+    }
+    composable<Route.Medications> {
+        MedicationGuard(medication, go::back) {
+            MedicationsScreen(
+                medication,
+                MedicationNav(
+                    onBack = go::back,
+                    onHistory = { go.to(Route.MedicationHistory) },
+                    onAdd = { go.to(Route.MedicationEdit()) },
+                    onEdit = { id -> go.to(Route.MedicationEdit(id)) },
+                ),
+            )
+        }
+    }
+    composable<Route.MedicationHistory> { MedicationGuard(medication, go::back) { MedicationHistoryScreen(medication, onBack = go::back) } }
+    composable<Route.MedicationEdit> { entry ->
+        val id = entry.toRoute<Route.MedicationEdit>().id
+        MedicationGuard(medication, go::back) { MedicationFormScreen(medicationForm, id, onClose = go::back) }
+    }
+}
+
 /** Kök gezinmenin eylemleri: tam ekran akışlar birbirini bunun üzerinden açar. */
 private class RootActions(private val root: NavHostController, private val setup: SetupViewModel) {
     fun back() {
@@ -157,6 +227,15 @@ private class RootActions(private val root: NavHostController, private val setup
     }
 
     fun to(route: Route) = root.navigate(route) { launchSingleTop = true }
+
+    /** Ana sekmelerden açılan tam ekran akışlar. */
+    fun home() = HomeActions(
+        onAdd = { to(Route.AddReminder) },
+        onHealth = { to(Route.Health) },
+        onSetup = ::overview,
+        onSettings = { to(Route.Settings) },
+        onMedications = { to(Route.Medications) },
+    )
 
     /** Kurulumun genel bakışı (Şimdi ekranındaki karttan). */
     fun overview() {
@@ -180,6 +259,8 @@ private class RootActions(private val root: NavHostController, private val setup
             screen == Screens.ADD -> to(Route.AddReminder)
             screen == Screens.SELF_TEST -> to(Route.SelfTest)
             screen == Screens.SETUP -> overview()
+            screen == Screens.SETTINGS -> to(Route.Settings)
+            screen == Screens.MEDICATIONS -> to(Route.Medications)
             screen.startsWith(Screens.STEP_PREFIX) -> SetupStep.entries.firstOrNull { it.name == screen.removePrefix(Screens.STEP_PREFIX) }?.let(::step)
         }
     }
@@ -193,15 +274,34 @@ object Screens {
     const val SETUP = "kurulum"
     const val SELF_TEST = "sina"
     const val STEP_PREFIX = "adim:"
+    const val SETTINGS = "ayarlar"
+    const val MEDICATIONS = "ilaclar"
+}
+
+/** Ana sekmelerin dışarı açılan eylemleri. */
+private data class HomeActions(
+    val onAdd: () -> Unit,
+    val onHealth: () -> Unit,
+    val onSetup: () -> Unit,
+    val onSettings: () -> Unit,
+    val onMedications: () -> Unit,
+)
+
+/** İlaç ekranları yalnız modül açıkken (K18, F2.41; [ModuleGate]). */
+@Composable
+private fun MedicationGuard(medication: MedicationViewModel, onClosed: () -> Unit, content: @Composable () -> Unit) {
+    val ui by medication.state.collectAsState()
+    ModuleGate(ui.loaded, ui.enabled, onClosed) { FlowSurface { content() } }
 }
 
 @Composable
-private fun HomeTabs(plan: PlanViewModel, setup: SetupViewModel, startOnPlan: Boolean, onAdd: () -> Unit, onHealth: () -> Unit, onSetup: () -> Unit) {
+private fun HomeTabs(plan: PlanViewModel, setup: SetupViewModel, medication: MedicationViewModel, startOnPlan: Boolean, actions: HomeActions) {
     val nav = rememberNavController()
     LaunchedEffect(startOnPlan) { if (startOnPlan) nav.navigateToTab(Tab.PLAN) }
     // Kurulumun kalan adımı ayar sayfasından her dönüşte yeniden sayılır.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { setup.refresh() }
     val setupUi by setup.state.collectAsState()
+    val medicationUi by medication.state.collectAsState()
     val remaining = setupUi.progress?.remaining ?: 0
     val entry by nav.currentBackStackEntryAsState()
     val current = Tab.entries.firstOrNull { tab ->
@@ -213,20 +313,24 @@ private fun HomeTabs(plan: PlanViewModel, setup: SetupViewModel, startOnPlan: Bo
         tabs = Tab.entries.map { NavTab(label = stringResource(it.label), icon = it.icon) },
         selectedTab = current.ordinal,
         onTabSelected = { nav.navigateToTab(Tab.entries[it]) },
-        topBarActions = TopBarActions(onGunes = if (current == Tab.GUNES) null else ({ nav.navigateToTab(Tab.GUNES) })),
+        topBarActions = TopBarActions(onGunes = if (current == Tab.GUNES) null else ({ nav.navigateToTab(Tab.GUNES) }), onProfile = actions.onSettings),
     ) { padding ->
         NavHost(navController = nav, startDestination = Route.Now, modifier = Modifier.padding(padding)) {
             composable<Route.Now> {
                 Column(modifier = Modifier.fillMaxSize()) {
                     // Atlanan kurulum burada sakin bir kart olarak bekler (blueprint D1-4); tamamlanınca kaybolur.
-                    if (remaining > 0) SetupCard(remaining, onContinue = onSetup, modifier = Modifier.padding(horizontal = Spacing.screenEdge, vertical = Spacing.xs))
+                    if (remaining > 0) SetupCard(remaining, onContinue = actions.onSetup, modifier = Modifier.padding(horizontal = Spacing.screenEdge, vertical = Spacing.xs))
                     Box(modifier = Modifier.weight(1f)) {
                         TabPlaceholder(EmptyShape.RING, R.string.empty_now, R.string.empty_now_action) { nav.navigateToTab(Tab.INBOX) }
                     }
                 }
             }
             composable<Route.Inbox> { TabPlaceholder(EmptyShape.LEAF, R.string.empty_inbox) }
-            composable<Route.Plan> { PlanScreen(plan, onAdd = onAdd, onHealth = onHealth) }
+            composable<Route.Plan> {
+                // İlaç girişi yalnız modül açıkken görünür (K18, F2.41).
+                val card: (@Composable () -> Unit)? = if (medicationUi.enabled) ({ MedicationPlanCard(medicationUi.summary, onOpen = actions.onMedications) }) else null
+                PlanScreen(plan, onAdd = actions.onAdd, onHealth = actions.onHealth, medicationCard = card)
+            }
             composable<Route.Flow> { TabPlaceholder(EmptyShape.WAVE, R.string.empty_flow) }
             composable<Route.Gunes> { TabPlaceholder(EmptyShape.RING, R.string.empty_gunes) }
         }

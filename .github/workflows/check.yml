@@ -45,6 +45,10 @@ jobs:
       # değişirse kırmızı. Bilinçli değişiklikte temel görüntüler recordRoborazziDebug ile yenilenir.
       - name: Arayüz testleri (kontrast + ekran görüntüsü karşılaştırma)
         run: ./gradlew --console=plain :ui:verifyRoborazziDebug
+      # GEÇİCİ (F2.39–F2.41): ilaç ekranlarının temel görüntülerinin ilk kaydı. Bulut oturumu görüntüleri aşağıdaki
+      # adımla günlükten alıp depoya koyar; ardından bu iki adım kaldırılır. Öteki görüntülerin karşılaştırması sürer.
+      - name: Yeni ilaç ekranı görüntüleri (ilk kayıt, geçici)
+        run: ./gradlew --console=plain :app:testDebugUnitTest --tests 'com.toparla.app.medication.MedicationScreenshotTest' -Proborazzi.test.record=true
       # Hatırlatma ekranları (Sağlık, sınama, kurulum sihirbazı): davranış testleri ve ekran görüntüsü karşılaştırma.
       - name: Ekran testleri (davranış + ekran görüntüsü karşılaştırma)
         run: ./gradlew --console=plain :app:verifyRoborazziDebug
@@ -71,9 +75,13 @@ jobs:
         if: always() && (startsWith(github.ref, 'refs/heads/claude/') || startsWith(github.ref, 'refs/heads/ccr-'))
         run: |
           for f in $(git ls-files --others --exclude-standard -- 'data/schemas/*.json'); do
-            echo "@@DOSYA-BASLA $f"
-            cat "$f"; echo
-            echo "@@DOSYA-BITTI"
+            echo "@@DOSYA-GZIP-BASE64 $f $(gzip -9 -c "$f" | base64 -w 0)"
+          done
+      - name: Yeni temel görüntüler (günlüğe, geçici)
+        if: always() && (startsWith(github.ref, 'refs/heads/claude/') || startsWith(github.ref, 'refs/heads/ccr-'))
+        run: |
+          for f in $(git ls-files --others --exclude-standard -- 'app/src/test/screenshots/*.png'); do
+            echo "@@PNG $f $(base64 -w 0 "$f")"
           done
       - name: Depo tutarlılığı
         run: node .claude/skills/dogrula/kontrol.mjs

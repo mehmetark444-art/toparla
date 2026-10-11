@@ -80,8 +80,14 @@ class MedicationDatabaseTest {
 
         val migrated = migrations.runMigrationsAndValidate(2, emptyList())
 
-        val kept = migrated.prepare("SELECT COUNT(*) FROM Reminder WHERE id = 'r1'").use { it.step(); it.getLong(0) }
-        val medications = migrated.prepare("SELECT COUNT(*) FROM Medication").use { it.step(); it.getLong(0) }
+        val kept = migrated.prepare("SELECT COUNT(*) FROM Reminder WHERE id = 'r1'").use {
+            it.step()
+            it.getLong(0)
+        }
+        val medications = migrated.prepare("SELECT COUNT(*) FROM Medication").use {
+            it.step()
+            it.getLong(0)
+        }
         migrated.close()
         assertEquals(1L, kept)
         assertEquals(0L, medications)

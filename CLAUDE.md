@@ -52,6 +52,9 @@ AI ajanı **Güneş** (cihaz içi Gemma + bulutta Gemini). Kapsam M1–M30'un ta
   kriz/kritik, ≥ 48 dp, ≥ 4,5:1) yeteneğin üstündedir. Ayrıntı: `.claude/rules/tasarim.md`.
 - **0016:** Görsel dil **Seçenek B**: açık palet koyulaştırıldı (kontrast), kartta yumuşak sıcak gölge,
   ekranda 4 yazı boyutu (32/20/16/13) ve 2 ağırlık, kenar ve kart içi 24 dp. Koyu/AMOLED renkleri blueprint'teki gibi.
+- **0018:** İlaç (M9) motorun Kritik hatırlatmasıdır; doz zamanı hiçbir düğmeyle değişmez (ilaçta "Yarın" yok); çift doz
+  uyarır, engellemez; kilit ekranında ve Direct Boot kopyasında ilaç adı yok; kapalıyken motora görünmez. Yeni izin
+  `USE_BIOMETRIC` (normal izin, çerçevenin `BiometricPrompt`'u); dışa aktarımın yerini Kullanıcı seçer.
 - **0017:** Uzak depo **herkese açık** (Kullanıcı kararı, 10 Ekim). Gizli değer kuralları aynen sürer; belgelere
   sağlık verisi, kişi adı, seri numarası, ekran içeriği girmez (artık tek koruma bu).
 

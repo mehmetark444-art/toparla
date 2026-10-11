@@ -133,12 +133,13 @@ class PlanViewModel @Inject constructor(
  * ekleme düğmesi. Geciken iş "Taşınan" ve amber; kırmızı yok.
  */
 @Composable
-fun PlanScreen(viewModel: PlanViewModel, onAdd: () -> Unit, onHealth: () -> Unit) {
+fun PlanScreen(viewModel: PlanViewModel, onAdd: () -> Unit, onHealth: () -> Unit, medicationCard: (@Composable () -> Unit)? = null) {
     val ui by viewModel.state.collectAsState()
     val zone = viewModel.clock.zone()
     Box(modifier = Modifier.fillMaxSize()) {
         if (ui.loaded && ui.waiting.isEmpty() && ui.upcoming.isEmpty()) {
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                medicationCard?.let { card -> Box(modifier = Modifier.padding(horizontal = Spacing.screenEdge, vertical = Spacing.l)) { card() } }
                 EmptyState(
                     shape = EmptyShape.PATH,
                     message = stringResource(R.string.plan_empty),
@@ -157,6 +158,8 @@ fun PlanScreen(viewModel: PlanViewModel, onAdd: () -> Unit, onHealth: () -> Unit
                         TextAction(text = stringResource(R.string.plan_health), onClick = onHealth)
                     }
                 }
+                // İlaç modülü açıkken giriş kartı (onaylı taslak `docs/tasarim/2026-10-11-ilac/PlanGiris.dc.html`).
+                medicationCard?.let { card -> item { card() } }
                 if (ui.waiting.isNotEmpty()) {
                     item { SectionLabel(stringResource(R.string.plan_waiting)) }
                     items(ui.waiting, key = { it.occurrenceKey }) { row -> WaitingCard(row, zone, viewModel::act) }

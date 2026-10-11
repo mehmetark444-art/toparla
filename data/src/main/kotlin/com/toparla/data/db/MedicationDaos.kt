@@ -21,9 +21,6 @@ interface MedicationDao {
     @Query("SELECT * FROM Medication WHERE deletedAt IS NULL ORDER BY name COLLATE NOCASE")
     fun observeAll(): Flow<List<MedicationEntity>>
 
-    @Query("SELECT * FROM Medication WHERE deletedAt IS NULL")
-    suspend fun all(): List<MedicationEntity>
-
     @Query("UPDATE Medication SET stockCount = :stock, updatedAt = :now WHERE id = :id")
     suspend fun updateStock(id: String, stock: Int, now: Long)
 

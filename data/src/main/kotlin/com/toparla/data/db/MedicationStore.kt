@@ -8,8 +8,9 @@ import com.toparla.domain.medication.MedicationSchedule
 import com.toparla.domain.medication.PlannedDose
 import com.toparla.domain.reminder.AlarmKey
 import com.toparla.domain.reminder.MedicationRole
-import com.toparla.domain.reminder.RecurrenceCodec
+import com.toparla.domain.reminder.OccurrenceState
 import com.toparla.domain.reminder.Recurrence
+import com.toparla.domain.reminder.RecurrenceCodec
 import com.toparla.domain.reminder.ReminderClass
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -29,8 +30,6 @@ import java.time.ZoneId
  */
 class MedicationStore(private val db: ToparlaDatabase) : MedicationRepository {
     fun observeMedications(): Flow<List<Medication>> = db.medications().observeAll().map { rows -> rows.mapNotNull { it.toModel() } }
-
-    suspend fun medications(): List<Medication> = db.medications().all().mapNotNull { it.toModel() }
 
     override suspend fun medication(id: String): Medication? = db.medications().byId(id)?.toModel()
 
@@ -59,7 +58,12 @@ class MedicationStore(private val db: ToparlaDatabase) : MedicationRepository {
      */
     override suspend fun requestRestock(medicationId: String, at: Instant) {
         val med = db.medications().byId(medicationId) ?: return
-        val zone = parseZone(med.zoneId) ?: return
+        val zone = try {
+            ZoneId.of(med.zoneId)
+        } catch (e: DateTimeException) {
+            Timber.w(e, "Eczane hatırlatması kurulamadı: saat dilimi çözülemedi (%s)", med.zoneId)
+            return
+        }
         db.reminders().upsert(
             ReminderEntity(
                 id = MedicationSchedule.restockReminderId(medicationId, at),
@@ -134,13 +138,23 @@ class MedicationStore(private val db: ToparlaDatabase) : MedicationRepository {
         db.medicationLogs().observeSince(since.toEpochMilli()).map { rows -> rows.map { it.toModel() } }
 
     private fun dosesOf(occurrences: List<ReminderOccurrenceEntity>): List<PlannedDose> =
-        occurrences.mapNotNull { o ->
-            val medicationId = MedicationSchedule.parse(o.reminderId)?.medicationId ?: return@mapNotNull null
-            val rootAt = AlarmKey.plannedAtOf(o.key) ?: return@mapNotNull null
-            Triple(medicationId to rootAt, o.snoozeCount, o.key)
-        }
-            .groupBy { it.first }
-            .map { (dose, versions) -> PlannedDose(dose.first, dose.second, versions.maxBy { it.second }.third) }
+        occurrences
+            .mapNotNull { o ->
+                val medicationId = MedicationSchedule.parse(o.reminderId)?.medicationId ?: return@mapNotNull null
+                val rootAt = AlarmKey.plannedAtOf(o.key) ?: return@mapNotNull null
+                (medicationId to rootAt) to o
+            }
+            .groupBy({ it.first }, { it.second })
+            .map { (dose, versions) ->
+                val live = versions.maxBy { it.snoozeCount }
+                PlannedDose(
+                    medicationId = dose.first,
+                    plannedAt = dose.second,
+                    occurrenceKey = live.key,
+                    snoozedUntil = if (live.state == OccurrenceState.PLANNED) Instant.ofEpochMilli(live.plannedAt) else null,
+                    answerable = live.state in ANSWERABLE,
+                )
+            }
 
     private fun MedicationLogEntity.toModel() = MedicationLog(medId, Instant.ofEpochMilli(plannedAt), Instant.ofEpochMilli(loggedAt), status, note)
 
@@ -190,14 +204,10 @@ class MedicationStore(private val db: ToparlaDatabase) : MedicationRepository {
         updatedAt = updatedAt,
     )
 
-    private fun parseZone(id: String): ZoneId? = try {
-        ZoneId.of(id)
-    } catch (e: DateTimeException) {
-        Timber.w(e, "Saat dilimi çözülemedi: %s", id)
-        null
-    }
-
     private companion object {
         const val LIST_SEPARATOR = ","
+
+        /** Motorun "Aldım / Atladım" kabul ettiği teslim durumları (yanıt bekleyen ya da süresi dolmuş). */
+        val ANSWERABLE = setOf(OccurrenceState.DELIVERED, OccurrenceState.SEEN, OccurrenceState.EXPIRED)
     }
 }

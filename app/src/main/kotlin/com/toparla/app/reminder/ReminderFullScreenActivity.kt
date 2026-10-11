@@ -1,5 +1,6 @@
 package com.toparla.app.reminder
 
+import android.app.KeyguardManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -26,12 +28,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
 import com.toparla.app.MainActivity
 import com.toparla.app.R
+import com.toparla.app.medication.DoubleDoseDialog
+import com.toparla.app.medication.DoubleDosePrompt
+import com.toparla.data.db.MedicationStore
 import com.toparla.domain.core.Clock
+import com.toparla.domain.medication.DoubleDoseCheck
+import com.toparla.domain.medication.MedicationRecorder
 import com.toparla.domain.reminder.ReminderAction
 import com.toparla.domain.reminder.ReminderEngine
+import com.toparla.domain.reminder.ReminderInfo
 import com.toparla.domain.reminder.ReminderRepository
 import com.toparla.reminders.ReminderIntents
 import com.toparla.ui.components.PrimaryButton
+import com.toparla.ui.components.QuietAction
 import com.toparla.ui.components.SecondaryButton
 import com.toparla.ui.theme.Spacing
 import com.toparla.ui.theme.ToparlaTheme
@@ -53,7 +62,10 @@ class ReminderFullScreenActivity : ComponentActivity() {
 
     @Inject lateinit var clock: Clock
 
+    @Inject lateinit var medications: MedicationStore
+
     private var card by mutableStateOf<CardContent?>(null)
+    private var prompt by mutableStateOf<DoubleDosePrompt?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -71,7 +83,7 @@ class ReminderFullScreenActivity : ComponentActivity() {
             if (occurrence == null || info == null) {
                 finish()
             } else {
-                card = CardContent(TIME.format(occurrence.plannedAt.atZone(clock.zone())), info.title, info.body)
+                card = contentOf(info, TIME.format(occurrence.plannedAt.atZone(clock.zone())))
             }
         }
         setContent {
@@ -79,10 +91,36 @@ class ReminderFullScreenActivity : ComponentActivity() {
                 card?.let { content ->
                     CriticalCard(
                         content = content,
-                        onDone = { respond(key, ReminderAction.DONE) },
+                        onDone = { if (content.medicationId != null) take(key, content.medicationId) else respond(key, ReminderAction.DONE) },
                         onSnooze = { respond(key, ReminderAction.SNOOZE) },
+                        onSkip = if (content.medicationId != null) ({ respond(key, ReminderAction.NOT_TODAY) }) else null,
                     )
+                    DoubleDoseDialog(prompt, onYes = { respond(key, ReminderAction.CONFIRM_TAKEN) }, onNo = { prompt = null })
                 }
+            }
+        }
+    }
+
+    /**
+     * İlaç dozu (M9): kilit ekranında ad görünmez ("İlaç zamanı"); "adı gizle" açıksa kilit açıkken de görünmez.
+     * Eylemler Aldım · 15 dk sonra · Atlıyorum (karar 0018).
+     */
+    private fun contentOf(info: ReminderInfo, time: String): CardContent {
+        val medication = info.medication?.takeIf { info.isMedicationDose } ?: return CardContent(time, info.title, info.body)
+        val locked = getSystemService(KeyguardManager::class.java).isKeyguardLocked
+        return if (locked || medication.hideName) {
+            CardContent(time, getString(R.string.med_card_generic_title), if (locked) getString(R.string.med_card_locked_text) else "", medication.medicationId)
+        } else {
+            CardContent(time, info.title, info.body, medication.medicationId)
+        }
+    }
+
+    /** "Aldım": asgari aralık dolmadıysa önce "Emin misin?" (çift doz koruması). */
+    private fun take(key: String, medicationId: String) {
+        lifecycleScope.launch {
+            when (val check = MedicationRecorder(medications).check(medicationId, clock.now())) {
+                DoubleDoseCheck.Clear -> respond(key, ReminderAction.DONE)
+                is DoubleDoseCheck.TooSoon -> prompt = DoubleDosePrompt(key, check.since)
             }
         }
     }
@@ -100,11 +138,16 @@ class ReminderFullScreenActivity : ComponentActivity() {
     }
 }
 
-data class CardContent(val time: String, val title: String, val body: String)
+/** @param medicationId ilaç dozunda ilacın kimliği (eylemler ve metin ilaca göre) */
+data class CardContent(val time: String, val title: String, val body: String, val medicationId: String? = null)
 
-/** Üst yarı bilgi, alt yarı eylem; tek baskın eylem "Yaptım" (blueprint C4, C9). */
+/**
+ * Üst yarı bilgi, alt yarı eylem; tek baskın eylem "Yaptım" (blueprint C4, C9). İlaç dozunda "Aldım · 15 dk sonra ·
+ * Atlıyorum" (onaylı taslak `docs/tasarim/2026-10-11-ilac/KartIlac.dc.html`).
+ */
 @Composable
-fun CriticalCard(content: CardContent, onDone: () -> Unit, onSnooze: () -> Unit) {
+fun CriticalCard(content: CardContent, onDone: () -> Unit, onSnooze: () -> Unit, onSkip: (() -> Unit)? = null) {
+    val medication = content.medicationId != null
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(
             modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(Spacing.screenEdge),
@@ -121,8 +164,14 @@ fun CriticalCard(content: CardContent, onDone: () -> Unit, onSnooze: () -> Unit)
                 }
             }
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.s)) {
-                PrimaryButton(text = stringResource(R.string.reminder_done), onClick = onDone, critical = true)
-                SecondaryButton(text = stringResource(R.string.reminder_snooze), onClick = onSnooze)
+                PrimaryButton(text = stringResource(if (medication) R.string.med_taken else R.string.reminder_done), onClick = onDone, critical = true)
+                SecondaryButton(
+                    text = stringResource(if (medication) R.string.med_card_snooze else R.string.reminder_snooze),
+                    onClick = onSnooze,
+                    // İlaç kartında üç eylem alt alta, tam genişlikte (onaylı taslak).
+                    modifier = if (medication) Modifier.fillMaxWidth() else Modifier,
+                )
+                onSkip?.let { QuietAction(text = stringResource(R.string.med_card_skip), onClick = it, modifier = Modifier.fillMaxWidth()) }
             }
         }
     }

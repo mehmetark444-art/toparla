@@ -178,22 +178,43 @@ enum class DoseState {
 
     /** Kayıt yok, süre dolmadı. */
     PENDING,
+
+    /** Bugünün çizelgesinde, hatırlatması henüz çalmadı ("Sırada"). */
+    UPCOMING,
+
+    /** "15 dk sonra" denmiş, yeniden sorulmayı bekliyor ("Ertelendi"). */
+    SNOOZED,
     ;
 
     /** "Unuttum" akışı: yalnız kaydı olmayan doz sonradan kaydedilir (telafi dozu önerilmez). */
     val canLogLater: Boolean get() = this == NOT_LOGGED || this == PENDING
 }
 
-/** Teslim edilmiş bir doz: [occurrenceKey] o dozun şu anki (son ertelenmiş) teslimi. */
-data class PlannedDose(val medicationId: String, val plannedAt: Instant, val occurrenceKey: String)
-
-data class DoseRow(
+/**
+ * Teslim edilmiş bir doz: [occurrenceKey] o dozun şu anki (son ertelenmiş) teslimi.
+ * @param snoozedUntil son teslim ertelenmiş ve henüz çalmamışsa yeniden sorulacağı an
+ * @param answerable motor bu teslime yanıt alır mı (yanıt bekleyen ya da süresi dolmuş); kapanmış teslim kaydedilemez
+ */
+data class PlannedDose(
     val medicationId: String,
     val plannedAt: Instant,
     val occurrenceKey: String,
+    val snoozedUntil: Instant? = null,
+    val answerable: Boolean = true,
+)
+
+/** @param occurrenceKey dozun teslimi; hatırlatması henüz çalmamış dozda null (kaydedilemez). */
+data class DoseRow(
+    val medicationId: String,
+    val plannedAt: Instant,
+    val occurrenceKey: String?,
     val state: DoseState,
     val loggedAt: Instant? = null,
-)
+    val answerable: Boolean = false,
+) {
+    /** Ekrandan "Aldım / Geç aldım / Atladım" denebilir mi. */
+    val actionable: Boolean get() = occurrenceKey != null && answerable && state.canLogLater
+}
 
 /** Kaçan doz yalnız kayıttır (blueprint M9): geçmiş, teslim edilmiş dozlar ile Kullanıcı'nın kayıtlarından kurulur. */
 object DoseHistory {
@@ -205,9 +226,35 @@ object DoseHistory {
                 DoseStatus.TAKEN -> DoseState.TAKEN
                 DoseStatus.LATE -> DoseState.LATE
                 DoseStatus.SKIPPED -> DoseState.SKIPPED
-                null -> if (now.isBefore(dose.plannedAt.plus(DoseRules.NOT_LOGGED_AFTER))) DoseState.PENDING else DoseState.NOT_LOGGED
+                null -> when {
+                    dose.snoozedUntil != null -> DoseState.SNOOZED
+                    now.isBefore(dose.plannedAt.plus(DoseRules.NOT_LOGGED_AFTER)) -> DoseState.PENDING
+                    else -> DoseState.NOT_LOGGED
+                }
             }
-            DoseRow(dose.medicationId, dose.plannedAt, dose.occurrenceKey, state, log?.loggedAt)
+            DoseRow(dose.medicationId, dose.plannedAt, dose.occurrenceKey, state, log?.loggedAt, dose.answerable)
         }.sortedByDescending { it.plannedAt }
     }
+
+    /**
+     * Bugünün dozları (İlaçlar ekranı "Bugün"): etkin ilaçların bugüne düşen saatleri, saat sırasıyla. Hatırlatması
+     * çalmış doz teslim kaydı ve Kullanıcı'nın kaydıyla, çalmamış doz "Sırada" diye gösterilir.
+     */
+    fun today(medications: List<Medication>, delivered: List<PlannedDose>, logs: List<MedicationLog>, now: Instant, zone: ZoneId): List<TodayDose> {
+        val date = now.atZone(zone).toLocalDate()
+        val deliveredRows = rows(delivered, logs, now).associateBy { it.medicationId to it.plannedAt }
+        return medications
+            .filter { it.active && it.days.contains(date.dayOfWeek) && !date.isBefore(it.startDate) }
+            .flatMap { med ->
+                med.times.map { time ->
+                    val plannedAt = date.atTime(time).atZone(med.zoneId).toInstant()
+                    val row = deliveredRows[med.id to plannedAt] ?: DoseRow(med.id, plannedAt, null, DoseState.UPCOMING)
+                    TodayDose(time, med, row)
+                }
+            }
+            .sortedWith(compareBy<TodayDose> { it.time }.thenBy { it.medication.name })
+    }
 }
+
+/** Bugünün bir dozu: saat, ilaç ve durumu. */
+data class TodayDose(val time: LocalTime, val medication: Medication, val row: DoseRow)

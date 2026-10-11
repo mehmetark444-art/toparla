@@ -193,11 +193,71 @@ class MedicationRulesTest {
     }
 
     @Test
+    fun `ertelenmis ve henuz calmamis doz ertelendi gorunur ve ekrandan kaydedilemez`() {
+        val dose = PlannedDose("m1", at("2026-10-11T08:00"), "k#s1", snoozedUntil = at("2026-10-11T08:16"), answerable = false)
+
+        val row = DoseHistory.rows(listOf(dose), emptyList(), at("2026-10-11T08:05")).single()
+
+        assertEquals(DoseState.SNOOZED, row.state)
+        assertFalse(row.actionable)
+    }
+
+    @Test
+    fun `yaniti kapanmis teslimde kayit yoksa kaydedilmedi gorunur ama ekrandan kaydedilemez`() {
+        // Ör. modül kapatılınca kapanan doz: motor artık bu teslime yanıt almaz.
+        val dose = PlannedDose("m1", at("2026-10-11T08:00"), "k", answerable = false)
+
+        val row = DoseHistory.rows(listOf(dose), emptyList(), at("2026-10-11T10:00")).single()
+
+        assertEquals(DoseState.NOT_LOGGED, row.state)
+        assertFalse(row.actionable)
+        assertTrue(DoseHistory.rows(listOf(dose.copy(answerable = true)), emptyList(), at("2026-10-11T10:00")).single().actionable)
+    }
+
+    @Test
     fun `yalniz kaydedilmemis ya da bekleyen doz sonradan kaydedilebilir`() {
+        assertFalse(DoseState.SNOOZED.canLogLater)
         assertTrue(DoseState.NOT_LOGGED.canLogLater)
         assertTrue(DoseState.PENDING.canLogLater)
         assertFalse(DoseState.TAKEN.canLogLater)
         assertFalse(DoseState.SKIPPED.canLogLater)
+    }
+
+    // --- Bugünün dozları ---
+
+    @Test
+    fun `bugunun dozlari cizelgeden kurulur teslim edilenin durumu kayittan gelir`() {
+        val now = at("2026-10-11T10:00")
+        val m = med()
+        val delivered = listOf(PlannedDose("m1", at("2026-10-11T08:00"), "k8"))
+        val logs = listOf(MedicationLog("m1", at("2026-10-11T08:00"), at("2026-10-11T08:02"), DoseStatus.TAKEN))
+
+        val rows = DoseHistory.today(listOf(m), delivered, logs, now, zone)
+
+        assertEquals(listOf(LocalTime.of(8, 0), LocalTime.of(20, 0)), rows.map { it.time })
+        assertEquals(listOf(DoseState.TAKEN, DoseState.UPCOMING), rows.map { it.row.state })
+        assertEquals("k8", rows.first().row.occurrenceKey)
+        assertNull(rows.last().row.occurrenceKey)
+    }
+
+    @Test
+    fun `bugun cizelgede olmayan gun ya da pasif ilac bugun listesinde yok`() {
+        val sunday = at("2026-10-11T10:00") // 11 Ekim 2026 pazar
+        val weekdays = med(days = setOf(DayOfWeek.MONDAY))
+        assertTrue(DoseHistory.today(listOf(weekdays, med(active = false).copy(id = "m2")), emptyList(), emptyList(), sunday, zone).isEmpty())
+    }
+
+    @Test
+    fun `vakti gecmis ama henuz teslim edilmemis doz bekliyor gorunur kaydedilemez`() {
+        val rows = DoseHistory.today(listOf(med(times = listOf(LocalTime.of(8, 0)))), emptyList(), emptyList(), at("2026-10-11T08:00:30"), zone)
+        assertEquals(DoseState.UPCOMING, rows.single().row.state)
+        assertFalse(rows.single().row.state.canLogLater)
+    }
+
+    @Test
+    fun `baslangic gununden onceki gun icin doz listelenmez`() {
+        val before = at("2026-10-10T10:00")
+        assertTrue(DoseHistory.today(listOf(med()), emptyList(), emptyList(), before, zone).isEmpty())
     }
 
     // --- Dışa aktarım ---
