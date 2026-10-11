@@ -1,7 +1,10 @@
 package com.toparla.data.db
 
+import com.toparla.domain.FeatureFlag
+import com.toparla.domain.medication.MedicationSchedule
 import com.toparla.domain.reminder.AlarmKey
 import com.toparla.domain.reminder.AlarmKeyKind
+import com.toparla.domain.reminder.MedicationTag
 import com.toparla.domain.reminder.OccurrenceRecord
 import com.toparla.domain.reminder.OccurrenceState
 import com.toparla.domain.reminder.PlannedAlarm
@@ -21,15 +24,36 @@ import java.time.zone.ZoneRulesException
 /**
  * Hatırlatma verisinin planlayıcıya ve teslim hattına bakan yüzü: tabloları `:domain` modellerine çevirir.
  * Bozuk satır (çözülemeyen tekrar kuralı, saat ya da dilim) planı çökertmez; atlanır ve günlüğe yazılır.
+ *
+ * @param medicationEnabled İlaç modülü (M9) açık mı. Kapalıyken ilaca ait hatırlatma motora hiç görünmez: kurulmaz,
+ * gösterilmez; yanıt bekleyen dozu motor sahipsiz sayıp kapatır (blueprint M9 "modül kapalıyken hiçbir ilaç UI'ı
+ * görünmez"). Veri silinmez; modül açılınca gelecek dozlar yeniden kurulur. Varsayılan, anahtarın varsayılanıdır (kapalı).
  */
-class ReminderStore(private val db: ToparlaDatabase) : ReminderRepository {
-    override suspend fun activeDefinitions(): List<ReminderDef> = db.reminders().activeReminders().mapNotNull { it.toDef() }
+class ReminderStore(
+    private val db: ToparlaDatabase,
+    private val medicationEnabled: suspend () -> Boolean = { FeatureFlag.MEDICATION.defaultOn },
+) : ReminderRepository {
+    override suspend fun activeDefinitions(): List<ReminderDef> {
+        val withMedication = medicationEnabled()
+        return db.reminders().activeReminders().filter { withMedication || it.ownerType != OwnerType.MED }.mapNotNull { it.toDef() }
+    }
 
     override suspend fun scheduled(): List<ScheduledAlarm> =
         db.scheduledAlarms().all().map { ScheduledAlarm(it.key, Instant.ofEpochMilli(it.fireAt)) }
 
-    override suspend fun info(reminderId: String): ReminderInfo? =
-        db.reminders().byId(reminderId)?.takeIf { it.deletedAt == null }?.let { ReminderInfo(it.id, it.klass, it.title, it.body, it.persistent) }
+    override suspend fun info(reminderId: String): ReminderInfo? {
+        val reminder = db.reminders().byId(reminderId)?.takeIf { it.deletedAt == null } ?: return null
+        val medication = if (reminder.ownerType == OwnerType.MED) medicationTag(reminder) ?: return null else null
+        return ReminderInfo(reminder.id, reminder.klass, reminder.title, reminder.body, reminder.persistent, medication)
+    }
+
+    /** İlaç hatırlatmasının etiketi; modül kapalıysa, ilaç silinmişse ya da kimlik çözülemezse null (gösterilmez). */
+    private suspend fun medicationTag(reminder: ReminderEntity): MedicationTag? {
+        if (!medicationEnabled()) return null
+        val parsed = MedicationSchedule.parse(reminder.id) ?: return null
+        val medication = db.medications().byId(parsed.medicationId) ?: return null
+        return MedicationTag(medication.id, parsed.role, medication.hideName)
+    }
 
     override suspend fun removeScheduled(key: String) {
         db.scheduledAlarms().deleteByKeys(listOf(key))

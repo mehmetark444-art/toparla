@@ -1,6 +1,8 @@
 package com.toparla.domain.reminder
 
 import com.toparla.domain.Defaults
+import com.toparla.domain.medication.DoubleDoseCheck
+import com.toparla.domain.medication.MedicationRecorder
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.time.Duration
@@ -19,6 +21,8 @@ class ReminderEngine(
     private val repo: ReminderRepository,
     private val scheduler: ReminderScheduler,
     private val notifier: ReminderNotifier,
+    /** İlaç dozlarının kaydı ve çift doz koruması (M9); yoksa ilaç dozu sıradan kritik hatırlatma gibi işler. */
+    private val medication: MedicationRecorder? = null,
     private val followUpConfig: suspend () -> FollowUpConfig,
 ) {
     private val mutex = Mutex()
@@ -40,18 +44,24 @@ class ReminderEngine(
     suspend fun onAction(occurrenceKey: String, action: ReminderAction, now: Instant, snoozeDelay: Duration? = null) = mutex.withLock {
         val occurrence = repo.occurrence(occurrenceKey) ?: return@withLock
         val info = repo.info(occurrence.reminderId)
-        val changed = when (action) {
-            ReminderAction.OPENED -> transition(occurrence, OccurrenceEvent.OPENED, now, resolves = false)
-            ReminderAction.DONE -> transition(occurrence, OccurrenceEvent.MARKED_DONE, now, resolves = true)
-            ReminderAction.SNOOZE -> snooze(occurrence, info, now, snoozeDelay)
-            ReminderAction.TOMORROW -> snoozeUntil(occurrence, now, nextWake(now))
-            ReminderAction.NOT_TODAY ->
-                if (info?.persistent == true) {
-                    // Israrlı iş sessizce bitmez: açık seçimle ertesi sabaha taşınır (karar 0003).
-                    snoozeUntil(occurrence, now, nextWake(now))
-                } else {
-                    transition(occurrence, OccurrenceEvent.SKIP, now, resolves = true)
-                }
+        val medicationDesk = medication?.let(::MedicationDoses)
+        val changed = if (info != null && info.isMedicationDose && medicationDesk != null) {
+            medicationDesk.act(occurrence, info, action, now, snoozeDelay)
+        } else {
+            when (action) {
+                ReminderAction.OPENED -> transition(occurrence, OccurrenceEvent.OPENED, now, resolves = false)
+                ReminderAction.DONE, ReminderAction.CONFIRM_TAKEN -> transition(occurrence, OccurrenceEvent.MARKED_DONE, now, resolves = true)
+                ReminderAction.KEEP_OPEN -> false
+                ReminderAction.SNOOZE -> snooze(occurrence, info, now, snoozeDelay)
+                ReminderAction.TOMORROW -> snoozeUntil(occurrence, now, nextWake(now))
+                ReminderAction.NOT_TODAY ->
+                    if (info?.persistent == true) {
+                        // Israrlı iş sessizce bitmez: açık seçimle ertesi sabaha taşınır (karar 0003).
+                        snoozeUntil(occurrence, now, nextWake(now))
+                    } else {
+                        transition(occurrence, OccurrenceEvent.SKIP, now, resolves = true)
+                    }
+            }
         }
         if (changed) {
             repo.log(occurrenceKey, now, EVENT_ACTION, action.name)
@@ -60,12 +70,53 @@ class ReminderEngine(
         }
     }
 
+    /**
+     * İlaç dozunun eylemleri (blueprint M9): Aldım · 15 dk sonra · Atlıyorum. "Aldım" asgari aralık dolmadan gelirse
+     * doz kapanmaz, "Emin misin?" sorulur ve merdiven sürer. Doz zamanı hiçbir eylemle değiştirilmez ("Yarın" yok
+     * sayılır). Kayıt, ertelenmiş olsa da dozun ilk planlanan anına yazılır. Motorun kilidi altında çağrılır.
+     */
+    private inner class MedicationDoses(private val recorder: MedicationRecorder) {
+        suspend fun act(occurrence: OccurrenceRecord, info: ReminderInfo, action: ReminderAction, now: Instant, snoozeDelay: Duration?): Boolean {
+            val medicationId = info.medication?.medicationId ?: return false
+            val doseAt = AlarmKey.plannedAtOf(occurrence.key) ?: occurrence.plannedAt
+            return when (action) {
+                ReminderAction.OPENED -> transition(occurrence, OccurrenceEvent.OPENED, now, resolves = false)
+                ReminderAction.DONE -> taken(occurrence, info, medicationId, doseAt, now)
+                ReminderAction.CONFIRM_TAKEN -> take(occurrence, medicationId, doseAt, now)
+                ReminderAction.KEEP_OPEN -> {
+                    if (occurrence.state in OPEN_STATES) notifier.show(notice(occurrence.key, info, LadderAction.NOTIFY, occurrence.plannedAt, Duration.ZERO))
+                    false
+                }
+                ReminderAction.SNOOZE -> snooze(occurrence, info, now, snoozeDelay)
+                ReminderAction.NOT_TODAY ->
+                    transition(occurrence, OccurrenceEvent.SKIP, now, resolves = true).also { if (it) recorder.skipped(medicationId, doseAt, now) }
+                ReminderAction.TOMORROW -> false
+            }
+        }
+
+        /** "Aldım": çift doz koruması geçerse kaydedilir, geçmezse sorulur. */
+        private suspend fun taken(occurrence: OccurrenceRecord, info: ReminderInfo, medicationId: String, doseAt: Instant, now: Instant): Boolean =
+            when (val check = recorder.check(medicationId, now)) {
+                DoubleDoseCheck.Clear -> take(occurrence, medicationId, doseAt, now)
+                is DoubleDoseCheck.TooSoon -> {
+                    if (occurrence.state in ANSWERABLE_STATES) {
+                        notifier.askDoubleDose(occurrence.key, info, check.since)
+                        repo.log(occurrence.key, now, EVENT_ACTION, EVENT_DOUBLE_DOSE_ASKED)
+                    }
+                    false
+                }
+            }
+
+        private suspend fun take(occurrence: OccurrenceRecord, medicationId: String, doseAt: Instant, now: Instant): Boolean =
+            transition(occurrence, OccurrenceEvent.MARKED_DONE, now, resolves = true).also { if (it) recorder.taken(medicationId, doseAt, now) }
+    }
+
     /** Kritik bekçi (15 dk'da bir): yakındaki kritik olayın alarmı yoksa hemen kurar ve kayda yazar. */
     suspend fun watchdog(now: Instant) = mutex.withLock {
         val missing = CriticalWatchdog.missing(now, repo.activeDefinitions(), repo.scheduled())
         if (missing.isEmpty()) return@withLock
         missing.forEach {
-            scheduler.schedule(it, repo.info(it.reminderId)?.title)
+            scheduler.schedule(it, repo.info(it.reminderId)?.mirrorTitle)
             repo.log(it.key, now, EVENT_WATCHDOG_REARMED)
         }
         repo.applyPlan(missing, emptyList())
@@ -102,8 +153,8 @@ class ReminderEngine(
             } else {
                 result.toSchedule
             }
-            // Başlık, kilit açılmadan çalarsa gösterilmek üzere alarmla birlikte verilir.
-            toArm.forEach { scheduler.schedule(it, repo.info(it.reminderId)?.title) }
+            // Başlık, kilit açılmadan çalarsa gösterilmek üzere alarmla birlikte verilir (ilaç adı verilmez).
+            toArm.forEach { scheduler.schedule(it, repo.info(it.reminderId)?.mirrorTitle) }
             repo.applyPlan(result.toSchedule, result.toCancel)
 
             var delivered = false
@@ -177,7 +228,7 @@ class ReminderEngine(
 
     private suspend fun snooze(occurrence: OccurrenceRecord, info: ReminderInfo?, now: Instant, requested: Duration?): Boolean {
         if (OccurrenceStateMachine.next(occurrence.state, OccurrenceEvent.SNOOZE) == null) return false
-        return when (val decision = SnoozePolicy.decide(occurrence.snoozeCount, requested)) {
+        return when (val decision = SnoozePolicy.decide(occurrence.snoozeCount, requested, isMedication = info?.isMedicationDose == true)) {
             is SnoozeDecision.Snooze -> snoozeUntil(occurrence, now, now.plus(decision.delay))
             SnoozeDecision.AskCarryOrSkip -> {
                 if (info != null) notifier.askCarryOrSkip(occurrence.key, info)
@@ -258,7 +309,11 @@ class ReminderEngine(
 
         /** Tolerans dolduktan sonra yeniden bakmadan önce bırakılan pay. */
         val RECHECK_MARGIN: Duration = Duration.ofSeconds(5)
+        const val EVENT_DOUBLE_DOSE_ASKED = "DOUBLE_DOSE_ASKED"
         private val OPEN_STATES = setOf(OccurrenceState.DELIVERED, OccurrenceState.SEEN)
+
+        /** "Aldım" denebilecek durumlar: yanıt bekleyen ya da "Kaydedilmedi" diye süresi dolmuş doz. */
+        private val ANSWERABLE_STATES = OPEN_STATES + OccurrenceState.EXPIRED
         private val SNOOZE_TAIL = Regex("""#s\d+$""")
     }
 }

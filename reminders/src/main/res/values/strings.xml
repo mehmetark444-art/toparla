@@ -43,6 +43,23 @@
         <item>Bugün olmayacaksa söyle, yarına alayım.</item>
     </string-array>
 
+    <!-- İlaç (M9): yalnız Kullanıcı'nın planı; doz ya da zaman önerisi yok. Kilit ekranında her zaman genel metin. -->
+    <string name="med_action_taken">Aldım</string>
+    <string name="med_action_snooze">15 dk sonra</string>
+    <string name="med_action_skip">Atlıyorum</string>
+    <string name="med_action_confirm">Evet, aldım</string>
+    <string name="med_action_keep">Vazgeç</string>
+    <string name="med_generic_title">İlaç zamanı</string>
+    <string name="med_restock_title">Eczaneye uğra</string>
+    <string name="med_restock_text">%1$s azalıyor.</string>
+    <string name="med_restock_generic_text">Bir ilacın azalıyor.</string>
+    <string name="med_carry_or_skip_text">Üç kez erteledik. Aldıysan “Aldım”, bu dozu atlıyorsan “Atlıyorum” de.</string>
+    <string name="med_double_dose_text">Son kayıt %1$s önce. Emin misin?</string>
+    <string name="med_double_dose_text_now">Bir dakikadan kısa süre önce bir doz kaydedildi. Emin misin?</string>
+    <string name="duration_hours_minutes">%1$d saat %2$d dakika</string>
+    <string name="duration_hours">%1$d saat</string>
+    <string name="duration_minutes">%1$d dakika</string>
+
     <string name="delivering_title">Hatırlatma iletiliyor</string>
     <string name="locked_boot_title">Hatırlatman var</string>
     <string name="locked_boot_text">Kilidi açınca ayrıntısını göstereceğim.</string>

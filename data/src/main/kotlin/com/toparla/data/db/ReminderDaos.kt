@@ -25,23 +25,30 @@ interface ReminderDao {
     @Query("UPDATE Reminder SET deletedAt = :now, active = 0, updatedAt = :now WHERE id = :id")
     suspend fun softDelete(id: String, now: Long)
 
+    /** Bir sahibin (ör. ilacın) silinmemiş hatırlatmaları. */
+    @Query("SELECT * FROM Reminder WHERE ownerType = :ownerType AND ownerId = :ownerId AND deletedAt IS NULL")
+    suspend fun forOwner(ownerType: OwnerType, ownerId: String): List<ReminderEntity>
+
     @Query("DELETE FROM Reminder WHERE deletedAt IS NOT NULL AND deletedAt < :before")
     suspend fun purgeDeleted(before: Long): Int
 
-    /** Yanıt bekleyen teslimler, en eskisi üstte (Plan ekranı "Seni bekleyenler"). */
+    /**
+     * Yanıt bekleyen teslimler, en eskisi üstte (Plan ekranı "Seni bekleyenler"). İlaç dozları burada görünmez:
+     * kendi ekranları ve eylemleri vardır (M9; modül kapalıyken hiçbir yüzeyde görünmezler).
+     */
     @Query(
         "SELECT o.`key` AS occurrenceKey, r.title AS title, r.klass AS klass, r.persistent AS persistent, o.deliveredAt AS since " +
             "FROM ReminderOccurrence o JOIN Reminder r ON r.id = o.reminderId " +
-            "WHERE o.state IN ('DELIVERED', 'SEEN') AND r.deletedAt IS NULL ORDER BY o.deliveredAt",
+            "WHERE o.state IN ('DELIVERED', 'SEEN') AND r.deletedAt IS NULL AND r.ownerType != 'MED' ORDER BY o.deliveredAt",
     )
     fun observeWaiting(): Flow<List<WaitingRow>>
 
-    /** Kurulu sıradaki teslimler (ana teslim ve ertelenenler), en yakını üstte (Plan ekranı "Sıradakiler"). */
+    /** Kurulu sıradaki teslimler (ana teslim ve ertelenenler), en yakını üstte (Plan ekranı "Sıradakiler"); ilaç hariç. */
     @Query(
         "SELECT s.`key` AS alarmKey, r.id AS reminderId, r.title AS title, r.klass AS klass, r.recurrence AS recurrence, " +
             "s.fireAt AS fireAt, s.kind AS kind " +
             "FROM ScheduledAlarm s JOIN Reminder r ON r.id = s.reminderId " +
-            "WHERE s.kind IN ('MAIN', 'SNOOZE') AND r.deletedAt IS NULL ORDER BY s.fireAt",
+            "WHERE s.kind IN ('MAIN', 'SNOOZE') AND r.deletedAt IS NULL AND r.ownerType != 'MED' ORDER BY s.fireAt",
     )
     fun observeUpcoming(): Flow<List<UpcomingRow>>
 
@@ -92,6 +99,13 @@ interface ReminderOccurrenceDao {
     /** Teslim edilmiş, yanıt bekleyenler: merdiven ve ısrarlı takip bunlar için sürer. */
     @Query("SELECT * FROM ReminderOccurrence WHERE state IN (:states)")
     suspend fun inStates(states: List<OccurrenceState>): List<ReminderOccurrenceEntity>
+
+    /** İlaç dozlarının teslimleri ([since] sonrası; ertelenenler dahil). Geçmiş ve dışa aktarım bunlardan kurulur. */
+    @Query("SELECT * FROM ReminderOccurrence WHERE reminderId LIKE 'med:%' AND plannedAt >= :since ORDER BY plannedAt")
+    suspend fun medicationSince(since: Long): List<ReminderOccurrenceEntity>
+
+    @Query("SELECT * FROM ReminderOccurrence WHERE reminderId LIKE 'med:%' AND plannedAt >= :since ORDER BY plannedAt")
+    fun observeMedicationSince(since: Long): Flow<List<ReminderOccurrenceEntity>>
 }
 
 data class DeliveredRow(val key: String, val plannedAt: Long, val deliveredAt: Long)

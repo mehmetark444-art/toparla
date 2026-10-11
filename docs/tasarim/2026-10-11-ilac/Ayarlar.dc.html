@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Ayarlar: Modüller</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.t-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+.t-root button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div class="t-root" style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #1B1917; color: #ECE7DF">
+  <div style="display: flex; align-items: center; gap: 8px; padding: 16px 16px 8px 8px; min-height: 48px">
+    <button aria-label="Geri" style="width: 48px; height: 48px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center">
+      <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#AFA79B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <h1 style="margin: 0; font-size: 20px; font-weight: 600">Ayarlar</h1>
+  </div>
+
+  <div style="flex: 1 1 auto; padding: 8px 24px 24px 24px; display: flex; flex-direction: column; gap: 32px">
+    <section style="display: flex; flex-direction: column; gap: 12px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: #AFA79B">Modüller</h2>
+      <div style="padding: 8px 24px; border-radius: 20px; background: #242220; box-shadow: 0 8px 24px rgba(10,8,6,0.35); display: flex; flex-direction: column">
+        <div style="display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid #2E2B28">
+          <div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 4px">
+            <div style="font-size: 16px">İlaç takibi</div>
+            <div style="font-size: 13px; line-height: 20px; color: #AFA79B">Kendi planına göre hatırlatma ve kayıt. Kapalıyken hiçbir yerde görünmez.</div>
+          </div>
+          <button role="switch" aria-checked="true" aria-label="İlaç takibi" style="width: 52px; height: 32px; border: 0; border-radius: 16px; background: #8DBBA9; padding: 0 6px; display: flex; align-items: center; justify-content: flex-end">
+            <span style="width: 20px; height: 20px; border-radius: 50%; background: #12261E"></span>
+          </button>
+        </div>
+        <button style="display: flex; align-items: center; gap: 16px; padding: 16px 0; min-height: 56px; border: 0; border-bottom: 1px solid #2E2B28; background: transparent; color: #ECE7DF; text-align: left">
+          <span style="flex: 1 1 auto; font-size: 16px">İlaçlar</span>
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#AFA79B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div style="display: flex; align-items: center; gap: 16px; padding: 16px 0">
+          <div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 4px">
+            <div style="font-size: 16px">İlaç ekranlarını kilitle</div>
+            <div style="font-size: 13px; line-height: 20px; color: #AFA79B">Girerken parmak izi, yüz ya da ekran kilidi sorulur.</div>
+          </div>
+          <button role="switch" aria-checked="false" aria-label="İlaç ekranlarını kilitle" style="width: 52px; height: 32px; border: 2px solid #AFA79B; border-radius: 16px; background: #2E2B28; padding: 0 4px; display: flex; align-items: center">
+            <span style="width: 16px; height: 16px; border-radius: 50%; background: #AFA79B"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 12px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: #AFA79B">Hatırlatmalar</h2>
+      <div style="padding: 8px 24px; border-radius: 20px; background: #242220; box-shadow: 0 8px 24px rgba(10,8,6,0.35); display: flex; flex-direction: column">
+        <button style="display: flex; align-items: center; gap: 16px; padding: 16px 0; min-height: 56px; border: 0; background: transparent; color: #ECE7DF; text-align: left">
+          <span style="flex: 1 1 auto; font-size: 16px">Hatırlatma Sağlığı</span>
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#AFA79B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <p style="margin: 0; font-size: 13px; line-height: 20px; color: #AFA79B">İlaç takibi kapatılınca ilaç hatırlatmaları durur; ilaçların ve kayıtların silinmez. Yeniden açınca kaldığı yerden sürer.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

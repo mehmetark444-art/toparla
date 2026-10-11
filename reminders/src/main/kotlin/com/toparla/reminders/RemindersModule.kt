@@ -6,11 +6,13 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.toparla.data.db.MedicationStore
 import com.toparla.data.db.ReminderStore
 import com.toparla.data.settings.SettingsStore
 import com.toparla.domain.Defaults
 import com.toparla.domain.core.Clock
 import com.toparla.domain.core.DispatcherProvider
+import com.toparla.domain.medication.MedicationRecorder
 import com.toparla.domain.reminder.FollowUpConfig
 import com.toparla.domain.reminder.ReminderEngine
 import com.toparla.domain.reminder.ReminderNotifier
@@ -67,7 +69,8 @@ object RemindersModule {
         HealthWatch(context, settings, intents) { probe.report() }
 
     /**
-     * Tek motor. Israrlı takip ayarı her planlamada ayarlardan yeniden okunur; saat dilimi telefonun o anki dilimidir.
+     * Tek motor. İlaç dozları (M9) da bu motordan geçer; modül kapalıyken depo onları motora göstermez.
+     * Israrlı takip ayarı her planlamada ayarlardan yeniden okunur; saat dilimi telefonun o anki dilimidir.
      * Sessizlik (odak, Bunaldım, "Bugün sessiz") ilgili fazlarda bağlanır; şimdilik yoktur.
      */
     @Provides @Singleton
@@ -75,9 +78,10 @@ object RemindersModule {
         repository: ReminderRepository,
         scheduler: ReminderScheduler,
         notifier: ReminderNotifier,
+        medications: MedicationStore,
         settings: SettingsStore,
         clock: Clock,
-    ): ReminderEngine = ReminderEngine(repository, scheduler, notifier) {
+    ): ReminderEngine = ReminderEngine(repository, scheduler, notifier, MedicationRecorder(medications)) {
         val current = settings.settings.first()
         FollowUpConfig(
             interval = Duration.ofMinutes(current.persistentIntervalMin.toLong()),

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>İlaç geçmişi</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.t-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+.t-root button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div class="t-root" style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #1B1917; color: #ECE7DF">
+  <div style="display: flex; align-items: center; gap: 8px; padding: 16px 16px 8px 8px; min-height: 48px">
+    <button aria-label="Geri" style="width: 48px; height: 48px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center">
+      <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#AFA79B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <h1 style="margin: 0; font-size: 20px; font-weight: 600; flex: 1 1 auto">Geçmiş</h1>
+    <button style="min-height: 48px; padding: 0 12px; border: 0; background: transparent; color: #8DBBA9; font-size: 16px; font-weight: 600">Dışa aktar</button>
+  </div>
+
+  <div style="flex: 1 1 auto; padding: 8px 24px 24px 24px; display: flex; flex-direction: column; gap: 24px">
+    <div style="display: flex; gap: 12px; align-items: flex-start; padding: 16px; border-radius: 16px; background: #2A3A4A; color: #ECE7DF">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8FB2D6" stroke-width="2" stroke-linecap="round" style="flex: none; margin-top: 2px"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg>
+      <div style="font-size: 16px; line-height: 24px">Kaydı olmayan doz için telafi önermem. Talimat için doktorunu ya da eczacını izle.</div>
+    </div>
+
+    <section style="display: flex; flex-direction: column; gap: 12px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: #AFA79B">Bugün</h2>
+      <div style="padding: 8px 24px; border-radius: 20px; background: #242220; box-shadow: 0 8px 24px rgba(10,8,6,0.35); display: flex; flex-direction: column">
+        <div style="display: flex; flex-direction: column; gap: 12px; padding: 16px 0; border-bottom: 1px solid #2E2B28">
+          <div style="display: flex; align-items: center; gap: 16px">
+            <div style="font-size: 16px; font-weight: 600; width: 48px">08:00</div>
+            <div style="flex: 1 1 auto; font-size: 16px">Vitamin</div>
+            <div style="display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 12px; background: #4A3E1E; color: #E0BC6A; font-size: 13px">
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E0BC6A" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4.5"/><path d="M12 16h.01"/></svg>
+              Kaydedilmedi
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; padding-left: 64px">
+            <button style="min-height: 48px; padding: 0 16px; border: 0; border-radius: 16px; background: rgba(141,187,169,0.16); color: #8DBBA9; font-size: 16px; font-weight: 600">Geç aldım</button>
+            <button style="min-height: 48px; padding: 0 16px; border: 0; border-radius: 16px; background: #2E2B28; color: #ECE7DF; font-size: 16px; font-weight: 600">Atladım</button>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px; padding: 16px 0">
+          <div style="font-size: 16px; font-weight: 600; width: 48px">08:00</div>
+          <div style="flex: 1 1 auto; font-size: 16px">Sabah ilacı</div>
+          <div style="display: flex; align-items: center; gap: 6px; color: #8CC2A0; font-size: 13px">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8CC2A0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            Alındı 08:03
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 12px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: #AFA79B">Dün</h2>
+      <div style="padding: 8px 24px; border-radius: 20px; background: #242220; box-shadow: 0 8px 24px rgba(10,8,6,0.35); display: flex; flex-direction: column">
+        <div style="display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid #2E2B28">
+          <div style="font-size: 16px; font-weight: 600; width: 48px">20:00</div>
+          <div style="flex: 1 1 auto; font-size: 16px">Vitamin</div>
+          <div style="display: flex; align-items: center; gap: 6px; color: #8CC2A0; font-size: 13px">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8CC2A0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            Geç alındı 21:40
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid #2E2B28">
+          <div style="font-size: 16px; font-weight: 600; width: 48px">08:00</div>
+          <div style="flex: 1 1 auto; font-size: 16px">Vitamin</div>
+          <div style="display: flex; align-items: center; gap: 6px; color: #AFA79B; font-size: 13px">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#AFA79B" stroke-width="2.2" stroke-linecap="round"><path d="M6 12h12"/></svg>
+            Atlandı
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px; padding: 16px 0">
+          <div style="font-size: 16px; font-weight: 600; width: 48px">08:00</div>
+          <div style="flex: 1 1 auto; font-size: 16px">Sabah ilacı</div>
+          <div style="display: flex; align-items: center; gap: 6px; color: #8CC2A0; font-size: 13px">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8CC2A0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            Alındı 08:01
+          </div>
+        </div>
+      </div>
+    </section>
+    <p style="margin: 0; font-size: 13px; line-height: 20px; color: #AFA79B">Son 30 gün. Dozlar yalnız hatırlatma çaldıktan sonra listeye girer.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

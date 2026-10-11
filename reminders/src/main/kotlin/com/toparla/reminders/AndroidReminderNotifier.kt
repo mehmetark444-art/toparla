@@ -11,6 +11,7 @@ import android.media.RingtoneManager
 import com.toparla.domain.reminder.ChannelHealth
 import com.toparla.domain.reminder.DeliveryNotice
 import com.toparla.domain.reminder.LadderAction
+import com.toparla.domain.reminder.MedicationRole
 import com.toparla.domain.reminder.PersistentItem
 import com.toparla.domain.reminder.ReminderAction
 import com.toparla.domain.reminder.ReminderClass
@@ -35,7 +36,7 @@ class AndroidReminderNotifier(
 
     override fun show(notice: DeliveryNotice) {
         val reminder = notice.reminder
-        val text = if (notice.lateBy > Duration.ZERO) context.getString(R.string.late_delivery_text) else reminder.body
+        val text = if (notice.lateBy > Duration.ZERO) context.getString(R.string.late_delivery_text) else bodyOf(reminder)
         val builder = base(notice.occurrenceKey, reminder, channelFor(reminder.klass))
             .setContentText(text.ifBlank { null })
             .setWhen(notice.plannedAt.toEpochMilli())
@@ -97,26 +98,90 @@ class AndroidReminderNotifier(
 
     override fun askCarryOrSkip(occurrenceKey: String, reminder: ReminderInfo) {
         val builder = base(occurrenceKey, reminder, channelFor(reminder.klass))
-            .setContentText(context.getString(R.string.carry_or_skip_text))
-        builder.addAction(action(occurrenceKey, R.string.action_carry_tomorrow, ReminderAction.TOMORROW))
-        builder.addAction(action(occurrenceKey, R.string.action_skip, ReminderAction.NOT_TODAY))
+        if (reminder.isMedicationDose) {
+            // İlaç dozu taşınmaz: doz zamanını değiştirmek bir öneri olurdu (blueprint M9).
+            builder.setContentText(context.getString(R.string.med_carry_or_skip_text))
+            builder.addAction(action(occurrenceKey, R.string.med_action_taken, ReminderAction.DONE))
+            builder.addAction(action(occurrenceKey, R.string.med_action_skip, ReminderAction.NOT_TODAY))
+        } else {
+            builder.setContentText(context.getString(R.string.carry_or_skip_text))
+            builder.addAction(action(occurrenceKey, R.string.action_carry_tomorrow, ReminderAction.TOMORROW))
+            builder.addAction(action(occurrenceKey, R.string.action_skip, ReminderAction.NOT_TODAY))
+        }
         manager.notify(idOf(occurrenceKey), builder.build())
     }
 
-    private fun base(occurrenceKey: String, reminder: ReminderInfo, channel: String): Notification.Builder =
-        Notification.Builder(context, channel)
+    override fun askDoubleDose(occurrenceKey: String, reminder: ReminderInfo, sinceLastDose: Duration) {
+        val builder = base(occurrenceKey, reminder, channelFor(reminder.klass))
+            .setContentText(doubleDoseText(context, sinceLastDose))
+            // Soru bir kez seslenir; merdiven sürdüğü için ayrıca uyarmaz.
+            .setOnlyAlertOnce(true)
+        builder.addAction(action(occurrenceKey, R.string.med_action_confirm, ReminderAction.CONFIRM_TAKEN))
+        builder.addAction(action(occurrenceKey, R.string.med_action_keep, ReminderAction.KEEP_OPEN))
+        manager.cancel(TAG_FULL_SCREEN, idOf(occurrenceKey))
+        manager.notify(idOf(occurrenceKey), builder.build())
+    }
+
+    private fun base(occurrenceKey: String, reminder: ReminderInfo, channel: String): Notification.Builder {
+        val medication = reminder.medication
+        val builder = Notification.Builder(context, channel)
             .setSmallIcon(R.drawable.ic_stat_toparla)
-            .setContentTitle(reminder.title)
+            .setContentTitle(titleOf(reminder))
             .setContentIntent(intents.openApp())
             .setCategory(if (reminder.klass == ReminderClass.CRITICAL) Notification.CATEGORY_ALARM else Notification.CATEGORY_REMINDER)
-            // Kritik kart kilit ekranında da okunur (blueprint D25); kaydırıp silmek yanıt sayılmaz, merdiven sürer.
-            .setVisibility(if (reminder.klass == ReminderClass.CRITICAL) Notification.VISIBILITY_PUBLIC else Notification.VISIBILITY_PRIVATE)
             .setAutoCancel(false)
             .setOnlyAlertOnce(false)
             .also { it.extras.putString(EXTRA_OCCURRENCE_KEY, occurrenceKey) }
+        if (medication == null) {
+            // Kritik kart kilit ekranında da okunur (blueprint D25); kaydırıp silmek yanıt sayılmaz, merdiven sürer.
+            builder.setVisibility(if (reminder.klass == ReminderClass.CRITICAL) Notification.VISIBILITY_PUBLIC else Notification.VISIBILITY_PRIVATE)
+        } else {
+            // İlaç verisi Sarı: kilit ekranında her zaman genel metin (blueprint D25 "İlaç zamanı").
+            val publicTitle = if (medication.role == MedicationRole.DOSE) R.string.med_generic_title else R.string.locked_boot_title
+            builder.setVisibility(Notification.VISIBILITY_PRIVATE)
+            builder.setPublicVersion(
+                Notification.Builder(context, channel)
+                    .setSmallIcon(R.drawable.ic_stat_toparla)
+                    .setContentTitle(context.getString(publicTitle))
+                    .setCategory(if (reminder.klass == ReminderClass.CRITICAL) Notification.CATEGORY_ALARM else Notification.CATEGORY_REMINDER)
+                    .build(),
+            )
+        }
+        return builder
+    }
 
-    /** Android en çok üç eylem gösterir; sınıfa göre en işe yarar üçü (blueprint D25, F2.28). */
-    private fun actionsFor(reminder: ReminderInfo): List<Pair<Int, ReminderAction>> = when (reminder.klass) {
+    /** Bildirimin başlığı; ilaçta "adı gizle" açıksa genel metin. */
+    private fun titleOf(reminder: ReminderInfo): String {
+        val medication = reminder.medication ?: return reminder.title
+        return when {
+            medication.role == MedicationRole.RESTOCK -> context.getString(R.string.med_restock_title)
+            medication.hideName -> context.getString(R.string.med_generic_title)
+            else -> reminder.title
+        }
+    }
+
+    private fun bodyOf(reminder: ReminderInfo): String {
+        val medication = reminder.medication ?: return reminder.body
+        return when {
+            medication.role == MedicationRole.RESTOCK && medication.hideName -> context.getString(R.string.med_restock_generic_text)
+            medication.role == MedicationRole.RESTOCK -> context.getString(R.string.med_restock_text, reminder.title)
+            medication.hideName -> ""
+            else -> reminder.body
+        }
+    }
+
+    /** Android en çok üç eylem gösterir; sınıfa göre en işe yarar üçü (blueprint D25, F2.28). İlaç dozunda M9'un üçü. */
+    private fun actionsFor(reminder: ReminderInfo): List<Pair<Int, ReminderAction>> = if (reminder.isMedicationDose) {
+        listOf(
+            R.string.med_action_taken to ReminderAction.DONE,
+            R.string.med_action_snooze to ReminderAction.SNOOZE,
+            R.string.med_action_skip to ReminderAction.NOT_TODAY,
+        )
+    } else {
+        classActions(reminder.klass)
+    }
+
+    private fun classActions(klass: ReminderClass): List<Pair<Int, ReminderAction>> = when (klass) {
         ReminderClass.CRITICAL -> listOf(R.string.action_done to ReminderAction.DONE, R.string.action_snooze to ReminderAction.SNOOZE)
         ReminderClass.IMPORTANT -> listOf(
             R.string.action_done to ReminderAction.DONE,
@@ -156,6 +221,19 @@ class AndroidReminderNotifier(
         private const val PERSISTENT_SUMMARY_ID = 1
 
         fun idOf(occurrenceKey: String): Int = occurrenceKey.hashCode()
+
+        /** "Son kayıt 2 saat 30 dakika önce. Emin misin?" (çift doz koruması; blueprint M9). */
+        fun doubleDoseText(context: Context, since: Duration): String {
+            val hours = since.toHours()
+            val minutes = since.toMinutesPart()
+            val span = when {
+                hours > 0 && minutes > 0 -> context.getString(R.string.duration_hours_minutes, hours, minutes)
+                hours > 0 -> context.getString(R.string.duration_hours, hours)
+                minutes > 0 -> context.getString(R.string.duration_minutes, minutes)
+                else -> return context.getString(R.string.med_double_dose_text_now)
+            }
+            return context.getString(R.string.med_double_dose_text, span)
+        }
 
         fun channelFor(klass: ReminderClass): String = when (klass) {
             ReminderClass.CRITICAL -> CHANNEL_CRITICAL

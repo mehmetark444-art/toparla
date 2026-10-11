@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>İlaç kaydını dışa aktar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.t-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+.t-root button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div class="t-root" style="width: 390px; height: 844px; box-sizing: border-box; position: relative; display: flex; flex-direction: column; justify-content: flex-end; background: #0E0D0C; color: #ECE7DF">
+  <div aria-hidden="true" style="position: absolute; top: 16px; left: 24px; right: 24px; display: flex; flex-direction: column; gap: 16px; opacity: 0.35">
+    <div style="font-size: 20px; font-weight: 600">Geçmiş</div>
+    <div style="height: 96px; border-radius: 16px; background: #2A3A4A"></div>
+    <div style="height: 200px; border-radius: 20px; background: #242220"></div>
+  </div>
+
+  <div role="dialog" aria-label="Dışa aktar" style="position: relative; padding: 12px 24px 32px 24px; border-radius: 28px 28px 0 0; background: #242220; box-shadow: 0 -8px 24px rgba(10,8,6,0.35); display: flex; flex-direction: column; gap: 24px">
+    <div aria-hidden="true" style="align-self: center; width: 40px; height: 4px; border-radius: 2px; background: #4A453F"></div>
+    <h2 style="margin: 0; font-size: 20px; font-weight: 600">Dışa aktar</h2>
+
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <div style="font-size: 13px; font-weight: 600; color: #AFA79B">Aralık</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <button aria-pressed="false" style="min-height: 48px; padding: 0 16px; border: 0; border-radius: 16px; background: #2E2B28; color: #ECE7DF; font-size: 16px">Son 7 gün</button>
+        <button aria-pressed="true" style="min-height: 48px; padding: 0 16px; border: 0; border-radius: 16px; background: #2F4A3F; color: #D7E8E0; font-size: 16px; font-weight: 600">Son 30 gün</button>
+        <button aria-pressed="false" style="min-height: 48px; padding: 0 16px; border: 0; border-radius: 16px; background: #2E2B28; color: #ECE7DF; font-size: 16px">Son 90 gün</button>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <div style="font-size: 13px; font-weight: 600; color: #AFA79B">Biçim</div>
+      <button aria-pressed="false" style="min-height: 64px; padding: 12px 16px; border: 1px solid #4A453F; border-radius: 16px; background: transparent; color: #ECE7DF; text-align: left; display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 16px">PDF</span>
+        <span style="font-size: 13px; color: #AFA79B">Yazdırmak ya da randevuya götürmek için</span>
+      </button>
+      <button aria-pressed="true" style="min-height: 64px; padding: 12px 16px; border: 2px solid #8DBBA9; border-radius: 16px; background: rgba(141,187,169,0.10); color: #ECE7DF; text-align: left; display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 16px; font-weight: 600">CSV</span>
+        <span style="font-size: 13px; color: #AFA79B">Hesap tablosunda açmak için</span>
+      </button>
+    </div>
+
+    <p style="margin: 0; font-size: 13px; line-height: 20px; color: #AFA79B">Dosyayı nereye kaydedeceğini sen seçersin. Toparla onu kimseye göndermez.</p>
+
+    <button style="width: 100%; min-height: 56px; border: 0; border-radius: 18px; background: #8DBBA9; color: #12261E; font-size: 16px; font-weight: 600">Dosyayı kaydet</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

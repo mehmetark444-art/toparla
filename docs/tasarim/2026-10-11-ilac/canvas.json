@@ -1,0 +1,26 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-10-11T09:30:00Z"},
+  "title": "Toparla · İlaç ekranları taslağı",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 390, "h": 1000, "title": "1 · İlaçlar: bugün ve ilaçların (koyu)"},
+    "IlaclarAcik.dc.html": {"x": 470, "y": 0, "w": 390, "h": 1000, "title": "1 · İlaçlar (açık)"},
+    "IlacEkle.dc.html": {"x": 940, "y": 0, "w": 390, "h": 1480, "title": "2 · İlaç ekle / düzenle (koyu)"},
+    "IlacEkleAcik.dc.html": {"x": 1410, "y": 0, "w": 390, "h": 1480, "title": "2 · İlaç ekle (açık)"},
+    "Gecmis.dc.html": {"x": 0, "y": 1600, "w": 390, "h": 844, "title": "3 · Geçmiş ve kaydedilmeyen doz"},
+    "DisaAktar.dc.html": {"x": 470, "y": 1600, "w": 390, "h": 844, "title": "4 · Dışa aktar (CSV / PDF)"},
+    "Ayarlar.dc.html": {"x": 940, "y": 1600, "w": 390, "h": 844, "title": "5 · Ayarlar → Modüller"},
+    "Kilit.dc.html": {"x": 1410, "y": 1600, "w": 390, "h": 844, "title": "6 · İlaç ekranları kilitli"},
+    "KartIlac.dc.html": {"x": 0, "y": 2564, "w": 390, "h": 844, "title": "7 · Tam ekran kart: ilaç zamanı"},
+    "KartKilitli.dc.html": {"x": 470, "y": 2564, "w": 390, "h": 844, "title": "8 · Tam ekran kart: telefon kilitliyken"},
+    "CiftDoz.dc.html": {"x": 940, "y": 2564, "w": 390, "h": 844, "title": "9 · Çift doz sorusu ve bildirimler"},
+    "PlanGiris.dc.html": {"x": 1410, "y": 2564, "w": 390, "h": 844, "title": "10 · Plan sekmesinde ilaç girişi"}
+  },
+  "order": ["Main.dc.html", "IlaclarAcik.dc.html", "IlacEkle.dc.html", "IlacEkleAcik.dc.html", "Gecmis.dc.html", "DisaAktar.dc.html", "Ayarlar.dc.html", "Kilit.dc.html", "KartIlac.dc.html", "KartKilitli.dc.html", "CiftDoz.dc.html", "PlanGiris.dc.html"],
+  "notes": {
+    "baslik": {"x": 0, "y": -260, "text": "İlaç takibi (M9) · onay taslağı · örnek içerik uydurmadır", "kind": "title1", "maxW": 1800}
+  },
+  "designSystems": []
+}

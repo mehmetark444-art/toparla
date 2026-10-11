@@ -111,6 +111,13 @@ class SettingsStore(private val dataStore: DataStore<Preferences>) {
         dataStore.edit { it[HEARTBEAT_WARNED] = value }
     }
 
+    /** İlaç ekranlarına girişte parmak izi / yüz / ekran kilidi istenir mi (blueprint M9 "biyometrik kilit"). */
+    val medicationLock: Flow<Boolean> = dataStore.data.map { it[MEDICATION_LOCK] ?: false }
+
+    suspend fun setMedicationLock(value: Boolean) {
+        dataStore.edit { it[MEDICATION_LOCK] = value }
+    }
+
     fun flag(flag: FeatureFlag): Flow<Boolean> = dataStore.data.map { it[flagKey(flag)] ?: flag.defaultOn }
 
     suspend fun setNotificationBudget(value: Int) {
@@ -150,6 +157,7 @@ class SettingsStore(private val dataStore: DataStore<Preferences>) {
         val LAST_SELF_TEST = stringPreferencesKey("last_self_test")
         val SELF_TEST_KEY = stringPreferencesKey("self_test_key")
         val HEARTBEAT_WARNED = stringSetPreferencesKey("heartbeat_warned")
+        val MEDICATION_LOCK = booleanPreferencesKey("medication_lock")
 
         fun flagKey(flag: FeatureFlag) = booleanPreferencesKey("flag_${flag.name.lowercase()}")
     }

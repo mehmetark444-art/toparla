@@ -1,6 +1,7 @@
 package com.toparla.data.db
 
 import android.content.Context
+import androidx.room3.AutoMigration
 import androidx.room3.Database
 import androidx.room3.Room
 import androidx.room3.RoomDatabase
@@ -16,9 +17,18 @@ import java.io.IOException
  * Sürüm artınca: yeni `Migration` yaz, `MigrationTestHelper` ile test et, [CURRENT_VERSION]'ı artır.
  */
 @Database(
-    entities = [ReminderEntity::class, ReminderOccurrenceEntity::class, ScheduledAlarmEntity::class, DeliveryLogEntity::class],
+    entities = [
+        ReminderEntity::class,
+        ReminderOccurrenceEntity::class,
+        ScheduledAlarmEntity::class,
+        DeliveryLogEntity::class,
+        MedicationEntity::class,
+        MedicationLogEntity::class,
+    ],
     version = ToparlaDatabase.CURRENT_VERSION,
     exportSchema = true,
+    // 1 → 2 (F2.39): yalnız iki yeni tablo (ilaç); var olan tablolara dokunulmaz. Testi `data/src/androidTest`.
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
 )
 abstract class ToparlaDatabase : RoomDatabase() {
     abstract fun reminders(): ReminderDao
@@ -29,8 +39,12 @@ abstract class ToparlaDatabase : RoomDatabase() {
 
     abstract fun deliveryLog(): DeliveryLogDao
 
+    abstract fun medications(): MedicationDao
+
+    abstract fun medicationLogs(): MedicationLogDao
+
     companion object {
-        const val CURRENT_VERSION = 1
+        const val CURRENT_VERSION = 2
         const val FILE_NAME = "toparla.db"
 
         /**

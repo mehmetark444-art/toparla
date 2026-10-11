@@ -31,8 +31,33 @@ data class AlarmKey(val occurrenceKey: String, val reminderId: String, val kind:
     }
 }
 
+/** İlaç modülünün (M9) hatırlatmadaki rolü: doz ya da stok azalınca "Eczaneye uğra". */
+enum class MedicationRole { DOSE, RESTOCK }
+
+/**
+ * Hatırlatma bir ilaca aitse (blueprint M9). İlaç verisi Sarı'dır: kilit ekranında ve cihaz korumalı kopyada
+ * adı görünmez; [hideName] açıksa bildirimin kendisinde de görünmez.
+ */
+data class MedicationTag(val medicationId: String, val role: MedicationRole, val hideName: Boolean = false)
+
 /** Bildirimde gösterilecek kadarıyla hatırlatma. */
-data class ReminderInfo(val id: String, val klass: ReminderClass, val title: String, val body: String, val persistent: Boolean)
+data class ReminderInfo(
+    val id: String,
+    val klass: ReminderClass,
+    val title: String,
+    val body: String,
+    val persistent: Boolean,
+    val medication: MedicationTag? = null,
+) {
+    /** İlaç dozu: eylemleri Aldım · 15 dk sonra · Atlıyorum, çift doz korumalı. */
+    val isMedicationDose: Boolean get() = medication?.role == MedicationRole.DOSE
+
+    /**
+     * Kilit açılmadan da okunabilen kopyaya yazılacak başlık. İlaç başlığı oraya yazılmaz; kilitli bildirim genel
+     * metinle gösterilir.
+     */
+    val mirrorTitle: String? get() = if (medication != null) null else title
+}
 
 /** Tek bir teslimin kalıcı kaydı (`ReminderOccurrence` tablosunun motora bakan yüzü). */
 data class OccurrenceRecord(
@@ -62,8 +87,12 @@ data class DeliveryNotice(
 /** Israrlı takipte yanıt bekleyen bir iş (birleşik bildirimin bir satırı). */
 data class PersistentItem(val occurrenceKey: String, val reminder: ReminderInfo, val asksDone: Int)
 
-/** Bildirim eylemleri (blueprint G1, karar 0003). */
-enum class ReminderAction { DONE, SNOOZE, TOMORROW, NOT_TODAY, OPENED }
+/**
+ * Bildirim eylemleri (blueprint G1, karar 0003). İlaç dozunda DONE "Aldım", SNOOZE "15 dk sonra", NOT_TODAY
+ * "Atlıyorum" demektir (blueprint M9); TOMORROW ilaçta yoktur (doz zamanı değiştirilmez).
+ * CONFIRM_TAKEN: çift doz sorusuna "Evet, aldım" ya da geçmişteki doza "Geç aldım". KEEP_OPEN: soruya "Vazgeç".
+ */
+enum class ReminderAction { DONE, SNOOZE, TOMORROW, NOT_TODAY, OPENED, CONFIRM_TAKEN, KEEP_OPEN }
 
 /** Hatırlatma verisi. Uygulaması `:data` içindedir; testte bellek içi sahtesi kullanılır. */
 interface ReminderRepository {
@@ -118,6 +147,9 @@ interface ReminderNotifier {
     /** Israrlı işlerin tek birleşik bildirimi; liste boşsa bildirim kaldırılır. */
     fun showPersistent(items: List<PersistentItem>, askedAt: Instant)
 
-    /** Üç ertelemeden sonra: "Yarına taşıyayım mı, atlayayım mı?" */
+    /** Üç ertelemeden sonra: "Yarına taşıyayım mı, atlayayım mı?" (ilaçta: "Aldım" ya da "Atlıyorum"). */
     fun askCarryOrSkip(occurrenceKey: String, reminder: ReminderInfo)
+
+    /** Çift doz koruması (blueprint M9): "Son kayıt X önce. Emin misin?" — Evet, aldım · Vazgeç. */
+    fun askDoubleDose(occurrenceKey: String, reminder: ReminderInfo, sinceLastDose: Duration)
 }

@@ -53,4 +53,19 @@ object Defaults {
 
     /** Hatırlatma penceresinin en geç yeniden doldurulma aralığı, saat. */
     const val MAINTENANCE_INTERVAL_HOURS = 12L
+
+    /** İlaç dozunun "15 dk sonra" ertelemesi, dakika (blueprint M9). */
+    const val MEDICATION_SNOOZE_MIN = 15L
+
+    /** İlaç ertelemesinin üst sınırı, dakika (blueprint Bölüm I: "ilaçta ≤ 30 dk"). */
+    const val MEDICATION_SNOOZE_MAX_MIN = 30L
+
+    /** Kaydı olmayan doz bu kadar dakika sonra "Kaydedilmedi" görünür; sonra alınan doz "geç" sayılır (Bölüm I: +60 dk). */
+    const val MEDICATION_NOT_LOGGED_AFTER_MIN = 60L
+
+    /** Yeni ilacın çift doz koruması için önerilen asgari aralık, saat. Kullanıcı değiştirir; 0 = koruma kapalı. */
+    const val MEDICATION_MIN_GAP_HOURS = 4L
+
+    /** Stok eşiği geçilince "Eczaneye uğra" hatırlatması bu kadar saniye sonra gelir (kayıt anında değil). */
+    const val MEDICATION_RESTOCK_DELAY_SEC = 60L
 }

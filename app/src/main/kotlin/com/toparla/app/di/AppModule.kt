@@ -11,10 +11,12 @@ import com.toparla.data.core.SecureRandomSource
 import com.toparla.data.core.SystemClock
 import com.toparla.data.core.UuidGenerator
 import com.toparla.data.db.DeliveryInsights
+import com.toparla.data.db.MedicationStore
 import com.toparla.data.db.ReminderStore
 import com.toparla.data.db.ToparlaDatabase
 import com.toparla.data.secret.KeystoreSecretStore
 import com.toparla.data.settings.SettingsStore
+import com.toparla.domain.FeatureFlag
 import com.toparla.domain.SecretStore
 import com.toparla.domain.core.Clock
 import com.toparla.domain.core.DispatcherProvider
@@ -26,6 +28,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.first
 import java.io.File
 import javax.inject.Singleton
 
@@ -52,8 +55,13 @@ object AppModule {
     fun database(@ApplicationContext context: Context, dispatchers: DispatcherProvider): ToparlaDatabase =
         ToparlaDatabase.open(context, dispatchers.io)
 
+    /** İlaç modülü (M9) kapalıyken ilaç hatırlatmaları motora hiç görünmez; anahtar her okumada ayarlardan gelir. */
     @Provides @Singleton
-    fun reminderStore(db: ToparlaDatabase): ReminderStore = ReminderStore(db)
+    fun reminderStore(db: ToparlaDatabase, settings: SettingsStore): ReminderStore =
+        ReminderStore(db) { settings.flag(FeatureFlag.MEDICATION).first() }
+
+    @Provides @Singleton
+    fun medicationStore(db: ToparlaDatabase): MedicationStore = MedicationStore(db)
 
     @Provides @Singleton
     fun deliveryInsights(db: ToparlaDatabase): DeliveryInsights = DeliveryInsights(db)
